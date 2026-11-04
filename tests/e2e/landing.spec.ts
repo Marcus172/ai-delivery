@@ -132,6 +132,33 @@ for (const locale of LOCALES) {
       }
     });
 
+    test("the outer ring spins around the orbit centre on a wide screen", async ({
+      page,
+    }) => {
+      // Wide enough that the fluid root font size is above 16 px.
+      await page.setViewportSize({ width: 2560, height: 1440 });
+      await page.goto(URL_OF[locale]);
+      const orbit = page.locator("svg[data-orbit]:visible");
+      await expect(orbit).toHaveCount(1);
+      const centreOf = (sel: string) =>
+        orbit.locator(sel).evaluate((el) => {
+          const r = el.getBoundingClientRect();
+          return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
+        });
+      const core = await centreOf(".core");
+      for (const t of [0, 22_500, 45_000, 67_500]) {
+        await page.evaluate((ms) => {
+          for (const a of document.getAnimations()) {
+            a.pause();
+            a.currentTime = ms;
+          }
+        }, t);
+        const ring = await centreOf(".ring.dash");
+        expect(Math.abs(ring.x - core.x), `x at ${t} ms`).toBeLessThan(1);
+        expect(Math.abs(ring.y - core.y), `y at ${t} ms`).toBeLessThan(1);
+      }
+    });
+
     test("no running animations under reduced motion", async ({ browser }) => {
       const context = await browser.newContext({ reducedMotion: "reduce" });
       const page = await context.newPage();

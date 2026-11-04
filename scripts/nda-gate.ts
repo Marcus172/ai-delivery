@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { readdirSync, readFileSync } from "node:fs";
+import { lstatSync, readdirSync, readFileSync, readlinkSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { loadDenylistText, parseDenylist, type Rule } from "./denylist";
@@ -108,9 +108,9 @@ export async function scanDist(dir = "dist", rules?: Rule[]): Promise<Hit[]> {
 }
 
 /**
- * Source mode: every git-tracked text file, `never` rules only. cv-only terms stay allowed in source (the CV
- * publishes them); built-in phone and banned-word patterns are not applied because the gate and its tests
- * carry them as literals.
+ * Source mode: every git-tracked text file (a symlink as its target path), `never` rules only. cv-only terms
+ * stay allowed in source (the CV publishes them); built-in phone and banned-word patterns are not applied
+ * because the gate and its tests carry them as literals.
  */
 export function scanSource(rules: Rule[], cwd = process.cwd()): Hit[] {
   const files = execFileSync("git", ["ls-files", "-z"], { cwd, encoding: "utf8" }).split("\0").filter(Boolean);
@@ -118,7 +118,10 @@ export function scanSource(rules: Rule[], cwd = process.cwd()): Hit[] {
   const docs: Doc[] = [];
   for (const file of files) {
     if (BINARY.test(file) || file.endsWith(".pdf")) continue;
-    docs.push({ path: file, text: readFileSync(join(cwd, file), "utf8") });
+    const abs = join(cwd, file);
+    // A symlink is scanned as git stores it: its target path. Its target is scanned on its own if tracked.
+    const text = lstatSync(abs).isSymbolicLink() ? readlinkSync(abs) : readFileSync(abs, "utf8");
+    docs.push({ path: file, text });
   }
   return scanSourceDocuments(docs, never);
 }

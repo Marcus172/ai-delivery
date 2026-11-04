@@ -1,0 +1,33 @@
+---
+id: case-tailwind
+order: 9
+title: "Case: from CSS-in-JS to Tailwind in ten weeks"
+summary: "Every component of three apps moved from CSS-in-JS to Tailwind with token-only scales. The visual-regression harness came first, the migration second, and the biggest finding came from reading screenshots, not from a green gate."
+---
+import { MigrationBand, Note, Stat } from "../../../components/chapter";
+
+export const locale = "en";
+
+### The harness before the first component
+
+Rewriting the styling of a whole product is the kind of work that AI makes cheap and that a team rightly fears, because a hundred small visual regressions are invisible to every existing test. So the first phase converted nothing. It built a visual-regression harness that renders every story of the base and of the change in one run, light and dark, and compares them pixel by pixel, with a self-test of the comparator and a CI job per pull request. Only then did the conversion start: layout and text primitives that resolve spacing and layout props to classes, then shared UI, then the domains, then removal of the old libraries. One stage, one pull request; the plan's state changes in the same commit.
+
+<MigrationBand locale={locale} />
+
+<div class="stats">
+  <Stat id="tailwind-components" locale={locale} />
+  <Stat id="story-coverage" locale={locale} />
+  <Stat id="bundle-size" locale={locale} />
+</div>
+
+### The gates were green, the truth was in the pixels
+
+The harness had a blind spot, and it taught the most useful lesson of the migration. Every story of the charting library was a screenshot of an empty chart, taken at the first frame of its animation, and every gate was green, because the base and the change were equally empty. It was found by a person reading the screenshots. The response was not another gate: a marker on each story that a person has actually looked at, and a check that lets the number of unread stories only fall. The measuring instrument got the same honesty: when the census of remaining call sites turned out to count prose in doc comments, it was fixed and the documentation warns not to compare tables across the fix.
+
+<Stat id="vrt-unread-stories" locale={locale} />
+
+Other defects passed every automated gate and were caught by review or by eye: an arbitrary variant that silently removed the focus-visible ring, a lost descendant selector, a border invisible in the dark theme, invalid CSS converted into nothing. Each one became a rule or a test.
+
+<Note>
+  <strong>Harness over conversion.</strong> When the harness's settle rule turned out not to distinguish "stable because finished" from "stable because not started", fixing the lane outranked converting the next component. The re-estimate after the pilot moved the cost from the component to its consumers, and the plan was rewritten around that instead of defended.
+</Note>

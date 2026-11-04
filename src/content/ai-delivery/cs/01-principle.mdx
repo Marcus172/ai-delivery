@@ -1,0 +1,29 @@
+---
+id: principle
+order: 1
+title: "Proces zůstává. Mravenčí práci dělá AI."
+summary: "Způsob práce pod delivery flow mého týmu je starší než agenti v něm; kontrakt, který ho zapisuje, je nový. Změnilo se, kdo píše, ne kdo rozhoduje."
+---
+import { FlowBand, Note, Stat } from "../../../components/chapter";
+
+export const locale = "cs";
+
+V&nbsp;roce 2026 jsem postavil AI-asistované dodávání pro jeden produktový tým: velké produktové monorepo s&nbsp;několika paralelními release liniemi a&nbsp;tým napříč rolemi – vývojáři, analytici i&nbsp;testeři. Většina kroků je těch, ve kterých jsem pracoval dávno předtím, než existovali agenti: tiket se přečte a&nbsp;vyptá, dohodne se spec, proběhne review, odevzdá člověk a&nbsp;změna se přenese na každou novější release linii. Dvě věci jsou nové. Test, který padne před opravou, je dnes součástí každého tiketu, který projde flow, protože AI udělala test-first dostupným; napříč všemi produktovými pull requesty, s&nbsp;flow i&nbsp;bez něj, se podíl těch s&nbsp;testy posunul takto:
+
+<Stat id="prs-with-tests" locale={locale} />
+
+A&nbsp;od srpna 2026 jsou kroky zapsané v&nbsp;kontraktu jako invarianty, takže se kontrolují, místo aby se pamatovaly.
+
+Změnila se mravenčí práce. Agent přečte tiket i&nbsp;přílohy, navrhne varianty specifikace, napíše test a&nbsp;kód ve vlastním pracovišti, pustí lokální repliku CI brány a&nbsp;připraví poznámky pro testery. Člověk klade otázky, vybere variantu, spustí odevzdání a&nbsp;schválí, co dorazí ke klientovi.
+
+<FlowBand locale={locale} />
+
+**Ručně téměř nic, nikdy sto procent.** Kódu píšu sám velmi málo; rozhoduju o&nbsp;něm celém. Nic se nemerguje, neposílá ani nevydává bez výslovného kroku člověka. Není to opatrnost pro opatrnost. Brány ve čtvrté kapitole existují proto, že agentovi, kterého nejde zastavit u&nbsp;brány, nejde u&nbsp;brány ani věřit, a&nbsp;proto, že stejné brány musí platit i&nbsp;pro kolegy, kteří AI nikdy neotevřou.
+
+Znalost procesu z&nbsp;doby před AI mi zároveň říká, které kroky zrychlí (čtení, návrhy, kontroly, porty) a&nbsp;které ne (rozhodnout, co má produkt dělat, zvážit kompromis, nést chybu). Proto je jediné číslo o&nbsp;tom, o&nbsp;kolik rychleji pracuji já, odhad a&nbsp;stojí stranou od měřených výsledků týmu.
+
+<Stat id="five-to-ten-x" locale={locale} />
+
+<Note>
+  <strong>Co tahle stránka neříká.</strong> Nikde netvrdí, že AI nahradila práci týmu, že každá role denně pracuje v&nbsp;plném flow, ani že nástroj z&nbsp;někoho udělal desetinásobného inženýra. Měřená čísla v&nbsp;kapitole Výsledky uvádějí své období i&nbsp;výhrady; odhad výše zůstává odhadem.
+</Note>

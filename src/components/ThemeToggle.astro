@@ -1,0 +1,89 @@
+---
+import type { Locale } from "../i18n/locales";
+import { t } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<button
+  type="button"
+  class="theme"
+  data-theme-toggle
+  aria-label={t(locale, "theme.label")}
+  data-label-light={t(locale, "theme.light")}
+  data-label-dark={t(locale, "theme.dark")}
+>
+  <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"></path>
+  </svg>
+  <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+  </svg>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const current = (): "light" | "dark" => (root.getAttribute("data-theme") === "dark" ? "dark" : "light");
+  const apply = (theme: "light" | "dark") => {
+    root.setAttribute("data-theme", theme);
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {
+      // Storage may be blocked (private mode); the attribute alone is enough for this session.
+    }
+  };
+  document.querySelectorAll<HTMLButtonElement>("button[data-theme-toggle]").forEach((button) => {
+    const label = () => {
+      // The label names the theme the click will switch to.
+      const next = current() === "dark" ? "light" : "dark";
+      button.setAttribute("title", button.dataset[next === "dark" ? "labelDark" : "labelLight"] ?? "");
+    };
+    button.addEventListener("click", () => {
+      apply(current() === "dark" ? "light" : "dark");
+      label();
+    });
+    label();
+  });
+</script>
+
+<style>
+  .theme {
+    border: 1px solid var(--line);
+    background: transparent;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    color: var(--ink);
+    margin-top: 8px;
+    padding: 0;
+  }
+  .theme:hover,
+  .theme:focus-visible {
+    background: var(--tint);
+  }
+  .theme svg {
+    width: 16px;
+    height: 16px;
+  }
+  .sun {
+    display: none;
+  }
+  :global(:root[data-theme="dark"]) .sun {
+    display: block;
+  }
+  :global(:root[data-theme="dark"]) .moon {
+    display: none;
+  }
+  @media (max-width: 899px) {
+    .theme {
+      margin: 0 0 0 6px;
+    }
+  }
+</style>

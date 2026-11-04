@@ -1,0 +1,169 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "Four layers of the delivery flow: generic contract, client preset, repository procedures, personal layer",
+  "Čtyři vrstvy delivery flow: generický kontrakt, klientský preset, procedury repozitáře, osobní vrstva",
+);
+const DESC = l(
+  "Values are read top-down and merge per key, the lower layer wins. Procedures are looked up bottom-up and the first file found is used whole. Tools appear only in the personal layer, through seven closed extension points.",
+  "Hodnoty se čtou shora dolů a slučují se po klíčích, vyhrává nižší vrstva. Procedury se hledají zdola nahoru a první nalezený soubor platí celý. Nástroje se objevují jen v osobní vrstvě, přes sedm uzavřených bodů rozšíření.",
+);
+
+/** `lines`: muted description lines; `tag`: the emphasised last line. Keep every line under ~62 characters so it fits the box. */
+type Layer = { name: string; owner: string; lines: string[]; tag?: string };
+const LAYERS: Record<Locale, Layer[]> = {
+  en: [
+    { name: "Generic contract", owner: "owner: the author", lines: ["choreography of steps, seven invariants, resolution rules,", "a version number with migration notes"], tag: "names no tracker, hosting, CI, client or tool" },
+    { name: "Client preset", owner: "owner: the client team", lines: ["about twenty capabilities under names the contract defines:", "resolve work item, quality gate, open PR, land change…"] },
+    { name: "Repository procedures", owner: "owner: the repository team", lines: ["five procedures, cap six: quality gate, provision workspace,", "propagate, read spec, verify change"] },
+    { name: "Personal layer", owner: "owner: each developer, not committed", lines: ["seven extension points: session, queues, checkout,", "workspace UI, fleet, state store"], tag: "the only place a tool is named" },
+  ],
+  cs: [
+    { name: "Generický kontrakt", owner: "vlastník: autor", lines: ["choreografie kroků, sedm invariantů, pravidla rozlišení,", "číslo verze s migračními poznámkami"], tag: "nejmenuje tracker, hosting, CI, klienta ani nástroj" },
+    { name: "Klientský preset", owner: "vlastník: tým klienta", lines: ["zhruba dvacet capabilities pod jmény z kontraktu:", "najdi položku, quality gate, otevři PR, zamerguj změnu…"] },
+    { name: "Procedury repozitáře", owner: "vlastník: tým repozitáře", lines: ["pět procedur, strop šest: quality gate, založení pracoviště,", "propagace, čtení specifikace, ověření změny"] },
+    { name: "Osobní vrstva", owner: "vlastník: každý vývojář, mimo git", lines: ["sedm bodů rozšíření: session, fronty, checkout,", "UI pracoviště, flotila, úložiště stavu"], tag: "jediné místo, kde se jmenuje nástroj" },
+  ],
+};
+const VALUES = l("values", "hodnoty");
+const VALUES_RULE = l("merge per key, lower layer wins", "sloučení po klíčích, vyhrává nižší");
+const PROCS = l("procedures", "procedury");
+const PROCS_RULE = l("first file found wins, whole", "první nalezený soubor platí celý");
+
+const W = 780;
+const BOX_X = 24;
+const BOX_W = 540;
+const BOX_H = 104;
+const GAP = 16;
+const TOP = 28;
+const layers = LAYERS[locale];
+const yOf = (i: number) => TOP + i * (BOX_H + GAP);
+const H = yOf(layers.length - 1) + BOX_H + 28;
+const ARROW_X1 = 616;
+const ARROW_X2 = 710;
+const A_TOP = TOP + 10;
+const A_BOT = yOf(layers.length - 1) + BOX_H - 10;
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="layers"
+    data-diagram="flow-layers"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="flow-layers-t"
+    aria-describedby="flow-layers-d"
+  >
+    <title id="flow-layers-t">{TITLE[locale]}</title>
+    <desc id="flow-layers-d">{DESC[locale]}</desc>
+    <defs>
+      <marker id="fl-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" class="head" />
+      </marker>
+    </defs>
+
+    {
+      layers.map((layer, i) => (
+        <g class:list={["layer", { last: i === layers.length - 1 }]} transform={`translate(${BOX_X},${yOf(i)})`}>
+          <rect width={BOX_W} height={BOX_H} rx="12" />
+          <text class="num" x="18" y="30" font-size="13">
+            {i + 1}
+          </text>
+          <text class="name" x="44" y="30" font-size="16">
+            {layer.name}
+          </text>
+          <text class="owner" x={BOX_W - 16} y="30" text-anchor="end" font-size="12.5">
+            {layer.owner}
+          </text>
+          {layer.lines.map((line, j) => (
+            <text class="what" x="44" y={52 + j * 18} font-size="12.5">
+              {line}
+            </text>
+          ))}
+          {layer.tag && (
+            <text class="tag" x="44" y={52 + layer.lines.length * 18} font-size="12.5">
+              {layer.tag}
+            </text>
+          )}
+        </g>
+      ))
+    }
+
+    <g class="arrow values">
+      <line x1={ARROW_X1} y1={A_TOP} x2={ARROW_X1} y2={A_BOT} marker-end="url(#fl-head)" />
+      <text x={ARROW_X1 - 12} y={(A_TOP + A_BOT) / 2} font-size="13" text-anchor="middle" transform={`rotate(-90 ${ARROW_X1 - 12} ${(A_TOP + A_BOT) / 2})`}>
+        <tspan class="k">{VALUES[locale]}</tspan>
+        <tspan> · {VALUES_RULE[locale]}</tspan>
+      </text>
+    </g>
+    <g class="arrow procs">
+      <line x1={ARROW_X2} y1={A_BOT} x2={ARROW_X2} y2={A_TOP} marker-end="url(#fl-head)" />
+      <text x={ARROW_X2 + 14} y={(A_TOP + A_BOT) / 2} font-size="13" text-anchor="middle" transform={`rotate(90 ${ARROW_X2 + 14} ${(A_TOP + A_BOT) / 2})`}>
+        <tspan class="k">{PROCS[locale]}</tspan>
+        <tspan> · {PROCS_RULE[locale]}</tspan>
+      </text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 28px;
+  }
+  .layers {
+    display: block;
+    width: 100%;
+    min-width: 720px;
+    overflow: visible;
+  }
+  .layer rect {
+    fill: var(--tint);
+    stroke: var(--line);
+  }
+  .layer.last rect {
+    fill: var(--bg);
+    stroke: var(--acc);
+    stroke-dasharray: 5 4;
+  }
+  .num {
+    fill: var(--acc-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .name {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .owner,
+  .what {
+    fill: var(--mute);
+  }
+  .tag {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .arrow line {
+    stroke: var(--mute);
+    stroke-width: 1.4;
+  }
+  .arrow text {
+    fill: var(--mute);
+  }
+  .arrow .k {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .head {
+    fill: var(--mute);
+  }
+</style>

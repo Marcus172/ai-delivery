@@ -1,0 +1,44 @@
+---
+id: case-a11y
+order: 8
+title: "Případ: přístupnost ve velkém"
+summary: "Externí audit dodal tisíce značek v matici stránka × kritérium a žádné selektory. Čteno jako vzorce to bylo osmnáct vad ve sdílených komponentách. Z opravy se stal testovací systém o šesti vrstvách a ta nejvyšší zůstává lidská."
+---
+import { Note, Stat, TestPyramid } from "../../../components/chapter";
+
+export const locale = "cs";
+
+### Tisíce značek, osmnáct vad
+
+Auditní matice pokrývala každou stránku ve dvou jazycích a&nbsp;dvou motivech a&nbsp;kritérium označila jako padající po stránkách. Nic neukazovalo na element. Než jsem cokoli opravil, nechal jsem matici rozebrat jako data: většina padajících kritérií padala téměř na každé stránce, což znamená, že vada seděla ve sdílené komponentě, ne na stránce. Z&nbsp;toho plynula strategie: opravit komponentu a&nbsp;test, který opravu dokazuje, místo procházení značek jedné po druhé.
+
+<div class="stats">
+  <Stat id="a11y-patterns" locale={locale} />
+  <Stat id="a11y-fix-reach" locale={locale} />
+</div>
+
+### Manifest se stavovým automatem
+
+Každé systémové kritérium a&nbsp;každý zbývající stránkový nález žije ve strojově čitelném manifestu se schématem a&nbsp;životním cyklem: čeká, rozpracováno, test napsán, prochází, hotovo, přičemž blokováno a&nbsp;neřešíme nesou důvod. Stavy nejsou ozdoba: *prochází* znamená zelený automatický test, *hotovo* znamená, že to člověk potvrdil se čtečkou obrazovky. Nad manifestem pracují tři agenti, jeden převede novou auditní matici na nálezy, jeden napíše k&nbsp;nálezu regresní test vedle kódu, jeden spustí vizuální audit, a&nbsp;hrstka příkazů vypíše stav, navrhne další položku, vyexportuje stav pro management a&nbsp;vstřebá rozšířený audit bez resetu. Když analytik klienta v&nbsp;září rozšířil rozsah, manifest nové řádky pojal, aniž by se začínalo znovu.
+
+<div class="stats">
+  <Stat id="a11y-criteria" locale={locale} />
+  <Stat id="a11y-page-findings" locale={locale} />
+</div>
+
+### Šest vrstev, jedna z&nbsp;nich lidská
+
+<TestPyramid locale={locale} />
+
+<Stat id="a11y-specs" locale={locale} />
+
+Automatické kontroly chytí snad třetinu skutečných bariér a&nbsp;dokumentace to říká. Šest systémových kritérií je čistě vizuálních, focus ring, kontrast v&nbsp;kontextu, reflow, a&nbsp;proto existuje pátá vrstva: agent v&nbsp;prohlížeči projde obrazovky a&nbsp;vision model přečte snímky proti těmto kritériím, s&nbsp;kalibrovanými příklady, a&nbsp;člověk zkontroluje, co označil. Šestá vrstva je jediná cesta do stavu *hotovo*: člověk se čtečkou obrazovky. Žádný agent tam nález nepřesune.
+
+<div class="example">
+  <span class="k">Příklad nálezu, smyšlená značka (Ferrylane)</span>
+  <p>Kritérium 2.4.7, viditelný fokus. Hlavní tlačítko ve výběru plavby v&nbsp;aplikaci Ferrylane přišlo po změně stylu o&nbsp;focus ring: obrys byl nastavený na obalu, na který se klávesnice nikdy nedostane. Oprava šla do sdíleného tlačítka, test komponenty ověřuje viditelný obrys při fokusu, průchodový test se na tlačítko doopravdy protabuje a&nbsp;člověk to potvrdil se čtečkou, než nález přešel do hotovo.</p>
+</div>
+
+<Note>
+  <strong>Ta poctivá část.</strong> Tři systémová kritéria blokují rozhodnutí mimo tento kód a&nbsp;jsou tak vedená, s&nbsp;důvodem, v&nbsp;dokumentu, který odděluje, co opravujeme my, od toho, co vlastní jiný dodavatel nebo o&nbsp;čem klient teprve rozhodne. Runner přístupnosti ve Storybooku není brána, protože na jedné architektuře procesoru padá; dokumentace to zaznamenává, místo aby to skrývala.
+</Note>

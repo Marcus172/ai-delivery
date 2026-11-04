@@ -1,0 +1,12 @@
+---
+import Base from "../../layouts/Base.astro";
+import AiDeliveryView from "../../views/AiDeliveryView.astro";
+import { t } from "../../i18n/ui";
+
+const locale = "cs";
+const page = "ai-delivery";
+---
+
+<Base locale={locale} page={page} title={t(locale, "page.ai-delivery.title")} description={t(locale, "page.ai-delivery.description")}>
+  <AiDeliveryView locale={locale} />
+</Base>

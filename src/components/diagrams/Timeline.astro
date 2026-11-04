@@ -1,0 +1,321 @@
+---
+import type { Milestone } from "../../data/journey";
+import { formatMonthOnly } from "../../i18n/dates";
+import type { Locale } from "../../i18n/locales";
+import { t } from "../../i18n/ui";
+
+interface Props {
+  items: Milestone[];
+  locale: Locale;
+}
+
+const { items, locale } = Astro.props;
+const BAND_YEAR = "2026";
+
+const compact = items.filter((m) => m.weight === "compact");
+const recent = items.filter((m) => m.weight === "expanded" && !m.date.startsWith(`${BAND_YEAR}-`));
+const band = items.filter((m) => m.date.startsWith(`${BAND_YEAR}-`));
+const year = (m: Milestone) => m.date.slice(0, 4);
+---
+
+<ol class="tl" aria-label={t(locale, "journey.eyebrow")}>
+  <li class="era strip" data-era="early">
+    <h2 class="era-title" id="era-early">{t(locale, "journey.early")}</h2>
+    <p class="era-note">{t(locale, "journey.earlyNote")}</p>
+    <ol class="rows" aria-labelledby="era-early">
+      {
+        compact.map((m) => (
+          <li class="row" data-milestone data-weight={m.weight} data-date={m.date}>
+            <time datetime={m.date}>{year(m)}</time>
+            <span class="row-title">{m.title[locale]}</span>
+            <span class="row-body">{m.body[locale]}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </li>
+
+  <li class="era recent" data-era="recent">
+    <h2 class="era-title" id="era-recent">{t(locale, "journey.recent")}</h2>
+    <ol class="cards" aria-labelledby="era-recent">
+      {
+        recent.map((m) => (
+          <li class="card" data-milestone data-weight={m.weight} data-date={m.date}>
+            <time datetime={m.date}>
+              <b>{year(m)}</b>{" "}
+              <span>{formatMonthOnly(locale, m.date)}</span>
+            </time>
+            <div class="card-text">
+              <h3>{m.title[locale]}</h3>
+              <p>{m.body[locale]}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </li>
+
+  <li class="era band" data-era="band" data-band={BAND_YEAR}>
+    <div class="band-head">
+      <h2 class="era-title band-year" id="era-band">
+        <span class="band-num">{BAND_YEAR}</span>
+        <span class="band-label">{t(locale, "journey.band")}</span>
+      </h2>
+      <p class="era-note">{t(locale, "journey.bandNote")}</p>
+    </div>
+    <ol class="months" aria-labelledby="era-band">
+      {
+        band.map((m) => (
+          <li class="month" data-milestone data-weight={m.weight} data-date={m.date}>
+            <time datetime={m.date}>{formatMonthOnly(locale, m.date)}</time>
+            <div class="month-text">
+              <h3>{m.title[locale]}</h3>
+              <p>{m.body[locale]}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </li>
+</ol>
+
+<style>
+  .tl,
+  .rows,
+  .cards,
+  .months {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .era + .era {
+    margin-top: 72px;
+    padding-top: 56px;
+    border-top: 1px solid var(--line);
+  }
+  .era-title {
+    font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+    margin-bottom: 8px;
+  }
+  .era-note {
+    color: var(--mute);
+    max-width: 60ch;
+    margin: 0 0 28px;
+  }
+  h3 {
+    font-size: 20px;
+    line-height: 1.2;
+    margin: 0 0 8px;
+  }
+
+  /* ---------- 2014–2023: dense strip ---------- */
+  .row {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 0 24px;
+    align-items: baseline;
+    padding: 14px 0;
+    border-top: 1px solid var(--line);
+  }
+  .row:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  .row time {
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .row-title {
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .row-body {
+    color: var(--mute);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  /* ---------- 2024–2025: cards ---------- */
+  .cards {
+    display: grid;
+    gap: 16px;
+  }
+  .card {
+    display: grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 20px 32px;
+    padding: 26px 0 28px;
+    border-top: 2px solid var(--ink);
+  }
+  .card time {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .card time b {
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    font-size: 56px;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+  }
+  .card time span {
+    color: var(--mute);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .card-text {
+    max-width: 66ch;
+  }
+  .card-text p {
+    color: var(--mute);
+  }
+
+  /* ---------- 2026: one band, months on a spine ---------- */
+  .band {
+    position: relative;
+  }
+  .band-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 24px 40px;
+    align-items: end;
+    margin-bottom: 36px;
+  }
+  .band-year {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+  }
+  .band-num {
+    display: block;
+    font-size: clamp(5rem, 11vw, 9rem);
+    line-height: 0.82;
+    letter-spacing: -0.03em;
+    color: var(--acc);
+  }
+  .band-label {
+    display: block;
+    font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  }
+  .band .era-note {
+    margin-bottom: 6px;
+  }
+  .months {
+    position: relative;
+    padding-left: 160px;
+  }
+  .months::before {
+    content: "";
+    position: absolute;
+    left: 128px;
+    top: 10px;
+    bottom: 10px;
+    width: 2px;
+    background: var(--line);
+  }
+  .month {
+    position: relative;
+    padding: 22px 0 26px;
+  }
+  .month + .month {
+    border-top: 1px solid var(--line);
+  }
+  .month::before {
+    content: "";
+    position: absolute;
+    left: -37px;
+    top: 30px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--acc);
+  }
+  .month:last-child::before {
+    background: var(--acc);
+  }
+  .month time {
+    position: absolute;
+    left: -160px;
+    top: 24px;
+    width: 112px;
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    text-transform: lowercase;
+  }
+  .month time::first-letter {
+    text-transform: uppercase;
+  }
+  .month-text {
+    max-width: 66ch;
+  }
+  .month-text p {
+    color: var(--mute);
+  }
+
+  @media (max-width: 899px) {
+    .era + .era {
+      margin-top: 48px;
+      padding-top: 40px;
+    }
+    .row {
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 4px 16px;
+    }
+    .row time {
+      font-size: 22px;
+      grid-row: span 2;
+      align-self: start;
+    }
+    .row-body {
+      grid-column: 2;
+    }
+    .card {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 20px 0 24px;
+    }
+    .card time {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .card time b {
+      font-size: 40px;
+    }
+    .band-head {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .months {
+      padding-left: 28px;
+    }
+    .months::before {
+      left: 5px;
+      top: 14px;
+    }
+    .month {
+      padding: 20px 0 22px;
+    }
+    .month::before {
+      left: -28px;
+      top: 26px;
+    }
+    .month time {
+      position: static;
+      display: block;
+      width: auto;
+      font-size: 20px;
+      color: var(--acc-text);
+      margin-bottom: 8px;
+    }
+  }
+</style>

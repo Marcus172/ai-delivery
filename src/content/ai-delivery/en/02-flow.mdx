@@ -1,0 +1,38 @@
+---
+id: flow
+order: 2
+title: "One contract, four layers"
+summary: "The delivery flow is a contract. Whatever differs between clients, repositories and people lives in three further layers with a clear owner, so a tool swap or a second client never touches the choreography."
+---
+import { FlowLayers, Note, Stat } from "../../../components/chapter";
+
+export const locale = "en";
+
+The flow started as five personal skills. Once a second developer wanted to run it with a different workspace tool, I pulled the shared part into a **generic contract**: the order of steps, seven invariants (each one written after a real incident), the rules for how the layers resolve, and a version number with migration notes. A grep guard forbids the contract from naming a tracker, a hosting service, a CI system, a client or a tool. The skills that developers actually invoke are thin entry points; the logic lives underneath.
+
+Every piece of logic then had to answer one question: *does this differ between two real repositories?* The answer sorted it into one of three further layers.
+
+<div class="stats">
+  <Stat id="preset-capabilities" locale={locale} />
+  <Stat id="repo-procedures" locale={locale} />
+  <Stat id="extension-points" locale={locale} />
+</div>
+
+The **client preset** implements the capabilities the contract names, for that client's tracker, hosting and release model: resolve a work item, pick a triage mode, resolve target release lines, open a pull request, land a change, advance the work item. The **repository layer** adds the few procedures that are a property of the codebase, such as its quality gate and how a workspace is provisioned. The **personal layer** is never committed; it holds each developer's choice of tools behind a closed list of extension points, plus preferences such as models and machine placement.
+
+<FlowLayers locale={locale} />
+
+Two different rules resolve the layers. **Values** are read from the generic default down to the personal layer and merge per key, so a lower layer only overrides what it states. **Procedures** are looked up the other way, personal layer first, and the first file found is used whole, because two procedures cannot be merged. There is one deliberate asymmetry: the checkout provider has a team default in the repository, a single personal file overrides it, and deleting that file brings the default back. Without the default a new team member would silently work inside the orchestrator's own checkout. Every capability also reports which file won, so after a run you can prove the personal override was looked for.
+
+### A second client, the same contract
+
+<div class="stats">
+  <Stat id="second-preset" locale={locale} />
+  <Stat id="contract-versions" locale={locale} />
+</div>
+
+The second client runs a different tracker with different fields and states, a trunk-based release model with a single line instead of several parallel ones, and artefacts in another language. Trunk-based meant one capability resolves to nothing and line resolution becomes trivial; the contract took that without a single new condition. The purity check found exactly one leak: the diagnostics command named the first client's CI file. The fix went into the check, the contract version stayed. A colleague wrote the preset, which is the stronger proof that the contract is portable between people and not just between clients.
+
+<Note>
+  <strong>A versioned contract and a doctor.</strong> Each run compares the repository's profile version with the plugin's. On a mismatch it prints one warning line and continues; it never fails. A diagnostics command shows the merged configuration with the origin of every value, where each extension point resolved, and a dry run of the resolvers. The rule behind the versioning: a personal copy of a procedure that still teaches a cancelled step is worse than a missing file.
+</Note>

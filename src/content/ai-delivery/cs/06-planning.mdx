@@ -1,0 +1,39 @@
+---
+id: planning
+order: 6
+title: "Plánování s AI: mapy rozhodnutí a vizuální plány"
+summary: "Velká, mlhavá práce se promění v rozhodnutí dřív, než vznikne kód. Specifikace se revidují jako interaktivní plány, které nikdy neopustí stroj, a směr vždy vybírá člověk."
+---
+import { DecisionTrail, Note, Stat } from "../../../components/chapter";
+
+export const locale = "cs";
+
+### Mapy rozhodnutí
+
+Práce, která se nevejde do jedné session, dostane **mapu** (skill Wayfinder z&nbsp;open-source sady): destinaci, stálé poznámky a&nbsp;glosář, dosavadní rozhodnutí, co ještě není určené a&nbsp;co je mimo rozsah. Pod mapou leží rozhodovací tikety, jeden na každou otevřenou otázku, uzavírané jeden po druhém, obvykle v&nbsp;session, kde mě agent vyslýchá místo toho, aby kódoval. Pravidlo zní *plánuj, nedělej*: mapa produkuje rozhodnutí, ne kód. Tracker je obyčejný markdown v&nbsp;git replice stavu, takže mapa cestuje mezi stroji a&nbsp;glosář drží agenty i&nbsp;lidi na stejných slovech.
+
+<Stat id="decision-maps" locale={locale} />
+
+<div class="example">
+  <span class="k">Příklad, anonymizovaný</span>
+  <p>Konfigurovatelný layout dashboardu. Dřív, než existoval první widget, mapa uzavřela zhruba tucet rozhodnutí: model widgetu (zamčený, nebo konfigurovatelný), že „mřížka není mřížka, ale zalamovaný seznam“, jak se layout ukládá na serveru (hluboké sloučení, poslední zápis vyhrává), kterou knihovnu na drag-and-drop použít (stávající to neuměla, zapsáno jako architektonické rozhodnutí) a&nbsp;kam mizí čas načítání (většinu dělal jeden zbytečný výpočet sekce).</p>
+  <p>Každý další widget je vlastní mapa, která se na mapu layoutu jen odkazuje. Mapa layoutu se znovu neotevírá.</p>
+</div>
+
+<DecisionTrail locale={locale} />
+
+### Vizuální plány a&nbsp;recapy, plně lokálně
+
+Specifikace se reviduje jako interaktivní **vizuální plán** (Agent-Native): diagramy, mapy souborů, anotovaný kód, otevřené otázky, někdy klikací prototyp. **Recap** dělá totéž pro hotovou změnu, pro reviewera nebo testera. Člověk odpovídá a&nbsp;komentuje přímo v&nbsp;plánu; agent si zpětnou vazbu přečte. Od září je to formální formát specifikace ve flow, ne markdown soubor.
+
+Všechno běží lokálně. Hostovaný validátor by dostal obrazovky, kód i&nbsp;texty klienta, takže na každém stroji je jedna centrální aplikace, plány leží mimo jakýkoli git checkout a&nbsp;druhý stroj se k&nbsp;nim dostane přes privátní síť. Naučil jsem se to tvrdou cestou: ověření plánu bez výslovné lokální adresy pošle celý plán hostované službě. Z&nbsp;toho vzniklo pravidlo, preflight skript a&nbsp;kontrola v&nbsp;diagnostice setupu.
+
+<div class="example">
+  <span class="k">Příklad, anonymizovaný</span>
+  <p>Triáž nahlášeného problému našla tři vady na jedné obrazovce. Agent předložil vizuální plán se třemi nápravami, A, B a&nbsp;C, s&nbsp;kompromisy každé z&nbsp;nich. Člověk vybral C. Týž den: implementace, tři kola review, draft pull request.</p>
+  <p>Agent nikdy nevybírá směr opravy sám. Připraví volbu; volbu dělá člověk nad vizuálem, který ukazuje, co každá možnost mění.</p>
+</div>
+
+<Note>
+  <strong>Grill brána.</strong> Volitelná brána v&nbsp;kontraktu: před implementací agent člověka vyptává k&nbsp;zadání, dokud nejsou otevřené body uzavřené, a&nbsp;rozhodnutí zapíše do meta tiketu a&nbsp;do popisu pull requestu. Finalizace se na nepotvrzeném grillu zastaví; přeskočit ho jde jen výslovně. Existuje kvůli riziku, které jsem pojmenoval brzy: dodávat software bez porozumění produktu, zadání a&nbsp;dopadům.
+</Note>

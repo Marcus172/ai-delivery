@@ -1,0 +1,13 @@
+:root {
+  color-scheme: light dark;
+  --bg: light-dark(#f6f6f3, #131416);
+  --ink: light-dark(#17191c, #ededea);
+  --mute: light-dark(#5e6369, #a2a7ad);
+  --line: light-dark(#dcddd8, #2b2d31);
+  --tint: light-dark(#ecece7, #1b1d20);
+  --acc: light-dark(#e8530e, #ff7a3d);
+  /* Accent for text below large-text size: 5.2:1 on --bg and 4.8:1 on --tint in light, 7.1:1 / 6.5:1 in dark (WCAG 1.4.3). --acc stays for marks, rules and large display numerals. */
+  --acc-text: light-dark(#b5410b, #ff7a3d);
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }

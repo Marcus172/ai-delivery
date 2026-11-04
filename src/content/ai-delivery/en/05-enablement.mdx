@@ -1,0 +1,47 @@
+---
+id: enablement
+order: 5
+title: "Beyond developers"
+summary: "The developers on this codebase run the full flow daily. Analysts use the shared plugins in their own work, testers and the project manager meet the gates through its outputs, and several of them wrote their own skills."
+---
+import { Note, RoleMatrix, Stat } from "../../../components/chapter";
+
+export const locale = "en";
+
+The goal was never one fast person. It was each role getting AI into *its own* flow, plus standards that pull along the people who would rather not. So the adoption claim is specific: the developers on this codebase run the full ticket flow daily; analysts use the shared plugins in their own work on the wiki and the tracker; testers and the project manager meet the gates through what the flow hands them; and some of them contribute tools back.
+
+<RoleMatrix locale={locale} />
+
+### A marketplace as the distribution channel
+
+<div class="stats">
+  <Stat id="marketplace-plugins" locale={locale} />
+  <Stat id="marketplace-contributors" locale={locale} />
+</div>
+
+One git repository holds the team's plugins; one command installs, the main branch updates. **Shared plugins** go to everyone: lookups into sibling repositories, operations, the client wiki, copywriting. **Role plugins** are installed only for the role: backend, development with the delivery flow, analysis, testing, project management. Nobody is forced to install another role's conventions. One pattern carries most of the cross-role value: a developer or an analyst asks about the backend, a read-only subagent searches the sibling repository after pulling it, and only a summary with the revision it read comes back into the session, never the source.
+
+### Analysts
+
+Analysts never touch workspaces, branches or gates; they work on the wiki and the tracker. Their main tool is an **analysis lookup**: for a reported behaviour it finds the functional analysis and the client's solution design, reads the page in the version valid on a given date, and returns a verdict of *bug*, *not a bug*, *change* or *gap*. Questions back to analysts follow a convention: only the gap in the analysis, never the development team's interim decisions. One analyst wrote the analysis plugin: resetting analyses after a release, extending one, adding a notification.
+
+### Testers
+
+End-to-end testing is the testing team's responsibility. What I built is the toolkit they run locally, on the principle **AI proposes, the tester approves**: the output is always a draft pull request, nothing writes to the tracker on its own, and nothing runs on a server.
+
+<div class="stats">
+  <Stat id="product-map-nodes" locale={locale} />
+  <Stat id="structured-test-notes" locale={locale} />
+</div>
+
+The product map has three layers, generated from the routes, recorded from browser walks, and curated branches for rights, validation and data states, with a drift check against the code. Coverage is derived from annotations in the specs, not estimated. A tester starts with one onboarding command that prints a check table, plans from acceptance criteria into Gherkin scenarios mapped to map nodes, and classifies nightly failures against a flake ledger with a quarantine rule. From the developers' flow testers receive a structured note with the environment, the test plan and the regression scope, and a ticket in the ready-for-test state; marking it resolved stays with the tester. A second tester wrote the testing plugin, with a fixed output contract so that different testers converge on the same result.
+
+### Incident triage calibrated on real cases
+
+<Stat id="incident-triage" locale={locale} />
+
+Triage of a client incident runs in two phases. A sieve checks the mandatory evidence (screenshot, captured traffic, log) and unpacks archives before any verdict. The evaluation crosses failed requests, logs and the analysis into a recommendation: ours, backend, third party, or a not-a-bug candidate. The rules were calibrated on real incidents: the second round showed that about a fifth were not bugs and that several cases had been wrongly attributed to the backend when a third-party mobile app was at fault. Every rule now carries its counterexample.
+
+<Note>
+  <strong>Pull without pressure.</strong> The entry level is two files and ten minutes. Nobody has to change their tool: the team has a default, the override is one file, deleting it restores the default. And the outputs of the flow are needed by people who never run it (testers read the notes, analysts get questions as gaps), so the process spreads through artefacts rather than installations. The project manager and the backend developers took the platform too, with plugins of their own.
+</Note>

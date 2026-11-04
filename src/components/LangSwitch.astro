@@ -1,0 +1,86 @@
+---
+import type { Locale } from "../i18n/locales";
+import { LOCALES } from "../i18n/locales";
+import { localizedPath, type PageId } from "../i18n/routes";
+import { t } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+  page: PageId;
+}
+
+const { locale, page } = Astro.props;
+---
+
+<div class="lang" role="group" aria-label={t(locale, "lang.label")}>
+  {
+    LOCALES.map((l) =>
+      l === locale ? (
+        <span aria-current="true" lang={l}>
+          {l.toUpperCase()}
+          <span class="sr"> – {t(locale, "lang.current")}</span>
+        </span>
+      ) : (
+        <a href={localizedPath(l, page)} hreflang={l} lang={l} data-lang-switch>
+          {l.toUpperCase()}
+          <span class="sr" lang={locale}> – {t(locale, "lang.switch")}</span>
+        </a>
+      ),
+    )
+  }
+</div>
+
+<script>
+  // Chapter anchors are locale-independent: carry the current hash across the switch.
+  const link = document.querySelector<HTMLAnchorElement>("a[data-lang-switch]");
+  if (link) {
+    const base = link.getAttribute("href") ?? "";
+    const sync = () => {
+      link.setAttribute("href", `${base}${location.hash}`);
+    };
+    window.addEventListener("hashchange", sync);
+    sync();
+  }
+</script>
+
+<style>
+  .lang {
+    display: inline-flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .lang > * {
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    color: var(--mute);
+    text-decoration: none;
+    text-align: center;
+  }
+  .lang a:hover,
+  .lang a:focus-visible {
+    color: var(--ink);
+    background: var(--tint);
+  }
+  .lang [aria-current="true"] {
+    background: var(--ink);
+    color: var(--bg);
+  }
+  @media (max-width: 899px) {
+    .lang {
+      flex-direction: row;
+      border-radius: 999px;
+      margin-left: 4px;
+    }
+    .lang > * {
+      border-radius: 999px;
+      padding: 5px 9px;
+    }
+  }
+</style>

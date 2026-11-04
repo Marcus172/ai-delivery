@@ -1,0 +1,12 @@
+---
+import Base from "../../layouts/Base.astro";
+import LandingView from "../../views/LandingView.astro";
+import { t } from "../../i18n/ui";
+
+const locale = "cs";
+const page = "landing";
+---
+
+<Base locale={locale} page={page} title={t(locale, "page.landing.title")} description={t(locale, "page.landing.description")}>
+  <LandingView locale={locale} />
+</Base>

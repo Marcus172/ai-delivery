@@ -1,0 +1,181 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "Ten weeks of the CSS-in-JS to Tailwind migration: the visual-regression harness first, which also took story coverage from 44.5 % to 100 %, then primitives, shared UI, domains and clean-up",
+  "Deset týdnů migrace z CSS-in-JS na Tailwind: nejdřív harness pro vizuální regrese, který zároveň zvedl pokrytí stories ze 44,5 % na 100 %, pak primitiva, sdílené UI, domény a úklid",
+);
+const DESC = l(
+  "A timeline of ten weeks. The first four weeks build the harness that compares screenshots of the base and the change in one run, before any component is converted; inside that same phase, story coverage was closed from 44.5 % to 100 %, so every component had a story next to it before its conversion. Conversion then runs in four phases over the remaining six weeks: layout and text primitives, shared UI, domain code, and removal of the old libraries. Below the axis, the gzipped bundle of each of three apps ends about 10 KB smaller.",
+  "Časová osa deseti týdnů. První čtyři týdny vzniká harness, který v jednom běhu porovná snímky základu a změny, dřív než se převede jediná komponenta; v téže fázi se pokrytí stories uzavřelo ze 44,5 % na 100 %, takže každá komponenta měla vedle sebe story dřív, než se převáděla. Konverze pak běží ve čtyřech fázích zbylých šest týdnů: primitiva layoutu a textu, sdílené UI, doménový kód a odstranění starých knihoven. Pod osou končí bundle každé ze tří aplikací po gzipu zhruba o 10 kB menší.",
+);
+
+type Phase = { name: string; from: number; to: number; first?: boolean; low?: boolean };
+const PHASES: Record<Locale, Phase[]> = {
+  en: [
+    { name: "VRT harness, built first", from: 0, to: 3.9, first: true },
+    { name: "primitives", from: 3.9, to: 4.5 },
+    { name: "shared UI", from: 4.5, to: 5.4, low: true },
+    { name: "domains", from: 5.4, to: 7.7 },
+    { name: "clean-up", from: 7.7, to: 9.5 },
+  ],
+  cs: [
+    { name: "VRT harness, jako první", from: 0, to: 3.9, first: true },
+    { name: "primitiva", from: 3.9, to: 4.5 },
+    { name: "sdílené UI", from: 4.5, to: 5.4, low: true },
+    { name: "domény", from: 5.4, to: 7.7 },
+    { name: "úklid", from: 7.7, to: 9.5 },
+  ],
+};
+const WEEK = l("week", "týden");
+const COVERAGE = l("story coverage closed inside the harness phase", "pokrytí stories uzavřené ve fázi harnessu");
+const BUNDLE = l("gzipped bundle, three apps", "bundle po gzipu, tři aplikace");
+const COVERAGE_VALUE = l("44.5 % → 100 %", "44,5 % → 100 %");
+const MINUS = l("−10 KB each", "−10 kB každá");
+const CONVERSION = l("conversion", "konverze");
+
+const W = 1010;
+const H = 300;
+const X0 = 70;
+const X1 = W - 30;
+const WEEKS = 10;
+const wx = (w: number) => X0 + ((X1 - X0) * w) / WEEKS;
+const Y_BAR = 150;
+const BAR_H = 36;
+const Y_BUNDLE = 262;
+const phases = PHASES[locale];
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="band"
+    data-diagram="migration-band"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="migration-band-t"
+    aria-describedby="migration-band-d"
+  >
+    <title id="migration-band-t">{TITLE[locale]}</title>
+    <desc id="migration-band-d">{DESC[locale]}</desc>
+
+    <!-- story coverage: an annotation on the harness phase, where it was measured and closed -->
+    <g class="coverage">
+      <line class="brace" x1={wx(0) + 1} y1="78" x2={wx(3.9) - 1} y2="78" />
+      <line class="brace" x1={wx(0) + 1} y1="72" x2={wx(0) + 1} y2="84" />
+      <line class="brace" x1={wx(3.9) - 1} y1="72" x2={wx(3.9) - 1} y2="84" />
+      <text class="val" x={wx(0)} y="42" font-size="20">{COVERAGE_VALUE[locale]}</text>
+      <text class="lbl" x={wx(0)} y="62" font-size="13">{COVERAGE[locale]}</text>
+    </g>
+
+    <!-- phases -->
+    {
+      phases.map((p) => (
+        <g class:list={["phase", { first: p.first }]}>
+          <rect x={wx(p.from) + 1} y={Y_BAR} width={wx(p.to) - wx(p.from) - 2} height={BAR_H} rx="6" />
+          {p.first ? (
+            <text class="ph" x={wx(p.from) + 12} y={Y_BAR + 23} font-size="13">
+              {p.name}
+            </text>
+          ) : (
+            <text class="ph" x={wx(p.from) + (wx(p.to) - wx(p.from)) / 2} y={Y_BAR + BAR_H + (p.low ? 34 : 18)} font-size="13" text-anchor="middle">
+              {p.name}
+            </text>
+          )}
+        </g>
+      ))
+    }
+    <line class="brace" x1={wx(3.9)} y1={Y_BAR + BAR_H + 48} x2={wx(9.5)} y2={Y_BAR + BAR_H + 48} />
+    <text class="lbl" x={wx(3.9) + (wx(9.5) - wx(3.9)) / 2} y={Y_BAR + BAR_H + 64} font-size="13" text-anchor="middle">{CONVERSION[locale]}</text>
+
+    <!-- week axis -->
+    {
+      Array.from({ length: WEEKS + 1 }, (_, w) => (
+        <g class="tick">
+          <line x1={wx(w)} y1={Y_BAR - 8} x2={wx(w)} y2={Y_BAR - 2} />
+          {w % 2 === 0 && (
+            <text x={wx(w)} y={Y_BAR - 13} font-size="13" text-anchor="middle">
+              {w === 0 ? `${WEEK[locale]} 0` : w}
+            </text>
+          )}
+        </g>
+      ))
+    }
+
+    <!-- bundle -->
+    <text class="lbl" x={X0} y={Y_BUNDLE + 14} font-size="13">{BUNDLE[locale]}</text>
+    {
+      [0, 1, 2].map((i) => (
+        <rect class="bundle" x={wx(5.2) + i * 54} y={Y_BUNDLE + 2} width="44" height="16" rx="4" />
+      ))
+    }
+    <text class="val" x={wx(5.2) + 3 * 54 + 6} y={Y_BUNDLE + 15} font-size="13">{MINUS[locale]}</text>
+  </svg>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 28px;
+  }
+  .band {
+    display: block;
+    width: 100%;
+    /* 860 / 1010 keeps 13 px labels ≥ 11 px rendered in a 358 px phone box and fits the 880 px desktop column. */
+    min-width: 860px;
+    overflow: visible;
+  }
+  .lbl {
+    fill: var(--mute);
+    font-weight: 600;
+  }
+  .coverage .brace {
+    stroke: var(--acc);
+    stroke-width: 2;
+  }
+  .coverage .val {
+    fill: var(--acc-text);
+  }
+  .val {
+    fill: var(--ink);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .phase rect {
+    fill: var(--tint);
+    stroke: var(--line);
+  }
+  .phase.first rect {
+    fill: var(--ink);
+    stroke: var(--ink);
+  }
+  .phase .ph {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .phase.first .ph {
+    fill: var(--bg);
+    font-weight: 700;
+  }
+  .brace {
+    stroke: var(--mute);
+    stroke-width: 1;
+  }
+  .tick line {
+    stroke: var(--mute);
+  }
+  .tick text {
+    fill: var(--mute);
+  }
+  .bundle {
+    fill: var(--tint);
+    stroke: var(--acc);
+  }
+</style>

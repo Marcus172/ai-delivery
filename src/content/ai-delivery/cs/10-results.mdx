@@ -1,0 +1,34 @@
+---
+id: results
+order: 10
+title: "Výsledky, nejdřív s výhradami"
+summary: "Šest měsíců před flow proti pěti měsícům po něm, z trackeru a z pull requestů téhož produktu. Výhrady jdou před čísla, protože právě na ně se skeptik zeptá nejdřív."
+---
+import { ResultsGrid, Stat } from "../../../components/chapter";
+
+export const locale = "cs";
+
+### Nejdřív si přečtěte tohle
+
+Dvě kohorty: šest měsíců před změnou a&nbsp;pět měsíců po ní, přechodový měsíc vynechaný. Stejný produkt, stejný repozitář, stejný tracker. Než se podíváte na čísla:
+
+<ul class="caveats" data-caveats>
+  <li><Stat id="team-size" locale={locale} /></li>
+  <li><Stat id="author-pr-share" locale={locale} /></li>
+  <li><Stat id="tracker-scope" locale={locale} /></li>
+  <li><strong>Lead time je zčásti disciplína ve stavech.</strong> Po merge flow sám nastaví stav připraveno k&nbsp;testu; dřív to dělal vývojář ručně, někdy se zpožděním. Číslo od rozpracování po pull request je odolnější, protože ten stav se přepínal ručně vždy.</li>
+  <li><strong>Lead time a&nbsp;vrácení z&nbsp;testu mají střední spolehlivost.</strong> Mezi kohortami se změnil mix projektů; směr drží i&nbsp;při omezení na jediný projekt přítomný v&nbsp;obou, vzorek po změně je tam ale malý.</li>
+  <li><strong>Dieta kontextu znovu narostla.</strong> Trvale načtené instrukce klesly z&nbsp;57,6 kB na 7 kB a&nbsp;od té doby narostly zpět na zhruba 28 kB, jak přibývaly znalosti o&nbsp;release liniích a&nbsp;trackeru. Sondy hlídají, že znalosti zůstávají dosažitelné; velikost je rozpočet, který dál utrácím.</li>
+</ul>
+
+### Měřeno, před a&nbsp;po
+
+<ResultsGrid locale={locale} />
+
+Dvě z&nbsp;těchto čísel měří proces, ne kvalitu: strukturované poznámky pro testery ukazují, že se formát předání používá, a&nbsp;doručení na víc linií vzrostlo zčásti proto, že paralelně běželo víc release linií. Signál o&nbsp;kvalitě je podíl tiketů vrácených z&nbsp;testu (21 % → 11 %); doba od rozpracování po pull request (−70 %) měří rychlost a&nbsp;je tu nejodolnější.
+
+### A&nbsp;číslo, které změřit neumím
+
+<div class="estimate" data-estimate>
+  Jediné číslo o&nbsp;tom, o&nbsp;kolik rychleji pracuji já, je můj vlastní odhad. Stojí <a href="#principle">v&nbsp;první kapitole</a>, se svým štítkem, a&nbsp;od měřené sady je schválně oddělené. Měřená čísla jsou týmová, s&nbsp;menším týmem a&nbsp;stejným měsíčním objemem tiketů. Když se ta dvě neshodnou, věřte měřeným.
+</div>

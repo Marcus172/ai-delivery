@@ -1,0 +1,183 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "The persona audit as a pipeline: strings pass a classifier, a deterministic checker and a judgment model, then a verification model, then browser agents that screenshot each string in context, into a review document where a person decides; decisions flow back as pull requests and as exceptions in the persona",
+  "Audit persony jako pipeline: texty projdou klasifikací, deterministickým checkerem a úsudkovým modelem, pak ověřovacím modelem, pak agenty v prohlížeči, kteří každý text vyfotí v kontextu, do dokumentu k review, kde rozhoduje člověk; rozhodnutí se vracejí jako pull requesty a jako výjimky do persony",
+);
+const DESC = l(
+  "Two rule layers feed the checks: a shared language base and the brand persona, which overrides the base by rule id. About 4,500 strings go in. Roughly 900 raw findings leave the checker and the judgment model; about 700 survive verification. Nearly every proposal gets a screenshot in context. The review document returns decisions: approved changes become pull requests per rule group, rejected ones become recorded exceptions, so the next run does not raise them again.",
+  "Kontroly sytí dvě vrstvy pravidel: sdílený jazykový základ a persona značky, která základ přebíjí podle id pravidla. Na vstupu je zhruba 4 500 textů. Z checkeru a úsudkového modelu vyjde asi 900 surových nálezů; ověření jich nechá kolem 700. Téměř každý návrh dostane snímek v kontextu. Dokument k review vrací rozhodnutí: schválené změny se stanou pull requesty po skupinách pravidel, zamítnuté evidovanými výjimkami, takže je další běh znovu nehlásí.",
+);
+
+type Stage = { head: string; who: string[]; n?: string };
+const STAGES: Record<Locale, Stage[]> = {
+  en: [
+    { head: "strings", who: ["from one fixed", "commit"], n: "~4,500" },
+    { head: "classify", who: ["small model: button,", "error, hint, legal…"] },
+    { head: "check", who: ["checker for mechanics", "+ model for judgment"], n: "~900" },
+    { head: "verify", who: ["large model:", "keep / edit / reject"], n: "~700" },
+    { head: "screenshot", who: ["browser agents, string", "framed on its screen"] },
+    { head: "review", who: ["a person: approve /", "disagree / edit"] },
+  ],
+  cs: [
+    { head: "texty", who: ["z jednoho pevného", "commitu"], n: "~4 500" },
+    { head: "roztřídit", who: ["malý model: tlačítko,", "chyba, pokyn, právní…"] },
+    { head: "zkontrolovat", who: ["checker na mechaniku", "+ model na úsudek"], n: "~900" },
+    { head: "ověřit", who: ["velký model: nechat /", "upravit / zamítnout"], n: "~700" },
+    { head: "vyfotit", who: ["agenti v prohlížeči,", "text v rámečku"] },
+    { head: "review", who: ["člověk: schválit /", "nesouhlasit / upravit"] },
+  ],
+};
+const BASE_LAYER = l("language base · shared", "jazykový základ · sdílený");
+const BRAND_LAYER = l("brand persona · overrides by rule id", "persona značky · přebíjí podle id pravidla");
+const LOOP_PR = l("approved → pull requests per rule group", "schváleno → pull requesty po skupinách pravidel");
+const LOOP_EX = l("rejected → exceptions written into the persona", "zamítnuto → výjimky zapsané do persony");
+const LEGEND = l("accent: a model does it · ink: a person decides", "oranžově: dělá model · černě: rozhoduje člověk");
+
+const W = 1010;
+const H = 334;
+const Y = 150;
+const BOX_H = 82;
+const GAP = 14;
+const X0 = 20;
+const BOX_W = (W - 2 * X0 - GAP * 5) / 6;
+const bx = (i: number) => X0 + i * (BOX_W + GAP);
+const stages = STAGES[locale];
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="pipe"
+    data-diagram="persona-pipeline"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="persona-pipeline-t"
+    aria-describedby="persona-pipeline-d"
+  >
+    <title id="persona-pipeline-t">{TITLE[locale]}</title>
+    <desc id="persona-pipeline-d">{DESC[locale]}</desc>
+    <defs>
+      <marker id="pp-head" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" />
+      </marker>
+    </defs>
+
+    <!-- persona layers feeding the check stage -->
+    <g class="persona">
+      <rect x={bx(1) + 10} y="18" width={BOX_W * 2 + GAP - 20} height="26" rx="6" class="base" />
+      <text x={bx(1) + 22} y="35" font-size="13">{BASE_LAYER[locale]}</text>
+      <rect x={bx(1) + 10} y="50" width={BOX_W * 2 + GAP - 20} height="26" rx="6" class="brand" />
+      <text x={bx(1) + 22} y="67" font-size="13">{BRAND_LAYER[locale]}</text>
+      <line class="feed" x1={bx(2) + BOX_W / 2} y1="76" x2={bx(2) + BOX_W / 2} y2={Y - 8} marker-end="url(#pp-head)" />
+    </g>
+
+    {
+      stages.map((s, i) => (
+        <g class:list={["stage", { model: i >= 1 && i <= 4, person: i === 5 }]}>
+          <rect x={bx(i)} y={Y} width={BOX_W} height={BOX_H} rx="10" />
+          <text class="head" x={bx(i) + 12} y={Y + 24} font-size="14">
+            {s.head}
+          </text>
+          {s.n && (
+            <text class="n" x={bx(i) + BOX_W - 12} y={Y + 24} font-size="14" text-anchor="end">
+              {s.n}
+            </text>
+          )}
+          {s.who.map((line, j) => (
+            <text class="who" x={bx(i) + 12} y={Y + 46 + j * 16} font-size="13">
+              {line}
+            </text>
+          ))}
+          {i < stages.length - 1 && <line class="arrow" x1={bx(i) + BOX_W + 2} y1={Y + BOX_H / 2} x2={bx(i + 1) - 3} y2={Y + BOX_H / 2} marker-end="url(#pp-head)" />}
+        </g>
+      ))
+    }
+
+    <!-- closed loop back from the review: down, left along the margin, up into the persona layers -->
+    <path
+      class="loop"
+      d={`M${bx(5) + BOX_W / 2} ${Y + BOX_H} V${Y + BOX_H + 34} H${X0 + 4} V63 H${bx(1) + 6}`}
+      marker-end="url(#pp-head)"
+    />
+    <text class="loop-t" x={X0 + 18} y={Y + BOX_H + 29} font-size="13">{LOOP_PR[locale]}</text>
+    <text class="loop-t" x={X0 + 18} y={Y + BOX_H + 52} font-size="13">{LOOP_EX[locale]}</text>
+
+    <text class="legend" x={X0} y={H - 8} font-size="13">{LEGEND[locale]}</text>
+  </svg>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 28px;
+  }
+  .pipe {
+    display: block;
+    width: 100%;
+    /* 860 / 1010 keeps 13 px labels ≥ 11 px rendered in a 358 px phone box and fits the 880 px desktop column. */
+    min-width: 860px;
+    overflow: visible;
+  }
+  marker path {
+    fill: var(--mute);
+  }
+  .persona rect {
+    fill: var(--tint);
+    stroke: var(--line);
+  }
+  .persona rect.brand {
+    stroke: var(--acc);
+  }
+  .persona text {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .feed,
+  .arrow {
+    stroke: var(--mute);
+    stroke-width: 1.5;
+  }
+  .stage rect {
+    fill: var(--bg);
+    stroke: var(--line);
+    stroke-width: 1.5;
+  }
+  .stage.model rect {
+    stroke: var(--acc);
+  }
+  .stage.person rect {
+    stroke: var(--ink);
+    stroke-width: 2;
+  }
+  .stage .head {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .stage .n {
+    fill: var(--acc-text);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .stage .who {
+    fill: var(--mute);
+  }
+  .loop {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 4;
+  }
+  .loop-t,
+  .legend {
+    fill: var(--mute);
+  }
+</style>

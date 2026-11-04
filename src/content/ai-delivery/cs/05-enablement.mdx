@@ -1,0 +1,47 @@
+---
+id: enablement
+order: 5
+title: "Za hranice vývoje"
+summary: "Vývojáři na tomto kódu jedou plný flow denně. Analytici používají sdílené pluginy ve vlastní práci, testeři a projektový manažer se s branami potkávají přes jeho výstupy a několik z nich si napsalo vlastní skilly."
+---
+import { Note, RoleMatrix, Stat } from "../../../components/chapter";
+
+export const locale = "cs";
+
+Cílem nikdy nebyl jeden rychlý člověk. Cílem bylo, aby každá role dostala AI do *vlastního* flow, a&nbsp;k&nbsp;tomu standardy, které potáhnou i&nbsp;ty, kdo by raději ne. Tvrzení o&nbsp;adopci je proto konkrétní: vývojáři na tomto kódu jedou plný flow tiketu denně; analytici používají sdílené pluginy ve vlastní práci nad wiki a&nbsp;trackerem; testeři a&nbsp;projektový manažer se s&nbsp;branami potkávají přes to, co jim flow předá; a&nbsp;někteří z&nbsp;nich přispívají nástroji zpět.
+
+<RoleMatrix locale={locale} />
+
+### Marketplace jako distribuční kanál
+
+<div class="stats">
+  <Stat id="marketplace-plugins" locale={locale} />
+  <Stat id="marketplace-contributors" locale={locale} />
+</div>
+
+Jeden git repozitář drží pluginy týmu; jeden příkaz instaluje, hlavní větev aktualizuje. **Sdílené pluginy** dostane každý: lookupy do sourozeneckých repozitářů, provoz, klientská wiki, copywriting. **Role pluginy** se instalují jen pro danou roli: backend, vývoj s&nbsp;delivery flow, analýza, testování, projektové řízení. Nikdo není nucen instalovat konvence cizí role. Většinu hodnoty napříč rolemi nese jeden vzor: vývojář nebo analytik se zeptá na backend, subagent jen pro čtení prohledá sourozenecký repozitář poté, co ho stáhne, a&nbsp;do session se vrátí jen shrnutí s&nbsp;revizí, kterou četl, nikdy zdrojový kód.
+
+### Analytici
+
+Analytici nesahají na pracoviště, větve ani brány; pracují nad wiki a&nbsp;trackerem. Jejich hlavní nástroj je **lookup analýzy**: k&nbsp;nahlášenému chování dohledá funkční analýzu a&nbsp;klientský solution design, přečte stránku ve verzi platné k&nbsp;danému datu a&nbsp;vrátí verdikt *chyba*, *není chyba*, *změna*, nebo *mezera*. Otázky zpět na analytiky mají konvenci: jen mezera v&nbsp;analýze, nikdy dočasná rozhodnutí vývoje. Jeden analytik napsal analytický plugin: vrácení analýz do výchozího stavu po releasu, rozšíření analýzy, přidání notifikace.
+
+### Testeři
+
+End-to-end testování je odpovědnost testovacího týmu. Já jsem postavil sadu nástrojů, kterou si pouštějí lokálně, na principu **AI navrhuje, tester schvaluje**: výstupem je vždy draft pull request, nic nezapisuje do trackeru samo a&nbsp;nic neběží na serveru.
+
+<div class="stats">
+  <Stat id="product-map-nodes" locale={locale} />
+  <Stat id="structured-test-notes" locale={locale} />
+</div>
+
+Produktová mapa má tři vrstvy: generovanou z&nbsp;rout, zaznamenanou z&nbsp;průchodů prohlížečem a&nbsp;kurátorované větve pro práva, validace a&nbsp;datové stavy, s&nbsp;kontrolou driftu proti kódu. Pokrytí se odvozuje z&nbsp;anotací ve specech, neodhaduje se. Tester začne jedním příkazem pro onboarding, který vypíše kontrolní tabulku, plánuje z&nbsp;akceptačních kritérií do scénářů v&nbsp;Gherkinu namapovaných na uzly mapy a&nbsp;noční pády třídí proti ledgeru nestabilních testů s&nbsp;pravidlem karantény. Z&nbsp;flow vývojářů testeři dostávají strukturovanou poznámku s&nbsp;prostředím, plánem testu a&nbsp;rozsahem regrese a&nbsp;tiket ve stavu připraveno k&nbsp;testu; označení za vyřešený zůstává na testerovi. Druhý tester napsal testovací plugin s&nbsp;pevným tvarem výstupu, aby se různí testeři dobrali stejného výsledku.
+
+### Triáž incidentů kalibrovaná na skutečných případech
+
+<Stat id="incident-triage" locale={locale} />
+
+Triáž klientského incidentu běží ve dvou fázích. Síto zkontroluje povinné podklady (snímek obrazovky, zachycený provoz, log) a&nbsp;před jakýmkoli verdiktem rozbalí archivy. Vyhodnocení zkříží padlé requesty, logy a&nbsp;analýzu do doporučení: naše, backend, třetí strana, nebo kandidát na „není chyba“. Pravidla se kalibrovala na skutečných incidentech: druhé kolo ukázalo, že zhruba pětina nebyla chyba a&nbsp;že několik případů bylo mylně připsáno backendu, i&nbsp;když šlo o&nbsp;vadu mobilní aplikace třetí strany. Každé pravidlo dnes nese svůj protipříklad.
+
+<Note>
+  <strong>Tah bez nátlaku.</strong> Vstupní úroveň jsou dva soubory a&nbsp;deset minut. Nikdo nemusí měnit nástroj: tým má default, override je jeden soubor a&nbsp;jeho smazání default vrátí. A&nbsp;výstupy flow potřebují i&nbsp;lidé, kteří ho nikdy nespustí (testeři čtou poznámky, analytici dostávají otázky jako mezery), takže proces se šíří přes artefakty, ne přes instalace. Platformu převzali i&nbsp;projektový manažer a&nbsp;backendoví vývojáři s&nbsp;vlastními pluginy.
+</Note>

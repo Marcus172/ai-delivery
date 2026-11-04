@@ -1,0 +1,7 @@
+#!/bin/sh
+# 1) working tree + build: dist (all rules) and tracked source (never rules).
+# 2) every outgoing commit, read from the object store (never rules), so history cannot carry a term either.
+set -e
+refs=$(cat)
+npm run build && npm run nda
+printf '%s\n' "$refs" | npx tsx scripts/nda-gate.ts --commits

@@ -1,0 +1,164 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "A decision map drawn as a trail: decision tickets as stations on the way to the destination, with an out-of-scope spur (anonymised example: a configurable dashboard layout)",
+  "Mapa rozhodnutí jako trasa: rozhodovací tikety jako stanice na cestě k destinaci, s odbočkou mimo rozsah (anonymizovaný příklad: konfigurovatelný layout dashboardu)",
+);
+const DESC = l(
+  "Six decided stations, widget model, wrapping list instead of a grid, persistence by deep merge, drag-and-drop library recorded as an architecture decision, load cost, and column breaks per width, lead to the destination, a layout spec as a visual plan. A dotted spur marks widget contents as out of scope: each widget gets its own map.",
+  "Šest rozhodnutých stanic, model widgetu, zalamovaný seznam místo mřížky, ukládání hlubokým sloučením, knihovna drag-and-drop zapsaná jako architektonické rozhodnutí, cena načítání a zlomy sloupců podle šířky, vede k destinaci, specifikaci layoutu jako vizuálnímu plánu. Tečkovaná odbočka značí obsah widgetů mimo rozsah: každý widget má vlastní mapu.",
+);
+
+const MAP = l("map: dashboard layout", "mapa: layout dashboardu");
+const DEST = l("destination|layout spec as a visual plan", "destinace|spec layoutu, vizuální plán");
+const OUT = l("out of scope: widget contents → own maps", "mimo rozsah: obsah widgetů → vlastní mapy");
+const LEGEND = l("filled: decided · dotted: out of scope", "plná: rozhodnuto · tečkovaně: mimo rozsah");
+
+type Station = { label: ReturnType<typeof l>; open?: boolean };
+const STATIONS: Station[] = [
+  { label: l("widget model|locked vs configurable", "model widgetu|zamčený vs konfigurovatelný") },
+  { label: l("layout|wrapping list, not a grid", "layout|zalamovaný seznam, ne mřížka") },
+  { label: l("persistence|deep merge, last write wins", "ukládání|hluboké sloučení, poslední zápis") },
+  { label: l("drag and drop|new library, written as an ADR", "drag and drop|nová knihovna, zapsáno jako ADR") },
+  { label: l("load cost|one section computed needlessly", "cena načítání|jedna sekce počítaná zbytečně") },
+  { label: l("column breaks|per width", "zlomy sloupců|podle šířky") },
+];
+
+const W = 1010;
+const H = 236;
+const Y = 112;
+const X0 = 40;
+const X_DEST = 760;
+const STEP = (X_DEST - X0 - 60) / STATIONS.length;
+const sx = (i: number) => X0 + 50 + i * STEP;
+const spurFrom = sx(0);
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="trail"
+    data-diagram="decision-trail"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="decision-trail-t"
+    aria-describedby="decision-trail-d"
+  >
+    <title id="decision-trail-t">{TITLE[locale]}</title>
+    <desc id="decision-trail-d">{DESC[locale]}</desc>
+
+    <text class="map" x={X0} y="24" font-size="13">{MAP[locale]}</text>
+
+    <line class="track" x1={X0} y1={Y} x2={X_DEST - 14} y2={Y} />
+
+    <path class="spur" d={`M${spurFrom} ${Y} C ${spurFrom + 40} ${Y + 50}, ${spurFrom + 60} ${Y + 78}, ${spurFrom + 120} ${Y + 84}`} />
+    <text class="out" x={spurFrom + 128} y={Y + 88} font-size="12.5">{OUT[locale]}</text>
+
+    {
+      STATIONS.map((s, i) => {
+        const [name, note] = s.label[locale].split("|");
+        const up = i % 2 === 0;
+        const ty = up ? Y - 24 : Y + 30;
+
+        return (
+          <g class:list={["station", { open: s.open }]}>
+            <circle cx={sx(i)} cy={Y} r="8" />
+            <text class="name" x={sx(i)} y={ty} text-anchor="middle" font-size="13">
+              {name}
+            </text>
+            <text class="note" x={sx(i)} y={ty + (up ? -16 : 16)} text-anchor="middle" font-size="12">
+              {note}
+            </text>
+          </g>
+        );
+      })
+    }
+
+    <g class="dest">
+      <rect x={X_DEST - 14} y={Y - 14} width="28" height="28" rx="6" />
+      {DEST[locale].split("|").map((line, i) => (
+        <text class:list={{ sub: i > 0 }} x={X_DEST + 24} y={Y - 3 + i * 17} font-size="13">
+          {line}
+        </text>
+      ))}
+    </g>
+
+    <text class="legend" x={X0} y={H - 8} font-size="12.5">{LEGEND[locale]}</text>
+  </svg>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 28px;
+  }
+  .trail {
+    display: block;
+    width: 100%;
+    /* 780 / 860 keeps 12 px notes ≥ 11 px rendered in a 358 px phone box. */
+    /* 930 / 1010 keeps 12 px notes ≥ 11 px rendered in a 358 px phone box. */
+    min-width: 930px;
+    overflow: visible;
+  }
+  .map {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .track {
+    stroke: var(--ink);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .track.open {
+    stroke: var(--line);
+  }
+  .spur {
+    fill: none;
+    stroke: var(--mute);
+    stroke-width: 1.5;
+    stroke-dasharray: 3 4;
+  }
+  .out,
+  .legend {
+    fill: var(--mute);
+  }
+  .station circle {
+    fill: var(--acc);
+    stroke: var(--bg);
+    stroke-width: 2.5;
+  }
+  .station.open circle {
+    fill: var(--bg);
+    stroke: var(--mute);
+    stroke-width: 2;
+  }
+  .station .name {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .station .note {
+    fill: var(--mute);
+  }
+  .station.open .name {
+    fill: var(--mute);
+  }
+  .dest rect {
+    fill: var(--ink);
+  }
+  .dest text {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .dest text.sub {
+    fill: var(--mute);
+    font-weight: 500;
+  }
+</style>

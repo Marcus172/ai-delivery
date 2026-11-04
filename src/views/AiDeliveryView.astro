@@ -1,0 +1,390 @@
+---
+import { getCollection, render } from "astro:content";
+import Eyebrow from "../components/Eyebrow.astro";
+import { csTypo } from "../data/l10n";
+import { AS_OF } from "../data/metrics";
+import type { Locale } from "../i18n/locales";
+import { t } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const entries = (await getCollection("aiDelivery", ({ id }) => id.startsWith(`${locale}/`))).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const typo = (s: string) => (locale === "cs" ? csTypo(s) : s);
+const chapters = await Promise.all(
+  entries.map(async (entry) => ({
+    ...entry.data,
+    title: typo(entry.data.title),
+    summary: typo(entry.data.summary),
+    Content: (await render(entry)).Content,
+  })),
+);
+const num = (order: number) => String(order).padStart(2, "0");
+---
+
+<header class="head">
+  <Eyebrow>{t(locale, "ai.eyebrow")}</Eyebrow>
+  <h1>{t(locale, "ai.title")}</h1>
+  <p class="lead">{t(locale, "ai.lead")}</p>
+  <p class="as-of">{t(locale, "ai.asOf")}</p>
+</header>
+
+<details class="toc-details" data-toc-details>
+  <summary>{t(locale, "ai.toc")}</summary>
+  <nav data-toc aria-label={t(locale, "ai.toc")}>
+    <ol>
+      {
+        chapters.map((c) => (
+          <li>
+            <a href={`#${c.id}`}>
+              <span class="n">{num(c.order)}</span>
+              {c.title}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+  </nav>
+</details>
+
+<div class="layout">
+  <article class="chapters">
+    {
+      chapters.map((c) => (
+        <section id={c.id} class="chapter" data-chapter aria-labelledby={`${c.id}-title`}>
+          <Eyebrow>
+            <span data-chapter-number>
+              {t(locale, "ai.chapter")} {num(c.order)}
+            </span>
+          </Eyebrow>
+          <h2 id={`${c.id}-title`}>{c.title}</h2>
+          <p class="summary">{c.summary}</p>
+          <div class="body">
+            <c.Content />
+          </div>
+        </section>
+      ))
+    }
+  </article>
+
+  <aside class="toc-side">
+    <div class="toc-wrap" data-toc-wrap>
+      <p class="toc-title">{t(locale, "ai.toc")}</p>
+      <nav data-toc aria-label={t(locale, "ai.toc")}>
+        <ol>
+          {
+            chapters.map((c) => (
+              <li>
+                <a href={`#${c.id}`}>
+                  <span class="n">{num(c.order)}</span>
+                  {c.title}
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+      <p class="toc-note">{AS_OF[locale]}</p>
+    </div>
+  </aside>
+</div>
+
+<script>
+  // Mark the chapter in view in the side TOC. No motion, no scroll hijacking: links stay plain anchors.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(".toc-side nav[data-toc] a"));
+  const sections = links
+    .map((a) => document.querySelector<HTMLElement>(a.getAttribute("href") ?? ""))
+    .filter((s): s is HTMLElement => !!s);
+  if (links.length && "IntersectionObserver" in window) {
+    const visible = new Set<string>();
+    const mark = () => {
+      const current = sections.find((s) => visible.has(s.id))?.id;
+      for (const a of links) {
+        if (a.getAttribute("href") === `#${current}`) a.setAttribute("aria-current", "true");
+        else a.removeAttribute("aria-current");
+      }
+    };
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target.id);
+          else visible.delete(e.target.id);
+        }
+        mark();
+      },
+      { rootMargin: "-20% 0px -60% 0px" },
+    );
+    for (const s of sections) io.observe(s);
+  }
+</script>
+
+<style>
+  .head {
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--line);
+  }
+  .head h1 {
+    font-size: clamp(3rem, 6.2vw, 5.75rem);
+    max-width: 14ch;
+  }
+  .head .lead {
+    margin-top: 24px;
+    max-width: 64ch;
+  }
+  .as-of {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--mute);
+  }
+
+  /* ---------- TOC ---------- */
+  nav[data-toc] ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  nav[data-toc] li + li {
+    margin-top: 2px;
+  }
+  nav[data-toc] a {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr);
+    gap: 8px;
+    align-items: baseline;
+    padding: 7px 10px 7px 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    color: var(--mute);
+    border-left: 2px solid transparent;
+  }
+  nav[data-toc] a:hover {
+    color: var(--ink);
+    background: var(--tint);
+  }
+  nav[data-toc] a[aria-current="true"] {
+    color: var(--ink);
+    font-weight: 600;
+    border-left-color: var(--acc);
+    border-radius: 0 8px 8px 0;
+  }
+  nav[data-toc] .n {
+    font-size: 12px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--acc-text);
+  }
+  .toc-details {
+    margin-top: 20px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  .toc-details summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 14px 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toc-details summary::-webkit-details-marker {
+    display: none;
+  }
+  .toc-details summary::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease;
+    flex: none;
+    margin-left: 2px;
+  }
+  .toc-details[open] summary::before {
+    transform: rotate(45deg);
+  }
+  .toc-side {
+    display: none;
+  }
+  .toc-wrap {
+    position: sticky;
+    top: 28px;
+    padding-top: 8px;
+  }
+  .toc-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mute);
+    margin: 0 0 10px 8px;
+  }
+  .toc-note {
+    margin: 18px 0 0 8px;
+    font-size: 12px;
+    color: var(--mute);
+  }
+
+  /* ---------- layout ---------- */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .chapters {
+    min-width: 0;
+  }
+  .chapter {
+    padding-block: 64px;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 12px;
+  }
+  .chapter:first-child {
+    border-top: 0;
+    padding-top: 40px;
+  }
+  .chapter h2 {
+    font-size: clamp(2rem, 3.6vw, 3.2rem);
+    max-width: 18ch;
+  }
+  .summary {
+    margin-top: 18px;
+    font-size: 18px;
+    color: var(--mute);
+    max-width: 60ch;
+  }
+  .body {
+    margin-top: 28px;
+  }
+  .body :global(p),
+  .body :global(ul),
+  .body :global(ol),
+  .body :global(h3) {
+    max-width: 68ch;
+  }
+  .body :global(p + p),
+  .body :global(ul + p),
+  .body :global(p + ul) {
+    margin-top: 16px;
+  }
+  .body :global(h3) {
+    margin-top: 40px;
+  }
+  .body :global(h3 + p) {
+    margin-top: 10px;
+  }
+  .body :global(ul),
+  .body :global(ol) {
+    padding-left: 22px;
+  }
+  .body :global(li + li) {
+    margin-top: 6px;
+  }
+  .body :global(strong) {
+    font-weight: 700;
+  }
+  .body :global(.stats) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px 28px;
+    margin-top: 32px;
+    max-width: 760px;
+  }
+  .body :global(.stats + p),
+  .body :global(.band + p),
+  .body :global(.scroll + p),
+  .body :global(.note + p),
+  .body :global(.stat + p) {
+    margin-top: 32px;
+  }
+  .body :global(.stat) {
+    margin-top: 28px;
+  }
+  .body :global(.stats .stat) {
+    margin-top: 0;
+  }
+  .body :global(.example) {
+    margin-top: 28px;
+    padding: 22px 24px;
+    background: var(--tint);
+    border-radius: 14px;
+    max-width: 68ch;
+  }
+  .body :global(.example p + p) {
+    margin-top: 10px;
+  }
+  .body :global(.example .k) {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--acc-text);
+    margin-bottom: 8px;
+  }
+
+  .body :global(.caveats) {
+    list-style: none;
+    margin: 20px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px 28px;
+    max-width: 860px;
+  }
+  .body :global(.caveats li) {
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--tint);
+    border-radius: 12px;
+    font-size: 14px;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+  .body :global(.caveats li strong) {
+    color: var(--ink);
+  }
+  .body :global(.caveats .stat) {
+    margin-top: 0;
+  }
+  .body :global(.caveats + h3) {
+    margin-top: 48px;
+  }
+  .body :global(.estimate) {
+    margin-top: 16px;
+    padding: 18px 22px;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+    max-width: 68ch;
+    color: var(--mute);
+  }
+  .body :global(.estimate a) {
+    color: var(--ink);
+  }
+
+  @media (min-width: 1100px) {
+    .toc-details {
+      display: none;
+    }
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 232px;
+      gap: 56px;
+    }
+    .toc-side {
+      display: block;
+    }
+  }
+  @media (max-width: 899px) {
+    .head {
+      padding-bottom: 32px;
+    }
+    .chapter {
+      padding-block: 44px;
+    }
+    .chapter:first-child {
+      padding-top: 28px;
+    }
+  }
+</style>

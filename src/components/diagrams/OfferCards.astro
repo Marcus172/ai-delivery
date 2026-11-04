@@ -1,0 +1,81 @@
+---
+import { OFFER } from "../../data/offer";
+import type { Locale } from "../../i18n/locales";
+import CtaRow from "../CtaRow.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const OFFER_ICONS: Record<string, string> = {
+  assessment: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21M8 11h6M11 8v6"/>',
+  "delivery-flow": '<circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/><path d="M7.5 12h9M12 9.5V5M12 14.5V19"/>',
+  enablement: '<circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 19a5.5 5.5 0 0 1 11 0M13 18a4 4 0 0 1 8 0"/>',
+};
+---
+
+<div class="offer">
+  <ol class="cards">
+    {
+      OFFER.map((card) => (
+        <li class="card" data-offer-card={card.id}>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            set:html={OFFER_ICONS[card.id]}
+          />
+          <h3>{card.title[locale]}</h3>
+          <p>{card.body[locale]}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <CtaRow locale={locale} />
+</div>
+
+<style>
+  .offer {
+    margin-top: 32px;
+  }
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 24px 22px;
+    min-width: 0;
+  }
+  .card svg {
+    width: 36px;
+    height: 36px;
+    color: var(--acc);
+  }
+  .card h3 {
+    margin: 18px 0 8px;
+  }
+  .card p {
+    color: var(--mute);
+    font-size: 15px;
+  }
+  .offer :global(.cta) {
+    margin-top: 32px;
+  }
+  @media (max-width: 899px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

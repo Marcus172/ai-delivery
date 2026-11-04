@@ -1,0 +1,31 @@
+---
+id: tooling
+order: 3
+title: "Vyměnitelné nástroje a malá flotila"
+summary: "Dvě výměny a&nbsp;zkouška za čtyři měsíce. Jakmile kontrakt oddělil checkout od session, výměna měnila jen soubory osobní vrstvy. Dva rovnocenné stroje sdílejí stav práce přes git."
+---
+import { Note, ToolSwimlane } from "../../../components/chapter";
+
+export const locale = "cs";
+
+Kontrakt jmenuje **operace**, ne nástroje: kde jsem, kdo je online, založ pracoviště, spusť v&nbsp;něm příkaz, doruč agentovi brief, co běží, archivuj. Každý vývojář tyhle operace implementuje v&nbsp;osobní vrstvě tím, co mu vyhovuje. Nad jedním repozitářem dnes jeden vývojář jede na Paseu, druhý na worktrunku s&nbsp;přímou session a&nbsp;třetí nepoužívá nic a&nbsp;pracuje na místě. Tři nástroje, jeden proces.
+
+Ten návrh vznikl z&nbsp;konkrétní potřeby, ne z&nbsp;teorie. Nástroje na pracoviště kříží dvě osy pokaždé jinak: kde vzniká pracovní kopie a&nbsp;kam padá brief pro agenta. Oddělení těch dvou os, a&nbsp;neprůhledný handle, který si nástroj pokrývající obě osy předá sám sobě, je to, co drží jména nástrojů mimo generickou vrstvu.
+
+### Dvě výměny, zkouška a&nbsp;co každá stála kontrakt
+
+Začal jsem s&nbsp;worktrunkem na worktrees a&nbsp;terminálem cmux na sessions. V&nbsp;srpnu jsem osobní vrstvu přesunul na Superset kvůli hostovaným pracovištím a&nbsp;vzdálenému stroji; po třech týdnech jsem ho opustil kvůli ceně a&nbsp;soukromí relay v&nbsp;tehdejší podobě. Krátká zkouška T3 Code přišla příliš brzy. Od září osobní vrstva běží na Paseu: zdarma, end-to-end relay, příkazová řádka na všechno, daemon jako služba, mobilní aplikace. V&nbsp;říjnu jsem T3 Code znovu posoudil proti gap tabulce se zdroji a&nbsp;živými sondami; verdikt se změnil, když se změnila fakta, a&nbsp;dnes je to kandidát na alternativního poskytovatele, ne migrace.
+
+<ToolSwimlane locale={locale} />
+
+První výměna kontrakt něco stála: přechod na Superset přišel s&nbsp;verzí, která oddělila poskytovatele checkoutu od projektu, a&nbsp;o&nbsp;dvě verze později kontrakt rozdělil dvě osy popsané výše. Od té doby obrázek platí: přechod na Paseo i&nbsp;hodnocení T3 Code změnily jen soubory osobní vrstvy, poskytovatele flotily, poskytovatele checkoutu, UI pracoviště, preference. Kontrakt v&nbsp;den přechodu na Paseo novou verzi dostal, ale kvůli flotile popsané níže; žádný nástroj v&nbsp;něm není. Týmová konfigurace v&nbsp;repozitáři se nezměnila vůbec. Pozdější inventura závislostí rozdělení potvrdila: většina schopností patří orchestrátoru a&nbsp;zbytek (git replika stavu, profil dotfiles, ssh, worktree hooky, orchestrační smyčka, plan app, privátní síť) přežije jakoukoli výměnu beze změny.
+
+### Flotila
+
+Paralelní agenti nad buildem, typecheckem a&nbsp;testy monorepa jeden notebook přetížili. Osobní vrstva proto dnes sahá přes **dva rovnocenné stroje**, notebook a&nbsp;desktop s&nbsp;Linuxem pod Windows. Každý umí řídit i&nbsp;vykonávat; žádná role workera. Práce na tiketu dostane vlastní izolované pracoviště, git worktree s&nbsp;vlastním portem dev serveru odvozeným z&nbsp;názvu větve, takže víc agentů pracuje paralelně na tiketech, review a&nbsp;portech na jiné release linie, a&nbsp;to na kterémkoli stroji, u&nbsp;kterého vývojář zrovna sedí.
+
+Stav práce (meta tiketů, ledgery, paměť, znalosti) je git replika s&nbsp;vlastním merge driverem, který slučuje JSON po klíčích. Konflikt ve stejném poli s&nbsp;různými hodnotami je tvrdý stop, protože znamená, že stejná práce běží dvakrát. Konfigurace je profil v&nbsp;chezmoi, pull-based, takže žádný stroj není hlavní; oba spolu mluví přes privátní síť Tailscale. Poté, co jedno vyčerpání paměti položilo celý daemon se všemi agenty, teď správce paměti pozastaví nejmladší dávkovou úlohu: plná paměť práci zpomalí, nikdy nezabije.
+
+<Note>
+  <strong>Poctivě:</strong> flotila je můj osobní setup, ověřený end-to-end oběma směry na skutečných tiketech. Není to týmový standard. Týmový default je worktrunk na jednom stroji a&nbsp;flow tam funguje bez jakékoli flotily.
+</Note>

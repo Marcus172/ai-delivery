@@ -1,0 +1,31 @@
+---
+id: tooling
+order: 3
+title: "Swappable tools and a small fleet"
+summary: "Two swaps and a trial in four months. Once the contract had separated checkout from session, a swap changed only personal-layer files. Two symmetric machines share the state of the work through git."
+---
+import { Note, ToolSwimlane } from "../../../components/chapter";
+
+export const locale = "en";
+
+The contract names **operations**, not tools: where am I, who is online, create a workspace, run a command there, deliver a brief to an agent, what is running, archive. Each developer implements those operations in the personal layer with whatever they prefer. On one repository today, one developer runs Paseo, another runs worktrunk with a direct session, and a third uses nothing at all and works in place. Three tools, one process.
+
+That design came out of a concrete need rather than a theory. Workspace tools mix two axes differently: where the working copy is created, and where the brief for the agent lands. Separating the two, and letting a tool that covers both hand itself an opaque handle, is what keeps every tool name out of the generic layer.
+
+### Two swaps and a trial, and what each one cost the contract
+
+I started with worktrunk for worktrees and the cmux terminal for sessions. In August I moved the personal layer to Superset to get hosted workspaces and a remote machine; three weeks later I left it over pricing and relay privacy at the time. A short trial of T3 Code was too early. From September the personal layer runs on Paseo: free, an end-to-end relay, a command line for everything, a daemon as a service, a mobile app. In October I reassessed T3 Code against a gap table with sources and live probes; the verdict changed when the facts changed, and it is now a candidate alternative provider, not a migration.
+
+<ToolSwimlane locale={locale} />
+
+The first swap did cost the contract something: moving to Superset came with a version that separated the checkout provider from the project, and two versions later the contract split the two axes above. From then on the picture holds: the move to Paseo and the T3 Code evaluation changed only files of the personal layer, the fleet provider, the checkout provider, the workspace UI, the preferences. The contract got a new version on the day of the Paseo move, but for the fleet below; no tool appears in it. The team's configuration in the repository did not change at all. A later dependency inventory confirmed the split: most capabilities belong to the orchestrator, and the rest (the git state replica, the dotfiles profile, ssh, the worktree hooks, the orchestration loop, the plan app, the private network) survive any swap untouched.
+
+### The fleet
+
+Parallel agents against a monorepo build, type-check and test suite overloaded one laptop. So the personal layer now spans **two symmetric machines**, a laptop and a desktop running Linux under Windows. Each can orchestrate and execute; there is no worker role. Work on a ticket gets its own isolated workspace, a git worktree with its own dev-server port derived from the branch name, so several agents work in parallel on tickets, reviews and ports to other release lines, on whichever machine the developer is sitting at.
+
+The state of the work (ticket metadata, ledgers, memory, knowledge) is a git replica with a custom merge driver that merges the JSON per key. A conflict on the same field with different values is a hard stop, because it means the same work is running twice. The configuration is a chezmoi profile, pull-based, so there is no master machine; the two talk over a private Tailscale network. After one out-of-memory event took down the whole agent daemon with every agent in it, a memory governor now pauses the youngest batch job instead: full memory slows the work and never kills it.
+
+<Note>
+  <strong>Honestly:</strong> the fleet is my personal setup, verified end-to-end in both directions on real tickets. It is not a team standard. The team default is worktrunk on one machine, and the flow works there without any fleet at all.
+</Note>

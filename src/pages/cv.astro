@@ -1,0 +1,12 @@
+---
+import Base from "../layouts/Base.astro";
+import CvView from "../views/CvView.astro";
+import { t } from "../i18n/ui";
+
+const locale = "en";
+const page = "cv";
+---
+
+<Base locale={locale} page={page} title={t(locale, "page.cv.title")} description={t(locale, "page.cv.description")}>
+  <CvView locale={locale} />
+</Base>

@@ -1,0 +1,134 @@
+---
+import { l } from "../../data/l10n";
+import { metric } from "../../data/metrics";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const CAPTION = l(
+  "Gates on the way from a commit to every release line, who enforces them, and whether they hold for someone who never opens an AI tool",
+  "Brány na cestě od commitu na každou release linii, kdo je vynucuje a jestli platí i pro toho, kdo AI nikdy neotevře",
+);
+const HEAD = {
+  gate: l("Gate", "Brána"),
+  by: l("Enforced by", "Vynucuje"),
+  holds: l("Holds without AI", "Platí i bez AI"),
+};
+const steps = metric("ci-gate-steps").value[locale].replace(/^.*→\s*/, "");
+
+type Row = { gate: string; by: string; holds: string; strong?: boolean };
+const ROWS: Record<Locale, Row[]> = {
+  en: [
+    { gate: `CI gate: ${steps} chained steps — lint, format, workspace deps, mock schema, a11y text namespace, query-error handling, design tokens, visual-regression self-test, type-check`, by: "CI", holds: "yes", strong: true },
+    { gate: "Pre-commit hooks: lint-staged, type regeneration, code-graph sync; bypassing them is a rule violation", by: "git hooks", holds: "yes", strong: true },
+    { gate: "Visual regression per pull request; an intended pixel change must be declared in the commit message", by: "CI", holds: "yes", strong: true },
+    { gate: "The red test must fail before the fix, with its exit code recorded as a file; done is proven by a criterion, not by a sentence", by: "flow contract", holds: "flow only — the reviewer sees the criterion in the pull request" },
+    { gate: "Submission is triggered by a person; nothing merges on its own", by: "flow contract + hosting", holds: "yes", strong: true },
+    { gate: "Structured tracker notes: for developers problem / cause / fix, for testers environment / plan / regression scope", by: "flow drafts, a person approves", holds: "the shape is the standard; the draft is the AI part" },
+    { gate: "Tracker comments on client projects go to the internal group, a hard client requirement; the raw posting tool is blocked and a hook checks visibility", by: "deny rule + hook in the AI tool", holds: "AI path only — blocks the agent's raw tool; a person posting by hand sets visibility themselves" },
+    { gate: "A change merged to one release line must reach every newer line; the audit compares content, not commit titles", by: "rule + audit script", holds: "yes", strong: true },
+  ],
+  cs: [
+    { gate: `CI brána: ${steps} řetězených kroků – lint, formát, workspace závislosti, schéma mocku, namespace textů přístupnosti, zpracování chyb dotazů, design tokeny, self-test vizuálních regresí, typecheck`, by: "CI", holds: "ano", strong: true },
+    { gate: "Pre-commit hooky: lint-staged, regenerace typů, sync code grafu; jejich obejití je porušení pravidla", by: "git hooky", holds: "ano", strong: true },
+    { gate: "Vizuální regrese na každý pull request; záměrná změna pixelů musí být deklarovaná v commit message", by: "CI", holds: "ano", strong: true },
+    { gate: "Červený test musí padnout před opravou, návratový kód se uloží do souboru; hotovo dokládá kritérium, ne věta", by: "kontrakt flow", holds: "jen ve flow – reviewer vidí kritérium v pull requestu" },
+    { gate: "Odevzdání spouští člověk; nic se nemerguje samo", by: "kontrakt flow + hosting", holds: "ano", strong: true },
+    { gate: "Strukturované poznámky v trackeru: pro vývojáře problém / příčina / řešení, pro testery prostředí / plán / rozsah regrese", by: "flow navrhne, člověk schválí", holds: "tvar je standard; AI dělá jen návrh" },
+    { gate: "Komentáře v trackeru u klientských projektů jdou interní skupině, závazný požadavek klienta; surový nástroj je zablokovaný a viditelnost hlídá hook", by: "deny pravidlo + hook v AI nástroji", holds: "jen na cestě přes AI – blokuje surový nástroj agenta; kdo píše ručně, nastaví viditelnost sám" },
+    { gate: "Změna zamergovaná do jedné release linie musí dojít na každou novější; audit porovnává obsah, ne názvy commitů", by: "pravidlo + auditní skript", holds: "ano", strong: true },
+  ],
+};
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={CAPTION[locale]}>
+  <table class="gates" data-diagram="gates-table">
+    <caption>{CAPTION[locale]}</caption>
+    <thead>
+      <tr>
+        <th scope="col">{HEAD.gate[locale]}</th>
+        <th scope="col">{HEAD.by[locale]}</th>
+        <th scope="col">{HEAD.holds[locale]}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        ROWS[locale].map((r) => (
+          <tr>
+            <td>{r.gate}</td>
+            <td>{r.by}</td>
+            <td class:list={["holds", { strong: r.strong }]}>
+              <i aria-hidden="true" />
+              {r.holds}
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 28px;
+  }
+  .gates {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  caption {
+    text-align: left;
+    color: var(--mute);
+    font-size: 13px;
+    padding-bottom: 12px;
+    caption-side: top;
+  }
+  th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mute);
+    padding: 0 12px 10px 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  td {
+    vertical-align: top;
+    padding: 12px 12px 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  td:first-child {
+    width: 56%;
+  }
+  td:nth-child(2) {
+    color: var(--mute);
+    white-space: nowrap;
+  }
+  .holds {
+    color: var(--mute);
+  }
+  .holds.strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+  .holds i {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--line);
+    margin-right: 8px;
+    vertical-align: 1px;
+  }
+  .holds.strong i {
+    background: var(--acc);
+  }
+</style>

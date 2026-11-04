@@ -1,0 +1,75 @@
+---
+id: case-persona
+order: 7
+title: "Případ: hlas značky jako kód"
+summary: "Klient řekl, že texty v produktu „nesedí“, a nedal jediný příklad. Pravidla značky existovala, jen je nikdo nehlídal. Odpovědí byla persona, kterou čte člověk i agent, auditní pipeline, která se ověří dřív, než se na ni někdo podívá, a smyčka, která vrací rozhodnutí zpátky do kódu."
+---
+import { Note, PersonaPipeline, Stat } from "../../../components/chapter";
+
+export const locale = "cs";
+
+### Zadání: „nesedí nám to“, bez příkladu
+
+Produkt měl tisíce textů, které roky psali vývojáři, analytici, překladatelé i&nbsp;lidé na straně klienta, na několika místech a&nbsp;bez jediné brány, kudy by prošlo všechno. Pravidla značky klient měl, jenže byla psaná pro jiné kanály, dopisy a&nbsp;mobilní aplikaci, a&nbsp;produkt proti nim nikdo nekontroloval. Copywriter, který měl roli převzít, nakonec nebyl najat. Začal jsem tedy inventurou, ne opravami: přes 150 termínů s&nbsp;více než jedním překladem, kontakt na podporu pod šesti různými jmény, tatáž obecná chyba ve zhruba třiceti formulacích. Z&nbsp;vágní stížnosti se stala měřitelná.
+
+### Persona, kterou čte člověk i&nbsp;agent
+
+Ne prompt „piš jako značka“. Datový model, verzovaný v&nbsp;gitu:
+
+- **Dvě vrstvy.** Sdílený jazykový základ (typografie, skloňování proměnných, stavba hlášek a&nbsp;tlačítek, limity kanálů jako kódování SMS) a&nbsp;nad ním persona značky (hlas, tóny podle situace, oslovení, slovník, výjimky). Persona smí přebít pravidlo základu, a&nbsp;to podle id pravidla.
+- **Pravidla se stálým id**, typem (mechanické, nebo úsudkové), závažností, zdrojem (kapitola klientova dokumentu, nebo „náš návrh“) a&nbsp;příkladem před/po. Mechanická pravidla nesou vlastní kontrolu a&nbsp;smějí blokovat; úsudková jen radí.
+- **Slovník** preferovaných, přípustných a&nbsp;zakázaných termínů; **evidované výjimky** (pravidlo, text, důvod, kdo schválil) a&nbsp;**evidované rozpory**, kde si klientova pravidla navzájem odporují, každý s&nbsp;návrhem, o&nbsp;kterém rozhodne klient.
+
+Hlas se nevymýšlí, převádí se: persona převádí klientovy dokumenty na pravidla a&nbsp;doplňuje jen mezery. Změnu smí navrhnout kdokoli, i&nbsp;agent; schvaluje člověk a&nbsp;agent personu nikdy sám neupravuje. Mechanismus a&nbsp;data jsou oddělené, takže druhá značka je druhá složka dat, ne přepis.
+
+<Stat id="persona-rules" locale={locale} />
+
+<div class="example">
+  <span class="k">Příklad pravidla, smyšlená značka (Ferrylane, aplikace na rezervaci trajektů)</span>
+  <p><strong>BRAND-ERR-02</strong>, úsudkové, varování: chybová hláška říká, co se stalo a&nbsp;co dělat dál; bez omluvy, bez kódů.</p>
+  <p>Před: „Chyba 500: zpracování požadavku selhalo. Omlouváme se za komplikace!“</p>
+  <p>Po: „Plavbu se nepodařilo potvrdit. Zkuste to za pár minut znovu.“</p>
+  <p><strong>Evidovaný rozpor.</strong> Style guide Ferrylane: „tlačítko je vždy celá věta“. Pravidla Ferrylane pro mobil: „tlačítko má nejvýš dvě slova“. Návrh: na tlačítkách dvě slova, v&nbsp;potvrzeních celé věty. Rozhodne klient.</p>
+</div>
+
+### Auditní pipeline
+
+Opakovatelný běh vezme texty z&nbsp;jednoho pevného commitu a&nbsp;vyrobí jeden soubor nálezů, každý s&nbsp;id pravidla, návrhem opravy a&nbsp;mírou jistoty. Model se volí podle úkonu: malý zařadí druh každého textu, střední aplikuje úsudková pravidla v&nbsp;paralelních dávkách, mechanická pravidla aplikuje deterministický checker a&nbsp;největší model je poslední síto před člověkem: každý nález nechá, upraví, nebo zamítne a&nbsp;sloučí návrhy pro stejný text. Deterministické obaly validují každý výstup modelu proti schématu; vadná dávka se pouští znovu, nikdy se neopravuje ručně.
+
+<PersonaPipeline locale={locale} />
+
+<div class="stats">
+  <Stat id="persona-strings" locale={locale} />
+  <Stat id="persona-findings" locale={locale} />
+  <Stat id="persona-proposals" locale={locale} />
+</div>
+
+Ověření není ozdoba: zhruba pětina surových nálezů jím neprošla a&nbsp;u&nbsp;další části návrh přepsalo. Druhý běh dostane ten předchozí jako vstup a&nbsp;převezme všechno, co se nezměnilo, takže se klient znovu ptá jen na nálezy označené jako nové nebo změněné. Zhruba polovina návrhů pochází z&nbsp;mechanických pravidel, polovina z&nbsp;úsudku.
+
+### Každý text vyfocený tam, kde se objeví
+
+Recenzent má schvalovat větu tam, kde ji uvidí zákazník, ne v&nbsp;řádku tabulky. Produkt běží nad mock serverem se smyšlenými daty v&nbsp;trace režimu, kde každý vykreslený text nese svůj klíč. Agenti v&nbsp;prohlížeči dostanou dávku klíčů, dojdou do stavu, kde se každý objeví, neúspěšný požadavek, toast, modální okno, prázdný stav, krok formuláře, a&nbsp;vyfotí obrazovku s&nbsp;textem v&nbsp;rámečku. Většina textů se objeví jen v&nbsp;hraničních stavech, takže agenti častěji podvrhují odpovědi API, než klikají. Kvalitu snímku hlídá stroj: text pod rozmazaným modálem, rámeček jen kolem části věty, ostrost uvnitř rámečku. Když text vykreslit nejde, důvod se zapíše pro netechnického čtenáře. Vedlejší efekt: agenti při focení našli skutečné vady produktu, a&nbsp;ty se opravily jako první.
+
+<Stat id="persona-screenshots" locale={locale} />
+
+### Dokument k&nbsp;review uzavírá kruh
+
+Jeden samostatný HTML dokument, bez serveru, psaný pro netechnického čtenáře: žádné klíče, žádný kód, žádné technické důvody. Změny jsou ve třech částech podle toho, co se od klienta chce: **(a) podle vašich pravidel** (potvrdit), **(b) naše návrhy** tam, kde pravidla mlčí (schválit), **(c) rozpory ve vašich pravidlech** (rozhodnout). Každý řádek ukazuje text před a&nbsp;po, zdroj pravidla a&nbsp;snímek. Recenzent schválí, nesouhlasí, nebo upraví, může udělit výjimku a&nbsp;rozhodnutí vyexportuje jako jeden soubor. Pipeline ho zvaliduje, schválené texty zapíše po klíčích zpátky do zdrojů, klíč, jehož text se mezitím změnil, přeskočí, otevře jeden pull request na skupinu pravidel a&nbsp;ze zamítnutých nálezů udělá výjimky v&nbsp;personě. Další audit je už nehlásí.
+
+<div class="example">
+  <span class="k">Řádky review, smyšlená značka</span>
+  <p>Ferrylane · (a) podle vašich pravidel · „Odeslat / Potvrdit / Autorizovat“ na třech obrazovkách → „Potvrdit“ · <em>schválit · nesouhlasím · upravit</em></p>
+  <p>Ferrylane · (b) náš návrh · „Zákaznická linka“, „Helpdesk“, „náš tým“ → „podpora Ferrylane“ · <em>schválit · nesouhlasím · upravit</em></p>
+</div>
+
+### Proč by to bez AI nešlo
+
+1. **Chyběl člověk.** Bez AI by projekt buď stál, nebo by vznikl další style guide, který nikdo nevynucuje.
+2. **Úsudek v&nbsp;češtině ve velkém objemu.** Běžné lintery umí v&nbsp;češtině jen regulární výrazy a&nbsp;seznam slov. Tón, srozumitelnost a&nbsp;„co se stalo a&nbsp;co dělat“ přes tisíce textů a&nbsp;desítky pravidel je hodně přes sto tisíc rozhodnutí text × pravidlo, která žádný člověk neudělá konzistentně.
+3. **Kontext pro každý text.** Najít stav, kde se objeví jedna chybová hláška, jsou desítky minut práce testera; agenti to udělali pro stovky klíčů.
+4. **Opakovatelnost.** Každá změna persony nebo kódu je nový běh, který přepočítá jen to, co se změnilo. Ruční audit je jeden snímek, zastaralý do příštího vydání.
+5. **Lidé jen schvalují.** Nikdo nepíše od nuly; lidská práce celé fáze byla plánovaná na zhruba deset člověkodnů, jako odhad, zatímco agenti běželi paralelně. Od prázdné složky ke kompletnímu dokumentu se snímky to trvalo asi čtyři týdny, souběžně s&nbsp;běžnou dodávkou.
+
+<Note>
+  <strong>Známé limity.</strong> Persona zatím nepokrývá pravopis a&nbsp;gramatiku, takže audit nehlásí překlepy. Brány na pull requestech a&nbsp;vydáních, další zdroje textů a&nbsp;druhá značka jsou navržené, ne spuštěné. Co klient s&nbsp;dokumentem udělal, tady popisovat nebudu.
+</Note>

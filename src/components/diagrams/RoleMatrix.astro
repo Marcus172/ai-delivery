@@ -1,0 +1,127 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "Which role uses what: the full ticket flow, shared plugins, a plugin for their own role, and skills contributed to the marketplace",
+  "Která role používá co: plný flow tiketu, sdílené pluginy, plugin pro vlastní roli a skilly přispěné do marketplace",
+);
+const DESC = l(
+  "Only developers on this codebase run the full ticket flow. Every role installs the shared plugins. Analysts, testers, the project manager and backend developers each have a plugin for their own role, and every role has contributed skills; the tester and the analyst plugins were written by a tester and an analyst.",
+  "Plný flow tiketu jedou jen vývojáři na tomto kódu. Sdílené pluginy instaluje každá role. Analytici, testeři, projektový manažer i backendoví vývojáři mají plugin pro vlastní roli a každá role přispěla skilly; testovací a analytický plugin napsali tester a analytik.",
+);
+const LEGEND = l("filled: yes · hollow: no", "plný: ano · prázdný: ne");
+
+const COLS = [
+  l("full ticket flow", "plný flow tiketu"),
+  l("shared plugins", "sdílené pluginy"),
+  l("own role plugin", "plugin pro roli"),
+  l("contributed skills", "přispěné skilly"),
+];
+// src: research note 02, §2.1–2.2, §3 (roles and their plugins; 7 contributors from 5 roles)
+const ROWS: { role: ReturnType<typeof l>; cells: boolean[] }[] = [
+  { role: l("developers on this codebase", "vývojáři na tomto kódu"), cells: [true, true, true, true] },
+  { role: l("backend developers", "backendoví vývojáři"), cells: [false, true, true, true] },
+  { role: l("analysts", "analytici"), cells: [false, true, true, true] },
+  { role: l("testers", "testeři"), cells: [false, true, true, true] },
+  { role: l("project manager", "projektový manažer"), cells: [false, true, true, true] },
+];
+
+const W = 760;
+const LEFT = 232;
+const COL_W = (W - LEFT - 16) / COLS.length;
+const TOP = 54;
+const ROW_H = 40;
+const H = TOP + ROWS.length * ROW_H + 34;
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="matrix"
+    data-diagram="role-matrix"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="role-matrix-t"
+    aria-describedby="role-matrix-d"
+  >
+    <title id="role-matrix-t">{TITLE[locale]}</title>
+    <desc id="role-matrix-d">{DESC[locale]}</desc>
+
+    {
+      COLS.map((c, j) => (
+        <text class="col" x={LEFT + j * COL_W + COL_W / 2} y="22" text-anchor="middle" font-size="12.5">
+          {c[locale]}
+        </text>
+      ))
+    }
+    <line class="rule" x1="0" y1={TOP - 16} x2={W} y2={TOP - 16} />
+
+    {
+      ROWS.map((r, i) => {
+        const y = TOP + i * ROW_H;
+
+        return (
+          <g class="row">
+            <text class="role" x="0" y={y + 5} font-size="13">
+              {r.role[locale]}
+            </text>
+            {r.cells.map((on, j) => (
+              <circle class:list={["cell", { on }]} cx={LEFT + j * COL_W + COL_W / 2} cy={y} r="7" />
+            ))}
+            <line class="rule soft" x1="0" y1={y + ROW_H / 2} x2={W} y2={y + ROW_H / 2} />
+          </g>
+        );
+      })
+    }
+
+    <text class="legend" x="0" y={H - 6} font-size="12.5">{LEGEND[locale]}</text>
+  </svg>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 28px;
+  }
+  .matrix {
+    display: block;
+    width: 100%;
+    /* 660 / 760 keeps 12.5 px labels ≥ 11 px rendered inside a 358 px phone box. */
+    min-width: 680px;
+    max-width: 820px;
+    overflow: visible;
+  }
+  .col,
+  .legend {
+    fill: var(--mute);
+  }
+  .col {
+    font-weight: 600;
+  }
+  .role {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .rule {
+    stroke: var(--ink);
+  }
+  .rule.soft {
+    stroke: var(--line);
+  }
+  .cell {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1.5;
+  }
+  .cell.on {
+    fill: var(--acc);
+    stroke: var(--acc);
+  }
+</style>

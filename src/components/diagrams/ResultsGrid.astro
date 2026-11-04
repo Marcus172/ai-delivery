@@ -1,0 +1,30 @@
+---
+import { RESULTS_METRIC_IDS } from "../../data/metrics";
+import type { Locale } from "../../i18n/locales";
+import Stat from "../Stat.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="stats results-grid" data-diagram="results-grid">
+  {RESULTS_METRIC_IDS.map((id) => <Stat id={id} locale={locale} />)}
+</div>
+
+<style>
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 36px;
+    margin-top: 32px;
+    max-width: 860px;
+  }
+  @media (max-width: 599px) {
+    .results-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

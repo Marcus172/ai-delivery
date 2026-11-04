@@ -1,0 +1,30 @@
+---
+interface Props {
+  id?: string;
+  /** Visually quieter top edge: no rule above the section (for the first one on a page). */
+  first?: boolean;
+  class?: string;
+}
+
+const { id, first = false, class: className } = Astro.props;
+---
+
+<section id={id} class:list={["section", { first }, className]}>
+  <slot />
+</section>
+
+<style>
+  .section {
+    padding-block: 72px;
+    border-top: 1px solid var(--line);
+  }
+  .section.first {
+    border-top: 0;
+    padding-top: 0;
+  }
+  @media (max-width: 899px) {
+    .section {
+      padding-block: 48px;
+    }
+  }
+</style>

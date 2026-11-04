@@ -1,0 +1,47 @@
+---
+id: guardrails
+order: 4
+title: "Gates that hold without AI"
+summary: "Rules are a budget and gates are code. The agent setup has its own regression tests, the context it loads is measured, and whatever a machine can check never depends on a prompt."
+---
+import { GatesTable, Note, Stat } from "../../../components/chapter";
+
+export const locale = "en";
+
+### Rules: always-on or scoped to a path
+
+The agent instructions live in one vendor-neutral file at the root of the repository, with symlinks so that two different agent tools read the same source, and nested files per package that carry only what is unique there. Rules come in two kinds. A handful are **always on** (safety, release lines, tracker workflow, browser automation). The rest are **path-scoped** through frontmatter and load only when the agent touches a file in their scope: styling, i18n, accessibility, testing, TypeScript. Every rule should fit in two lines, say "do this, not that", and point to the docs instead of repeating them.
+
+Context is a budget, not a storage room. A dedicated clean-up moved history and rationale into the docs and kept the directives word for word.
+
+<Stat id="context-diet" locale={locale} />
+
+### Regression tests for the agent setup
+
+Prompts and rules are code, so they get tests. A probe suite starts fresh headless sessions, asks a question and checks the answer with a regular expression, while measuring the token baseline of a fresh session. One anonymised probe: *"I added an import from another package in the monorepo. What do I run before committing?"* The answer must name the dependency fix and the install. Running the suite is mandatory after every change to the setup.
+
+The suite has its own methodology. A probe for a path-scoped rule must name a file inside that scope, or it is flaky by design. Retries cover infrastructure errors only, never a wrong answer. Model variance is recorded as a range of passes, not as the best draw.
+
+<Stat id="behavioural-probes" locale={locale} />
+
+### A context layer, measured twice
+
+Instead of grepping the repository, the agent queries a generated package manifest and a local code graph (CodeGraph; telemetry off, nothing leaves the machine) through a thin wrapper, and a read-only subagent does the exploring. This was built as an experiment with a baseline, acceptance criteria and repeated runs. The first wiring made things slower: the queries were fast, reading their output was not, so the output was shaped. One gain I had claimed was withdrawn after three rounds showed it was noise. Two measurements survived and they are separate, so they are shown separately.
+
+<div class="stats">
+  <Stat id="impact-query" locale={locale} />
+  <Stat id="subagent-tokens" locale={locale} />
+  <Stat id="graph-output" locale={locale} />
+</div>
+
+### Deterministic gates, each from an incident
+
+Whatever a machine can check is not in a prompt; it is in the gate. The local mirror of the CI gate grew step by step, and every step has an incident in its header: a mock-schema check after screens in mock mode had stayed blank for months because one field was missing; a query-error check after a client-library upgrade blanked dozens of screens; a check that accessibility strings stay in one namespace after they had leaked into sixteen. Where old debt exists, the gate applies gradual tightening: a debt file may only shrink, so new mistakes are blocked while old ones are paid down.
+
+<Stat id="ci-gate-steps" locale={locale} />
+
+<GatesTable locale={locale} />
+
+<Note>
+  <strong>Operational guardrails</strong> sit underneath: an allowlist and denylist for what the agent may run, page content from a browser treated as untrusted data rather than instructions, PII rules for captured traffic, and no plan or source ever sent to a hosted validator. Parallel agents are solved by infrastructure (one worktree, one port each), not by discipline.
+</Note>

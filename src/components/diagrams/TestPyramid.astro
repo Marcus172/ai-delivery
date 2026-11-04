@@ -1,0 +1,160 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const LABEL = l(
+  "Six layers of accessibility testing, from lint at the base to a human with a screen reader at the top",
+  "Šest vrstev testování přístupnosti, od lintu v základně po člověka se čtečkou obrazovky na vrcholu",
+);
+const AI = l("AI", "AI");
+const HUMAN = l("human only", "jen člověk");
+const BASE = l("base", "základna");
+const TOP = l("top", "vrchol");
+
+type Layer = { name: string; how: string; count?: string; ai?: boolean; human?: boolean };
+const LAYERS: Record<Locale, Layer[]> = {
+  en: [
+    { name: "Lint", how: "static rules on markup and i18n: accessibility strings stay in one namespace" },
+    { name: "Component specs with axe", how: "every shared component rendered and checked in isolation", count: "134 specs" },
+    { name: "Storybook addon", how: "the same checks on every story while developing" },
+    { name: "End-to-end journeys", how: "axe plus a real keyboard through whole screens", count: "49 suites" },
+    { name: "Vision audit", how: "a browser agent and a vision model for what axe cannot see: focus rings, contrast in context, reflow", ai: true },
+    { name: "Screen reader", how: "a person walks the screen with a screen reader; the only path to done", human: true },
+  ],
+  cs: [
+    { name: "Lint", how: "statická pravidla nad markupem a i18n: texty pro přístupnost zůstávají v jednom jmenném prostoru" },
+    { name: "Testy komponent s axe", how: "každá sdílená komponenta vykreslená a zkontrolovaná zvlášť", count: "134 testů" },
+    { name: "Doplněk pro Storybook", how: "tytéž kontroly nad každou story už při vývoji" },
+    { name: "End-to-end průchody", how: "axe a skutečná klávesnice přes celé obrazovky", count: "49 sad" },
+    { name: "Vizuální audit", how: "agent v prohlížeči a vision model pro to, co axe nevidí: focus ring, kontrast v kontextu, reflow", ai: true },
+    { name: "Čtečka obrazovky", how: "obrazovkou projde člověk se čtečkou; jediná cesta do stavu hotovo", human: true },
+  ],
+};
+const layers = LAYERS[locale];
+---
+
+<figure class="pyramid" data-diagram="test-pyramid">
+  <figcaption class="sr">{LABEL[locale]}</figcaption>
+  <ol class="layers">
+    {
+      layers.map((layer, i) => (
+        <li class:list={["layer", { ai: layer.ai, human: layer.human }]} style={`--w: ${100 - i * 9}%`}>
+          <div class="row">
+            <span class="name">
+              {layer.name}
+              {layer.ai && <b class="chip">{AI[locale]}</b>}
+              {layer.human && <b class="chip human">{HUMAN[locale]}</b>}
+            </span>
+            {layer.count && <span class="count">{layer.count}</span>}
+          </div>
+          <p class="how">{layer.how}</p>
+        </li>
+      ))
+    }
+  </ol>
+  <p class="axis" aria-hidden="true">
+    <span>{BASE[locale]}</span>
+    <span>{TOP[locale]}</span>
+  </p>
+</figure>
+
+<style>
+  .pyramid {
+    margin: 32px 0 0;
+    max-width: 760px;
+  }
+  .layers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+    counter-reset: layer;
+  }
+  .layer {
+    width: var(--w);
+    margin-inline: auto;
+    padding: 12px 16px 13px;
+    border: 1px solid var(--line);
+    background: var(--tint);
+    border-radius: 10px;
+    min-width: 0;
+  }
+  .layer.ai {
+    border-color: var(--acc);
+  }
+  .layer.human {
+    background: transparent;
+    border: 1.5px dashed var(--ink);
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .name {
+    font-weight: 700;
+    font-size: 15px;
+    display: inline-flex;
+    gap: 8px;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .name::before {
+    counter-increment: layer;
+    content: counter(layer);
+    color: var(--acc-text);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+  }
+  .chip {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border-radius: 999px;
+    padding: 2px 8px;
+    border: 1px solid var(--acc);
+    color: var(--acc-text);
+  }
+  .chip.human {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .count {
+    flex: none;
+    font-size: 13px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--acc-text);
+  }
+  .how {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+  .axis {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0 0;
+    font-size: 12px;
+    color: var(--mute);
+  }
+  @media (max-width: 599px) {
+    .layer {
+      width: 100%;
+    }
+    .layers {
+      border-left: 2px solid var(--line);
+      padding-left: 12px;
+    }
+  }
+</style>

@@ -1,0 +1,47 @@
+---
+id: guardrails
+order: 4
+title: "Brány, které platí i bez AI"
+summary: "Pravidla jsou rozpočet a brány jsou kód. AI setup má vlastní regresní testy, kontext, který načítá, se měří, a co umí zkontrolovat stroj, nikdy nezávisí na promptu."
+---
+import { GatesTable, Note, Stat } from "../../../components/chapter";
+
+export const locale = "cs";
+
+### Pravidla: trvale, nebo jen pro cestu
+
+Instrukce pro agenta žijí v&nbsp;jednom souboru nezávislém na vendorovi v&nbsp;kořeni repozitáře, se symlinky, aby dva různé agentní nástroje četly stejný zdroj, a&nbsp;ve vnořených souborech per balík, které nesou jen to, co je tam unikátní. Pravidla jsou dvojího druhu. Hrstka je **vždy načtená** (bezpečnost, release linie, workflow trackeru, automatizace prohlížeče). Zbytek je **vázaný na cestu** přes frontmatter a&nbsp;načte se, jen když agent sáhne na soubor v&nbsp;jeho rozsahu: styling, i18n, přístupnost, testy, TypeScript. Každé pravidlo se má vejít do dvou řádků, říkat „dělej tohle, ne tamto“ a&nbsp;odkazovat do dokumentace místo jejího opakování.
+
+Kontext je rozpočet, ne odkladiště. Cílený úklid přesunul historii a&nbsp;zdůvodnění do dokumentace a&nbsp;direktivy nechal slovo od slova.
+
+<Stat id="context-diet" locale={locale} />
+
+### Regresní testy pro AI setup
+
+Prompty a&nbsp;pravidla jsou kód, takže mají testy. Sada sond spouští čerstvé headless sessions, položí otázku a&nbsp;odpověď ověří regulárním výrazem; zároveň měří tokenovou baseline čerstvé session. Jedna anonymizovaná sonda: *„Přidal jsem import z&nbsp;jiného balíku v&nbsp;monorepu. Co mám spustit před commitem?“* Odpověď musí jmenovat opravu závislostí a&nbsp;instalaci. Spuštění sady je po každé změně setupu povinné.
+
+Sada má vlastní metodiku. Sonda na pravidlo vázané na cestu musí jmenovat soubor v&nbsp;jeho rozsahu, jinak je z&nbsp;principu nestabilní. Opakování pokrývá jen chyby infrastruktury, nikdy špatnou odpověď. Rozptyl modelu se zapisuje jako rozsah úspěšnosti, ne jako nejlepší los.
+
+<Stat id="behavioural-probes" locale={locale} />
+
+### Kontextová vrstva, měřená dvakrát
+
+Místo grepování repozitáře se agent ptá generovaného manifestu balíků a&nbsp;lokálního code grafu (CodeGraph; telemetrie vypnutá, nic neopouští stroj) přes tenký wrapper a&nbsp;průzkum dělá subagent jen pro čtení. Stavělo se to jako experiment s&nbsp;baseline, akceptačními kritérii a&nbsp;opakovanými běhy. První zapojení věci zpomalilo: dotazy byly rychlé, čtení jejich výstupu ne, a&nbsp;tak se zhustil výstup. Jedno zlepšení, které jsem ohlásil, jsem po třech kolech stáhl, protože šlo o&nbsp;šum. Přežila dvě měření, jsou oddělená, a&nbsp;proto jsou i&nbsp;ukázaná odděleně.
+
+<div class="stats">
+  <Stat id="impact-query" locale={locale} />
+  <Stat id="subagent-tokens" locale={locale} />
+  <Stat id="graph-output" locale={locale} />
+</div>
+
+### Deterministické brány, každá z&nbsp;incidentu
+
+Co umí zkontrolovat stroj, není v&nbsp;promptu, ale v&nbsp;bráně. Lokální zrcadlo CI brány rostlo krok za krokem a&nbsp;každý krok má v&nbsp;hlavičce svůj incident: kontrola schématu mocku poté, co obrazovky v&nbsp;mock režimu zůstaly měsíce prázdné kvůli jednomu chybějícímu poli; kontrola chyb dotazů poté, co upgrade klientské knihovny vyprázdnil desítky obrazovek; kontrola, že texty přístupnosti zůstávají v&nbsp;jednom namespace, poté, co se rozlezly do šestnácti. Kde existuje starý dluh, brána používá postupné zpřísňování: dluhový soubor se smí jen zmenšovat, takže nové chyby blokuje a&nbsp;staré se splácejí.
+
+<Stat id="ci-gate-steps" locale={locale} />
+
+<GatesTable locale={locale} />
+
+<Note>
+  <strong>Provozní mantinely</strong> leží pod tím: allowlist a&nbsp;denylist toho, co agent smí spouštět, obsah stránek z&nbsp;prohlížeče jako nedůvěryhodná data, ne instrukce, pravidla pro osobní údaje v&nbsp;zachyceném provozu a&nbsp;žádný plán ani zdroj poslaný hostovanému validátoru. Paralelní agenty řeší infrastruktura (jeden worktree, jeden port pro každého), ne disciplína.
+</Note>

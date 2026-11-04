@@ -1,0 +1,115 @@
+---
+import Timeline from "../components/diagrams/Timeline.astro";
+import Eyebrow from "../components/Eyebrow.astro";
+import Section from "../components/Section.astro";
+import { JOURNEY } from "../data/journey";
+import type { Locale } from "../i18n/locales";
+import { localizedPath } from "../i18n/routes";
+import { t } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const next = [
+  { page: "ai-delivery", title: t(locale, "nav.ai-delivery"), body: t(locale, "journey.nextAi") },
+  { page: "cv", title: t(locale, "nav.cv"), body: t(locale, "journey.nextCv") },
+] as const;
+---
+
+<header class="head">
+  <Eyebrow>{t(locale, "journey.eyebrow")}</Eyebrow>
+  <h1>{t(locale, "journey.title")}</h1>
+  <p class="lead" data-journey-intro>{t(locale, "journey.intro")}</p>
+</header>
+
+<Section id="timeline" first>
+  <Timeline items={JOURNEY} locale={locale} />
+</Section>
+
+<Section id="read-on">
+  <Eyebrow as="h2">{t(locale, "journey.nextEyebrow")}</Eyebrow>
+  <ul class="next" data-journey-next>
+    {
+      next.map((n) => (
+        <li>
+          <a class="next-link" href={localizedPath(locale, n.page)}>
+            <span class="next-title">{n.title}</span>
+            <span class="next-body">{n.body}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  .head {
+    padding-bottom: 64px;
+  }
+  .head h1 {
+    font-size: clamp(3rem, 6.2vw, 5.75rem);
+    max-width: 14ch;
+  }
+  .head .lead {
+    margin-top: 24px;
+    max-width: 62ch;
+  }
+  .next {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    max-width: 800px;
+  }
+  .next-link {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    height: 100%;
+    padding: 24px 22px 20px;
+    border-top: 2px solid var(--ink);
+    text-decoration: none;
+    background: var(--tint);
+    border-radius: 0 0 14px 14px;
+  }
+  .next-title {
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    text-transform: uppercase;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .next-body {
+    color: var(--mute);
+    font-size: 15px;
+  }
+  .next-link svg {
+    width: 20px;
+    height: 20px;
+    justify-self: end;
+    transition: transform 0.2s ease;
+  }
+  .next-link:hover {
+    border-top-color: var(--acc);
+  }
+  .next-link:hover svg {
+    transform: translateX(4px);
+    color: var(--acc);
+  }
+  @media (max-width: 899px) {
+    .head {
+      padding-bottom: 40px;
+    }
+    .next {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

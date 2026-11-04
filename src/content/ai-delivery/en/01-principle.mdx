@@ -1,0 +1,29 @@
+---
+id: principle
+order: 1
+title: "The process stays. AI does the grunt work."
+summary: "The way of working underneath my team's delivery flow is older than the agents in it; the contract that encodes it is new. What changed is who does the typing, not who decides."
+---
+import { FlowBand, Note, Stat } from "../../../components/chapter";
+
+export const locale = "en";
+
+In 2026 I set up AI-assisted delivery for one product team: a large product monorepo with several parallel release lines and a cross-functional team of developers, analysts and testers. Most of the steps are ones I worked in long before agents existed: a ticket is read and questioned, a spec is agreed, a review happens, a person submits, and the change is ported to every newer release line. Two things are new. A test that fails before the fix is now part of every ticket that runs through the flow, because AI made test-first affordable; across all product pull requests, with or without the flow, the share that adds or changes tests moved like this:
+
+<Stat id="prs-with-tests" locale={locale} />
+
+And since August 2026 the steps are encoded in a contract as invariants, so they are checked rather than remembered.
+
+What changed is the legwork. The agent reads the ticket and its attachments, drafts the spec variants, writes the test and the code in its own workspace, runs the local replica of the CI gate and drafts the notes for testers. A person asks the questions, picks the variant, triggers the submission and approves whatever reaches the client.
+
+<FlowBand locale={locale} />
+
+**Almost nothing by hand, never a hundred percent.** I type very little of the code; I decide all of it. Nothing is merged, posted or shipped without an explicit step by a person. That is not caution for its own sake. The gates in chapter 4 exist because an agent that cannot be stopped at a gate cannot be trusted at one either, and because the same gates have to hold for colleagues who never open an AI tool.
+
+Knowing the process from before AI is also what tells me which steps it speeds up (reading, drafting, checking, porting) and which it does not (deciding what the product should do, weighing a trade-off, owning a mistake). That is why the one figure for how much faster I work is an estimate and sits apart from the measured team results.
+
+<Stat id="five-to-ten-x" locale={locale} />
+
+<Note>
+  <strong>What this page does not say.</strong> It never claims that AI replaced the team's work, that every role works in the full flow daily, or that a tool made anyone a ten-times engineer. The measured figures in the Results chapter name their period and their caveats; the estimate above stays an estimate.
+</Note>

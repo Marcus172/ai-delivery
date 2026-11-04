@@ -1,0 +1,347 @@
+---
+import { Image } from "astro:assets";
+import photo from "../assets/photo.jpg";
+import CtaRow from "../components/CtaRow.astro";
+import Orbit from "../components/diagrams/Orbit.astro";
+import Eyebrow from "../components/Eyebrow.astro";
+import Note from "../components/Note.astro";
+import Section from "../components/Section.astro";
+import Stat from "../components/Stat.astro";
+import { LANDING } from "../data/landing";
+import { AS_OF, LANDING_METRIC_IDS, metric } from "../data/metrics";
+import { OFFER } from "../data/offer";
+import type { Locale } from "../i18n/locales";
+import { localizedPath } from "../i18n/routes";
+import { t } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const name = t(locale, "site.name");
+const stats = LANDING_METRIC_IDS.map((id) => metric(id));
+const estimate = metric("five-to-ten-x");
+const resultsHref = localizedPath(locale, "ai-delivery", "results");
+
+const OFFER_ICONS: Record<string, string> = {
+  assessment: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21M8 11h6M11 8v6"/>',
+  "delivery-flow": '<circle cx="5" cy="12" r="2.5"/><circle cx="19" cy="12" r="2.5"/><path d="M7.5 12h9M12 9.5V5M12 14.5V19"/>',
+  enablement: '<circle cx="8" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 19a5.5 5.5 0 0 1 11 0M13 18a4 4 0 0 1 8 0"/>',
+};
+---
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-text">
+    <p class="who"><i aria-hidden="true"></i>{name} · {LANDING.who[locale]}</p>
+    <h1 id="hero-title">{LANDING.headline[locale]}</h1>
+    <p class="lead">{LANDING.lead[locale]}</p>
+    <CtaRow locale={locale} />
+    <div class="stats" data-stats>
+      {
+        stats.map((m) => (
+          <div data-metric={m.id}>
+            <Stat locale={locale} value={m.value[locale]} label={m.label[locale]} kind={m.kind} />
+          </div>
+        ))
+      }
+    </div>
+    <p class="period" data-stats-period>
+      {AS_OF[locale].charAt(0).toUpperCase() + AS_OF[locale].slice(1)}. {LANDING.statsPeriodBefore[locale]}<a href={resultsHref}>{LANDING.statsPeriodLink[locale]}</a>.
+    </p>
+  </div>
+  <div class="hero-art">
+    <Orbit locale={locale} />
+  </div>
+</section>
+
+<Section id="offer">
+  <Eyebrow>{LANDING.offerEyebrow[locale]}</Eyebrow>
+  <div class="split">
+    <h2>{LANDING.offerTitle[locale]}</h2>
+    <p class="intro">{LANDING.offerIntro[locale]}</p>
+  </div>
+  <div class="pillars">
+    {
+      OFFER.map((card) => (
+        <article class="pillar" data-offer-card={card.id}>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+            set:html={OFFER_ICONS[card.id]}
+          />
+          <h3>{card.title[locale]}</h3>
+          <p>{card.body[locale]}</p>
+        </article>
+      ))
+    }
+  </div>
+</Section>
+
+<Section id="about">
+  <Eyebrow>{LANDING.aboutEyebrow[locale]}</Eyebrow>
+  <div class="about" data-about>
+    <figure class="photo">
+      <Image src={photo} alt={LANDING.photoAlt[locale]} width={600} widths={[300, 600]} sizes="(max-width: 899px) 280px, 300px" loading="eager" />
+      <figcaption class="badge"><i aria-hidden="true"></i>{LANDING.badge[locale]}</figcaption>
+    </figure>
+    <div class="about-text">
+      <h2>{LANDING.aboutTitle[locale]}</h2>
+      <p class="bio">{LANDING.aboutBio[locale]}</p>
+      <p class="bio mute">{LANDING.aboutBio2[locale]}</p>
+      <div class="estimate" data-metric={estimate.id}>
+        <Stat locale={locale} value={estimate.value[locale]} label={estimate.label[locale]} kind={estimate.kind} />
+        <Note as="p">
+          <strong>{estimate.period[locale]}.</strong> {estimate.caveat?.[locale]}
+        </Note>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<Section id="read-on">
+  <Eyebrow as="h2">{LANDING.readEyebrow[locale]}</Eyebrow>
+  <ul class="teasers">
+    {
+      LANDING.teasers.map((tz) => (
+        <li>
+          <a class="teaser" href={localizedPath(locale, tz.page)}>
+            <span class="teaser-title">{tz.title[locale]}</span>
+            <span class="teaser-body">{tz.body[locale]}</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
+
+<style>
+  /* ---------- hero ---------- */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: 40px;
+    align-items: center;
+    padding-block: 0 72px;
+  }
+  .who {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mute);
+    margin: 0 0 18px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .who i,
+  .badge i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--acc);
+    display: inline-block;
+    flex: none;
+  }
+  .hero h1 {
+    font-size: clamp(3rem, 6.2vw, 5.75rem);
+  }
+  .hero .lead {
+    margin: 24px 0 28px;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+    max-width: 600px;
+  }
+  .period {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--mute);
+    max-width: 60ch;
+  }
+  .period a {
+    text-decoration-color: var(--line);
+    text-underline-offset: 3px;
+  }
+  .period a:hover {
+    text-decoration-color: var(--acc);
+  }
+  .hero-art {
+    min-width: 0;
+  }
+
+  /* ---------- offer ---------- */
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .intro {
+    color: var(--mute);
+    font-size: 17px;
+    max-width: 48ch;
+  }
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 36px;
+  }
+  .pillar {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 26px 24px 22px;
+  }
+  .pillar svg {
+    width: 36px;
+    height: 36px;
+    color: var(--acc);
+  }
+  .pillar h3 {
+    margin: 18px 0 8px;
+  }
+  .pillar p {
+    color: var(--mute);
+  }
+
+  /* ---------- about ---------- */
+  .about {
+    display: grid;
+    grid-template-columns: 300px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .photo {
+    margin: 0;
+    position: relative;
+    aspect-ratio: 2 / 3;
+    border-radius: 16px;
+    background: var(--tint);
+  }
+  .photo img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+  .badge {
+    position: absolute;
+    left: -14px;
+    bottom: 22px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .about-text {
+    min-width: 0;
+  }
+  .bio {
+    font-size: 17px;
+    margin: 18px 0 0;
+    max-width: 60ch;
+  }
+  .bio.mute {
+    font-size: 16px;
+  }
+  .estimate {
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    max-width: 60ch;
+  }
+
+  /* ---------- teasers ---------- */
+  .teasers {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .teaser {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 10px;
+    height: 100%;
+    padding: 24px 22px 20px;
+    border-top: 2px solid var(--ink);
+    text-decoration: none;
+    background: var(--tint);
+    border-radius: 0 0 14px 14px;
+  }
+  .teaser-title {
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    text-transform: uppercase;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .teaser-body {
+    color: var(--mute);
+    font-size: 15px;
+  }
+  .teaser svg {
+    width: 20px;
+    height: 20px;
+    justify-self: end;
+    transition: transform 0.2s ease;
+  }
+  .teaser:hover {
+    border-top-color: var(--acc);
+  }
+  .teaser:hover svg {
+    transform: translateX(4px);
+    color: var(--acc);
+  }
+
+  @media (max-width: 899px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-bottom: 48px;
+    }
+    .hero-art {
+      order: -1;
+    }
+    .split,
+    .pillars,
+    .about,
+    .teasers {
+      grid-template-columns: 1fr;
+    }
+    .split {
+      gap: 14px;
+    }
+    .photo {
+      max-width: 280px;
+    }
+  }
+  @media (max-width: 559px) {
+    .stats {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      margin-top: 32px;
+    }
+  }
+</style>

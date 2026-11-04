@@ -1,0 +1,22 @@
+---
+interface Props {
+  as?: "aside" | "p" | "div";
+}
+
+const { as: Tag = "aside" } = Astro.props;
+---
+
+<Tag class="note"><slot /></Tag>
+
+<style>
+  .note {
+    margin-top: 16px;
+    border-left: 3px solid var(--acc);
+    padding: 6px 0 6px 14px;
+    color: var(--mute);
+    max-width: 70ch;
+  }
+  .note :global(strong) {
+    color: var(--ink);
+  }
+</style>

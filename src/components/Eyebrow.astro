@@ -1,0 +1,32 @@
+---
+interface Props {
+  as?: "p" | "span" | "div" | "h2";
+}
+
+const { as: Tag = "p" } = Astro.props;
+---
+
+<Tag class="eyebrow"><slot /></Tag>
+
+<style>
+  .eyebrow {
+    font-size: 13px;
+    font-weight: 600;
+    font-variation-settings: "wdth" 100;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.55;
+    color: var(--mute);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 2px;
+    background: var(--ink);
+    flex: none;
+  }
+</style>

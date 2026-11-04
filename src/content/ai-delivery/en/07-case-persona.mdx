@@ -1,0 +1,75 @@
+---
+id: case-persona
+order: 7
+title: "Case: brand voice as code"
+summary: "A client said the product's copy felt off and gave no example. The brand rules existed; nothing enforced them. The answer was a persona that a person and an agent both read, an audit pipeline that verifies itself before anyone looks, and a loop that carries decisions back into code."
+---
+import { Note, PersonaPipeline, Stat } from "../../../components/chapter";
+
+export const locale = "en";
+
+### The brief: "it feels off", no examples
+
+The product had thousands of strings written over years by developers, analysts, translators and the client's own people, in several places with no single gate between them. The client's brand rules existed, but they had been written for other channels, letters and a mobile app, and nobody checked the product against them. The copywriter who was to take the role over was never hired. So I started with an inventory instead of fixes: over 150 terms with more than one translation, the support contact under six different names, the same generic error in about thirty wordings. The vague complaint became a measurable one.
+
+### A persona that a person and an agent both read
+
+Not a prompt that says "write like the brand". A data model, versioned in git:
+
+- **Two layers.** A shared language base (typography, inflected variables, message and button grammar, channel limits such as SMS encoding) and the brand persona on top (voice, tone by situation, address, glossary, exceptions). The persona may override a base rule, by rule id.
+- **Rules with a stable id**, a type (mechanical or judgment), a severity, a source (a chapter of the client's own document, or "our proposal") and a before/after example. Mechanical rules carry their own check and may block; judgment rules only advise.
+- **A glossary** of preferred, allowed and banned terms; **recorded exceptions** (rule, string, reason, who approved); and **recorded conflicts** where the client's own rules contradict each other, each with a proposal for the client to decide.
+
+The voice is translated, not invented: the persona converts the client's documents into rules and fills only the gaps. Anyone, including an agent, may propose a change to it; a person approves, and the agent never edits the persona itself. Mechanism and data are separate, so a second brand is a second data folder, not a rewrite.
+
+<Stat id="persona-rules" locale={locale} />
+
+<div class="example">
+  <span class="k">Example rule, fictional brand (Ferrylane, a ferry-booking app)</span>
+  <p><strong>BRAND-ERR-02</strong>, judgment, warning: an error says what happened and what to do next; no apology, no codes.</p>
+  <p>Before: "Error 500: request processing failed. We apologise for the inconvenience!"</p>
+  <p>After: "We couldn't confirm your crossing. Please try again in a few minutes."</p>
+  <p><strong>Recorded conflict.</strong> Ferrylane style guide: "a button is always a full sentence". Ferrylane mobile guidelines: "a button has at most two words". Proposal: two words on buttons, full sentences in confirmations. The client decides.</p>
+</div>
+
+### The audit pipeline
+
+A repeatable run takes the strings from one fixed commit and produces one file of findings, each with a rule id, a proposed fix and a confidence. The model is chosen per task: a small one classifies the kind of each string, a mid-sized one applies the judgment rules in parallel batches, the deterministic checker applies the mechanical ones, and the largest model is the last sieve before a person: it keeps, edits or rejects every finding and merges proposals for the same string. Deterministic wrappers validate every model output against a schema; a bad batch is re-run, never patched by hand.
+
+<PersonaPipeline locale={locale} />
+
+<div class="stats">
+  <Stat id="persona-strings" locale={locale} />
+  <Stat id="persona-findings" locale={locale} />
+  <Stat id="persona-proposals" locale={locale} />
+</div>
+
+The verification step is not decoration: about a fifth of the raw findings did not survive it, and a further share had its proposal rewritten. A second run gets the previous one as input and carries over everything that did not change, so the client is asked again only about findings marked new or changed. Roughly half of the proposals come from mechanical rules, half from judgment.
+
+### Every string photographed where it appears
+
+A reviewer should approve a sentence where a customer will see it, not in a spreadsheet row. The product runs against a mock server with invented data in a trace mode where every rendered string carries its key. Browser agents receive a batch of keys, reach the state where each one appears, a failed request, a toast, a modal, an empty state, a form step, and take a screenshot with the string framed. Most strings only appear in edge states, so the agents stub API responses more often than they click. Screenshot quality is checked by machine: a string under a blurred modal, a frame around part of a sentence, sharpness inside the frame. When a string cannot be rendered, the reason is written for a non-technical reader. A side effect: while photographing, the agents found real product defects, which were fixed first.
+
+<Stat id="persona-screenshots" locale={locale} />
+
+### The review document closes the loop
+
+One self-contained HTML document, no server, written for a non-technical reader: no keys, no code, no technical reasons. Changes sit in three parts by what is asked of the client: **(a) by your own rules** (confirm), **(b) our proposals** where the rules are silent (approve), **(c) conflicts in your rules** (decide). Each row shows before, after, the rule's source and the screenshot. The reviewer approves, disagrees or edits, may grant an exception, and exports the decisions as one file. The pipeline validates it, writes approved strings back to the sources by key, skipping any key whose text changed in the meantime, opens one pull request per rule group, and turns rejected findings into exceptions in the persona. The next audit does not raise them again.
+
+<div class="example">
+  <span class="k">Review rows, fictional brand</span>
+  <p>Ferrylane · (a) by your rules · "Submit / Confirm / Authorise" on three screens → "Confirm" · <em>approve · disagree · edit</em></p>
+  <p>Ferrylane · (b) our proposal · "Customer line", "Helpdesk", "our team" → "Ferrylane support" · <em>approve · disagree · edit</em></p>
+</div>
+
+### Why this was not possible without AI
+
+1. **The person was missing.** Without AI the project would have stalled, or produced one more style guide that nobody enforces.
+2. **Judgment in a non-English language at volume.** Ordinary linters handle this language with regular expressions and a word list. Tone, clarity and "what happened and what to do" across thousands of strings and dozens of rules is well over a hundred thousand string-by-rule decisions, which no person makes consistently.
+3. **Context for every string.** Finding the state where one error message appears is tens of minutes of a tester's time; the agents did it for hundreds of keys.
+4. **Repeatability.** Every change of the persona or the code is a new run that recomputes only what changed. A manual audit is one snapshot, stale by the next release.
+5. **People only approve.** Nobody writes from scratch; the human work of the whole phase was planned at roughly ten person-days, an estimate, while the agents ran in parallel. From an empty folder to the complete document with screenshots took about four weeks, alongside normal delivery.
+
+<Note>
+  <strong>Known limits.</strong> The persona does not yet cover spelling and grammar, so the audit does not report typos. Gates on pull requests and releases, further string sources and a second brand are designed, not running. What the client did with the document is not something I will describe here.
+</Note>

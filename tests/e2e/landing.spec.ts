@@ -1,0 +1,183 @@
+import { expect, test } from "@playwright/test";
+import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
+import { LANDING_METRIC_IDS, metric } from "../../src/data/metrics";
+import { OFFER } from "../../src/data/offer";
+import { LOCALES, type Locale } from "../../src/i18n/locales";
+import { t } from "../../src/i18n/ui";
+
+const URL_OF: Record<Locale, string> = { en: "", cs: "cs/" };
+const PATH_OF: Record<
+  Locale,
+  Record<"journey" | "ai-delivery" | "cv", string>
+> = {
+  en: {
+    journey: "/ai-delivery/journey/",
+    "ai-delivery": "/ai-delivery/ai-delivery/",
+    cv: "/ai-delivery/cv/",
+  },
+  cs: {
+    journey: "/ai-delivery/cs/journey/",
+    "ai-delivery": "/ai-delivery/cs/ai-delivery/",
+    cv: "/ai-delivery/cs/cv/",
+  },
+};
+
+const denylist = loadDenylistText();
+const cvOnly = denylist
+  ? parseDenylist(denylist).filter((r) => r.scope === "cv-only")
+  : [];
+
+for (const locale of LOCALES) {
+  const measured = t(locale, "badge.measured");
+  const estimate = t(locale, "badge.estimate");
+
+  test.describe(`landing (${locale})`, () => {
+    test("hero: h1, three measured stats in order, period line", async ({
+      page,
+    }) => {
+      await page.goto(URL_OF[locale]);
+      await expect(page.locator("main h1")).toHaveCount(1);
+      await expect(page.locator("main h1")).toBeVisible();
+
+      const stats = page.locator("[data-stats] [data-metric]");
+      await expect(stats).toHaveCount(3);
+      for (const [i, id] of LANDING_METRIC_IDS.entries()) {
+        const stat = stats.nth(i);
+        await expect(stat).toHaveAttribute("data-metric", id);
+        await expect(stat).toContainText(metric(id).value[locale]);
+        await expect(stat.getByText(measured, { exact: true })).toBeVisible();
+      }
+      await expect(page.locator("[data-stats-period]")).toBeVisible();
+    });
+
+    test("5–10× lives in the about block as an estimate, not among the stats", async ({
+      page,
+    }) => {
+      await page.goto(URL_OF[locale]);
+      const five = metric("five-to-ten-x");
+      const about = page.locator("[data-about]");
+      await expect(about).toContainText(five.value[locale]);
+      await expect(about.getByText(estimate, { exact: true })).toBeVisible();
+      await expect(page.locator("[data-stats]")).not.toContainText(
+        five.value[locale],
+      );
+      await expect(page.locator("[data-stats]")).not.toContainText(estimate);
+    });
+
+    test("three offer cards with their titles", async ({ page }) => {
+      await page.goto(URL_OF[locale]);
+      const cards = page.locator("[data-offer-card]");
+      await expect(cards).toHaveCount(OFFER.length);
+      for (const [i, card] of OFFER.entries()) {
+        await expect(cards.nth(i)).toContainText(card.title[locale]);
+        await expect(cards.nth(i)).toContainText(card.body[locale]);
+      }
+    });
+
+    test("photo has a localized alt", async ({ page }) => {
+      await page.goto(URL_OF[locale]);
+      const img = page.locator("[data-about] img").first();
+      await expect(img).toBeVisible();
+      const alt = await img.getAttribute("alt");
+      expect(alt).toContain("Marek Rom");
+      expect(alt).toMatch(locale === "cs" ? /portrét/i : /portrait/i);
+    });
+
+    test("links to Journey, AI Delivery and CV", async ({ page }) => {
+      await page.goto(URL_OF[locale]);
+      const main = page.locator("main");
+      for (const key of ["journey", "ai-delivery", "cv"] as const) {
+        const links = main.locator(`a[href^="${PATH_OF[locale][key]}"]`);
+        expect(await links.count(), key).toBeGreaterThan(0);
+      }
+    });
+
+    test("orbit diagram is an accessible image with localized title and desc", async ({
+      page,
+    }) => {
+      await page.goto(URL_OF[locale]);
+      const orbit = page.locator("svg[data-orbit]:visible");
+      await expect(orbit).toHaveCount(1);
+      await expect(orbit).toHaveAttribute("role", "img");
+      const title = await orbit.locator("title").textContent();
+      const desc = await orbit.locator("desc").textContent();
+      expect(title?.trim().length ?? 0).toBeGreaterThan(10);
+      expect(desc?.trim().length ?? 0).toBeGreaterThan(10);
+      expect(title).toMatch(locale === "cs" ? /flow|tým/i : /flow|team/i);
+      // Anti-goal: never claim every role works in the full flow; other roles plug in through plugins and gates.
+      const text = `${title} ${desc}`;
+      expect(text).not.toMatch(
+        /all (work|run|use)|every role|všichni|všechny role|ve stejném flow|in the same flow/i,
+      );
+      expect(desc).toMatch(
+        locale === "cs" ? /sdílené pluginy/i : /shared plugins/i,
+      );
+      for (const tool of ["Claude Code", "Paseo", "worktrunk", "CodeGraph"]) {
+        await expect(orbit).toContainText(tool);
+      }
+    });
+
+    test("no running animations under reduced motion", async ({ browser }) => {
+      const context = await browser.newContext({ reducedMotion: "reduce" });
+      const page = await context.newPage();
+      await page.goto(URL_OF[locale]);
+      await expect(page.locator("svg[data-orbit]:visible")).toHaveCount(1);
+      await page.waitForTimeout(300);
+      expect(await page.evaluate(() => document.getAnimations().length)).toBe(
+        0,
+      );
+      await context.close();
+    });
+
+    test("outer ring rotates when motion is allowed", async ({ browser }) => {
+      const context = await browser.newContext({
+        reducedMotion: "no-preference",
+      });
+      const page = await context.newPage();
+      await page.goto(URL_OF[locale]);
+      await expect(page.locator("svg[data-orbit]:visible")).toHaveCount(1);
+      expect(
+        await page.evaluate(() => document.getAnimations().length),
+      ).toBeGreaterThan(0);
+      await context.close();
+    });
+
+    test("names no bank, no client industry and no cv-only term", async ({
+      page,
+    }) => {
+      await page.goto(URL_OF[locale]);
+      const html = await page.content();
+      expect(html).not.toMatch(/bank|banc/i);
+      expect(html).not.toMatch(/front-?end/i);
+      for (const rule of cvOnly)
+        expect(html, rule.label).not.toMatch(rule.pattern);
+    });
+
+    for (const width of [390, 1000, 1440]) {
+      test(`orbit labels render at 11 px or larger at ${width} px`, async ({
+        browser,
+      }) => {
+        const context = await browser.newContext({
+          viewport: { width, height: 900 },
+        });
+        const page = await context.newPage();
+        await page.goto(URL_OF[locale]);
+        const orbit = page.locator("svg[data-orbit]:visible");
+        await expect(orbit).toHaveCount(1);
+        // Rendered font size = font size in viewBox units × (rendered width / viewBox width).
+        const sizes = await orbit.locator("text").evaluateAll((els) =>
+          els.map((el) => {
+            const svg = (el as SVGTextElement).ownerSVGElement as SVGSVGElement;
+            const scale =
+              svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
+            return parseFloat(getComputedStyle(el).fontSize) * scale;
+          }),
+        );
+        expect(sizes.length).toBeGreaterThan(5);
+        for (const h of sizes)
+          expect(h, `${width}px`).toBeGreaterThanOrEqual(11);
+        await context.close();
+      });
+    }
+  });
+}

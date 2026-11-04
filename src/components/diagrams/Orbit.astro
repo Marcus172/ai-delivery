@@ -1,0 +1,215 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "One shared delivery flow in the centre, team roles on the inner ring, swappable tools on the outer ring",
+  "Jeden sdílený delivery flow uprostřed, role týmu na vnitřním prstenci, vyměnitelné nástroje na vnějším",
+);
+const DESC = l(
+  "Developers run the full flow; analysts, testers and the PM plug into it through shared plugins and the flow's outputs. Around them orbit the swappable tools: Claude Code, Paseo, Superset, worktrunk, Wayfinder, Agent-Native visual plans and CodeGraph.",
+  "Vývojáři jedou celý flow; analytici, testeři a PM se do něj zapojují přes sdílené pluginy a výstupy flow. Kolem obíhají vyměnitelné nástroje: Claude Code, Paseo, Superset, worktrunk, Wayfinder, vizuální plány Agent-Native a CodeGraph.",
+);
+const CORE = l("shared delivery flow", "sdílený delivery flow");
+const CORE_LINES = l("shared|delivery|flow", "sdílený|delivery|flow");
+const CORE_SUB = l("one contract, swappable tools", "kontrakt, výměnné nástroje");
+const LEGEND = l("inner ring: roles · outer ring: tools", "vnitřní prstenec: role · vnější: nástroje");
+
+const ROLES = [l("developer", "vývojář"), l("analyst", "analytik"), l("tester", "tester"), l("PM", "PM")];
+const TOOLS = ["Claude Code", "Paseo", "Superset", "worktrunk", "Wayfinder", "Agent-Native visual plans", "CodeGraph"];
+const TOOLS_COMPACT = ["Claude Code", "Paseo", "Superset", "worktrunk", "Wayfinder", "Agent-Native", "CodeGraph"];
+
+const C = 300;
+const R_IN = 150;
+const R_OUT = 250;
+
+type Variant = {
+  size: "desktop" | "compact";
+  font: number;
+  toolFont: number;
+  tools: string[];
+};
+const VARIANTS: Variant[] = [
+  // Shown from a 525 px container up (scale ≥ 0.847 of the 620 viewBox → every label ≥ 11.4 px).
+  { size: "desktop", font: 14, toolFont: 13.5, tools: TOOLS },
+  // Below 525 px; at a 390 px phone the svg is ≈ 358 px wide (scale 0.577) → ≥ 11.5 px.
+  { size: "compact", font: 21, toolFont: 20.5, tools: TOOLS_COMPACT },
+];
+
+const pos = (r: number, deg: number) => {
+  const rad = ((deg - 90) * Math.PI) / 180;
+
+  return { x: +(C + r * Math.cos(rad)).toFixed(1), y: +(C + r * Math.sin(rad)).toFixed(1) };
+};
+/** Pill width from the label; Bricolage at 600 averages about 0.56 em per character. */
+const pill = (label: string, font: number) => Math.round(label.length * font * 0.56 + font * 1.9);
+---
+
+<div class="orbit-wrap">
+{
+  VARIANTS.map((v) => {
+    const id = `orbit-${v.size}`;
+    const h = Math.round(v.font * 2.1);
+    const ht = Math.round(v.toolFont * 2.05);
+    const sub = v.size === "desktop";
+    const coreLines = sub ? [CORE[locale]] : CORE_LINES[locale].split("|");
+    const coreFont = sub ? 15 : 21;
+    const coreR = sub ? 100 : 84;
+
+    return (
+      <svg
+        class="orbit"
+        data-orbit
+        data-size={v.size}
+        viewBox="-10 -10 620 620"
+        role="img"
+        aria-labelledby={`${id}-t`}
+        aria-describedby={`${id}-d`}
+      >
+        <title id={`${id}-t`}>{TITLE[locale]}</title>
+        <desc id={`${id}-d`}>{DESC[locale]}</desc>
+
+        <circle class="ring" cx={C} cy={C} r={R_IN} />
+        <g class="spin">
+          <circle class="ring dash" cx={C} cy={C} r={R_OUT} />
+          <circle class="dot" cx={C} cy={C - R_OUT} r="6" />
+        </g>
+        <circle class="dot small" cx={pos(R_IN, 135).x} cy={pos(R_IN, 135).y} r="4" />
+
+        <circle class="core" cx={C} cy={C} r={coreR} />
+        {coreLines.map((line, i) => (
+          <text
+            class="core-t"
+            x={C}
+            y={C + (i - (coreLines.length - 1) / 2) * (coreFont * 1.1) + (sub ? -4 : coreFont * 0.36)}
+            text-anchor="middle"
+            font-size={coreFont}
+          >
+            {line}
+          </text>
+        ))}
+        {sub && (
+          <text class="core-s" x={C} y={C + 16} text-anchor="middle" font-size="13.5">
+            {CORE_SUB[locale]}
+          </text>
+        )}
+
+        {ROLES.map((role, i) => {
+          const label = role[locale];
+          const w = pill(label, v.font);
+          const p = pos(R_IN, i * 90);
+
+          return (
+            <g class="chip" transform={`translate(${p.x},${p.y})`}>
+              <rect x={-w / 2} y={-h / 2} width={w} height={h} rx={h / 2} />
+              <text y={v.font * 0.36} text-anchor="middle" font-size={v.font}>
+                {label}
+              </text>
+            </g>
+          );
+        })}
+
+        {v.tools.map((label, i) => {
+          const w = pill(label, v.toolFont);
+          const p = pos(R_OUT, 180 / v.tools.length + (i * 360) / v.tools.length);
+
+          return (
+            <g class="chip tool" transform={`translate(${p.x},${p.y})`}>
+              <rect x={-w / 2} y={-ht / 2} width={w} height={ht} rx={ht / 2} />
+              <text y={v.toolFont * 0.36} text-anchor="middle" font-size={v.toolFont}>
+                {label}
+              </text>
+            </g>
+          );
+        })}
+
+        <text class="legend" x={C} y="596" text-anchor="middle" font-size={sub ? 13.5 : 20}>
+          {LEGEND[locale]}
+        </text>
+      </svg>
+    );
+  })
+}
+</div>
+
+<style>
+  .orbit-wrap {
+    container-type: inline-size;
+    min-width: 0;
+  }
+  .orbit {
+    width: 100%;
+    max-width: 560px;
+    margin-inline: auto;
+    display: block;
+    overflow: visible;
+  }
+  .orbit[data-size="compact"] {
+    display: none;
+  }
+  .ring {
+    fill: none;
+    stroke: var(--line);
+    stroke-width: 1.2;
+  }
+  .ring.dash {
+    stroke-dasharray: 3 7;
+  }
+  .chip rect {
+    fill: var(--bg);
+    stroke: var(--line);
+  }
+  .chip text {
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .chip.tool text {
+    fill: var(--mute);
+    font-weight: 500;
+  }
+  .core {
+    fill: var(--ink);
+  }
+  .core-t {
+    fill: var(--bg);
+    font-weight: 700;
+  }
+  .core-s {
+    fill: var(--bg);
+    opacity: 0.8;
+  }
+  .dot {
+    fill: var(--acc);
+  }
+  .legend {
+    fill: var(--mute);
+  }
+  .spin {
+    transform-origin: 300px 300px;
+    transform-box: view-box;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .spin {
+      animation: orbit-spin 90s linear infinite;
+    }
+  }
+  @keyframes orbit-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @container (max-width: 524px) {
+    .orbit[data-size="desktop"] {
+      display: none;
+    }
+    .orbit[data-size="compact"] {
+      display: block;
+    }
+  }
+</style>

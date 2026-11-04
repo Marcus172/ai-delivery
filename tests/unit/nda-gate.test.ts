@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
@@ -209,6 +209,19 @@ describe("source mode", () => {
     git("add", "clean.md", "dirty.ts", "bin.png");
     const hits = scanSource(rules, dir);
     expect(hits.map((h) => h.path)).toEqual(["dirty.ts"]);
+  });
+  it("scans a tracked symlink as its target path, not the target's content, and survives directory links", () => {
+    const dir = mkdtempSync(join(tmpdir(), "nda-link-"));
+    const git = (...args: string[]) => spawnSync("git", args, { cwd: dir, encoding: "utf8" });
+    git("init", "-q");
+    mkdirSync(join(dir, "skills"));
+    writeFileSync(join(dir, "doc.md"), "Globex");
+    symlinkSync("skills", join(dir, "dir-link"));
+    symlinkSync("doc.md", join(dir, "file-link.md"));
+    symlinkSync("Globex.md", join(dir, "named-link.md"));
+    git("add", "dir-link", "file-link.md", "named-link.md");
+    const hits = scanSource(rules, dir);
+    expect(hits.map((h) => h.path)).toEqual(["named-link.md"]);
   });
 });
 

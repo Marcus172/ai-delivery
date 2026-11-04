@@ -13,8 +13,8 @@ const TITLE = l(
   "Jeden sdílený delivery flow uprostřed, role týmu na vnitřním prstenci, vyměnitelné nástroje na vnějším",
 );
 const DESC = l(
-  "Developers run the full flow; analysts, testers and the PM plug into it through shared plugins and the flow's outputs. Around them orbit the swappable tools: Claude Code, Paseo, Superset, worktrunk, Wayfinder, Agent-Native visual plans and CodeGraph.",
-  "Vývojáři jedou celý flow; analytici, testeři a PM se do něj zapojují přes sdílené pluginy a výstupy flow. Kolem obíhají vyměnitelné nástroje: Claude Code, Paseo, Superset, worktrunk, Wayfinder, vizuální plány Agent-Native a CodeGraph.",
+  "Developers run the full flow; analysts, testers and the PM plug into it through shared plugins and the flow's outputs. Around them orbit the swappable tools: Claude Code, Paseo, Codex, worktrunk, Wayfinder, Agent-Native visual plans and CodeGraph.",
+  "Vývojáři jedou celý flow; analytici, testeři a PM se do něj zapojují přes sdílené pluginy a výstupy flow. Kolem obíhají vyměnitelné nástroje: Claude Code, Paseo, Codex, worktrunk, Wayfinder, vizuální plány Agent-Native a CodeGraph.",
 );
 const CORE = l("shared delivery flow", "sdílený delivery flow");
 const CORE_LINES = l("shared|delivery|flow", "sdílený|delivery|flow");
@@ -22,8 +22,8 @@ const CORE_SUB = l("one contract, swappable tools", "kontrakt, výměnné nástr
 const LEGEND = l("inner ring: roles · outer ring: tools", "vnitřní prstenec: role · vnější: nástroje");
 
 const ROLES = [l("developer", "vývojář"), l("analyst", "analytik"), l("tester", "tester"), l("PM", "PM")];
-const TOOLS = ["Claude Code", "Paseo", "Superset", "worktrunk", "Wayfinder", "Agent-Native visual plans", "CodeGraph"];
-const TOOLS_COMPACT = ["Claude Code", "Paseo", "Superset", "worktrunk", "Wayfinder", "Agent-Native", "CodeGraph"];
+const TOOLS = ["Claude Code", "Paseo", "Codex", "worktrunk", "Wayfinder", "Agent-Native visual plans", "CodeGraph"];
+const TOOLS_COMPACT = ["Claude Code", "Paseo", "Codex", "worktrunk", "Wayfinder", "Agent-Native", "CodeGraph"];
 
 const C = 300;
 const R_IN = 150;
@@ -145,7 +145,7 @@ const pill = (label: string, font: number) => Math.round(label.length * font * 0
   }
   .orbit {
     width: 100%;
-    max-width: 560px;
+    max-width: 35rem;
     margin-inline: auto;
     display: block;
     overflow: visible;
@@ -191,7 +191,7 @@ const pill = (label: string, font: number) => Math.round(label.length * font * 0
     fill: var(--mute);
   }
   .spin {
-    transform-origin: 300px 300px;
+    transform-origin: 18.75rem 18.75rem;
     transform-box: view-box;
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -204,7 +204,7 @@ const pill = (label: string, font: number) => Math.round(label.length * font * 0
       transform: rotate(360deg);
     }
   }
-  @container (max-width: 524px) {
+  @container (max-width: 32.75rem) {
     .orbit[data-size="desktop"] {
       display: none;
     }

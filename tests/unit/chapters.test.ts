@@ -60,6 +60,14 @@ const BANNED = [
 ];
 
 describe("ai-delivery chapters", () => {
+  it("keep HTML entities out of frontmatter, which renders as escaped text (use the literal U+00A0)", () => {
+    for (const locale of LOCALES) {
+      for (const c of chapters(locale)) {
+        expect(`${c.title} ${c.summary}`, c.file).not.toMatch(/&[#\w]+;/);
+      }
+    }
+  });
+
   it("exist for both locales, all eleven", () => {
     for (const l of LOCALES) expect(BY_LOCALE[l].map((c) => c.id), l).toEqual([...CHAPTER_IDS]);
   });
@@ -100,7 +108,7 @@ describe("ai-delivery chapters", () => {
     const diagrams = (c: Chapter) =>
       [
         ...c.body.matchAll(
-          /<(FlowBand|FlowLayers|ToolSwimlane|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards)\b/g,
+          /<(FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards)\b/g,
         ),
       ].map((m) => m[1]);
     const [en, cs] = LOCALES.map((l) => BY_LOCALE[l]);

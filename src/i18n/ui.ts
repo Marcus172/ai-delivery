@@ -19,6 +19,7 @@ const en = {
   "cta.cv": "Download CV",
   "cta.email": "Write me an email",
   "cta.linkedin": "LinkedIn",
+  "cta.github": "GitHub",
   "lang.label": "Language",
   "lang.switch": "Česky",
   "lang.current": "English",
@@ -55,7 +56,7 @@ const en = {
   "ai.lead": "How AI-assisted delivery works for one product team in practice: the process that stays, the layers that let tools change, the gates that hold without AI, and the roles beyond development that got their own tools. Every figure is labelled measured or estimate.",
   "ai.toc": "Chapters",
   "ai.chapter": "Chapter",
-  "ai.asOf": "Figures as of October 2026; each one names its own period.",
+  "ai.asOf": "Figures as of November 2026; each one names its own period.",
 } as const;
 
 export type UiKey = keyof typeof en;
@@ -79,6 +80,7 @@ const cs: Record<UiKey, string> = {
   "cta.cv": "Stáhnout životopis",
   "cta.email": "Napište mi e-mail",
   "cta.linkedin": "LinkedIn",
+  "cta.github": "GitHub",
   "lang.label": "Jazyk",
   "lang.switch": "English",
   "lang.current": "Česky",
@@ -115,7 +117,7 @@ const cs: Record<UiKey, string> = {
   "ai.lead": "Jak v praxi funguje AI-asistované dodávání v jednom produktovém týmu: proces, který zůstává, vrstvy, díky kterým se dají měnit nástroje, brány, které platí i bez AI, a role mimo vývoj, které dostaly vlastní nástroje. Každé číslo má štítek měřeno, nebo odhad.",
   "ai.toc": "Kapitoly",
   "ai.chapter": "Kapitola",
-  "ai.asOf": "Čísla k říjnu 2026; každé uvádí vlastní období.",
+  "ai.asOf": "Čísla k listopadu 2026; každé uvádí vlastní období.",
 };
 
 const dictionaries: Record<Locale, Record<UiKey, string>> = { en, cs };

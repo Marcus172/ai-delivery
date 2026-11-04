@@ -8,7 +8,7 @@ import { FlowLayers, Note, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
 
-Flow začal jako pět osobních skillů. Jakmile ho chtěl druhý vývojář používat s&nbsp;jiným nástrojem na pracoviště, vytáhl jsem sdílenou část do **generického kontraktu**: pořadí kroků, sedm invariantů (každý vznikl po skutečném incidentu), pravidla, jak se vrstvy rozlišují, a&nbsp;číslo verze s&nbsp;migračními poznámkami. Grep guard kontraktu zakazuje jmenovat tracker, hosting, CI, klienta i&nbsp;nástroj. Skilly, které vývojáři skutečně spouštějí, jsou tenké vstupní body; logika žije pod nimi.
+Jádrem flow je **generický kontrakt**: pořadí kroků, sedm invariantů (každý vznikl po skutečném incidentu), pravidla, jak se vrstvy rozlišují, a&nbsp;číslo verze s&nbsp;migračními poznámkami. Grep guard kontraktu zakazuje jmenovat tracker, hosting, CI, klienta i&nbsp;nástroj. Skilly, které vývojáři skutečně spouštějí, jsou tenké vstupní body; logika žije pod nimi.
 
 Každý kus logiky pak musel odpovědět na jednu otázku: *liší se to mezi dvěma skutečnými repozitáři?* Odpověď ho zařadila do jedné ze tří dalších vrstev.
 
@@ -31,7 +31,7 @@ Vrstvy rozlišují dvě různá pravidla. **Hodnoty** se čtou od generického d
   <Stat id="contract-versions" locale={locale} />
 </div>
 
-Druhý klient má jiný tracker s&nbsp;jinými poli a&nbsp;stavy, trunk-based release model s&nbsp;jedinou linií místo několika paralelních a&nbsp;artefakty v&nbsp;jiném jazyce. Trunk znamená, že jedna capability nedělá nic a&nbsp;rozlišení linií je triviální; kontrakt to unesl bez jediné nové podmínky. Kontrola čistoty našla přesně jeden únik: diagnostický příkaz jmenoval CI soubor prvního klienta. Oprava šla do kontroly, verze kontraktu zůstala. Preset napsal kolega, a&nbsp;to je silnější důkaz, že kontrakt je přenositelný mezi lidmi, ne jen mezi klienty.
+Druhý klient má jiný tracker s&nbsp;jinými poli a&nbsp;stavy, trunk-based release model s&nbsp;jedinou linií místo několika paralelních a&nbsp;artefakty v&nbsp;jiném jazyce. Trunk znamená, že jedna capability nedělá nic a&nbsp;rozlišení linií je triviální; kontrakt to unesl bez jediné nové podmínky. Preset napsal kolega, a&nbsp;to je silnější důkaz, že kontrakt je přenositelný mezi lidmi, ne jen mezi klienty.
 
 <Note>
   <strong>Verzovaný kontrakt a&nbsp;doctor.</strong> Každý běh porovná verzi profilu repozitáře s&nbsp;verzí pluginu. Při neshodě vypíše jeden řádek varování a&nbsp;pokračuje; nikdy nespadne. Diagnostický příkaz ukáže sloučenou konfiguraci s&nbsp;původem každé hodnoty, kde se který bod rozšíření rozlišil, a&nbsp;suchý běh resolverů. Pravidlo za verzováním: osobní kopie procedury, která pořád učí zrušený krok, je horší než chybějící soubor.

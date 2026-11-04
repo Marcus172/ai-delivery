@@ -21,6 +21,10 @@ The goal was never one fast person. It was each role getting AI into *its own* f
 
 One git repository holds the team's plugins; one command installs, the main branch updates. **Shared plugins** go to everyone: lookups into sibling repositories, operations, the client wiki, copywriting. **Role plugins** are installed only for the role: backend, development with the delivery flow, analysis, testing, project management. Nobody is forced to install another role's conventions. One pattern carries most of the cross-role value: a developer or an analyst asks about the backend, a read-only subagent searches the sibling repository after pulling it, and only a summary with the revision it read comes back into the session, never the source.
 
+### Not tied to one provider
+
+The flow is built on Claude Code, and its plugins are distributed through a Claude Code plugin marketplace. Over time I brought Codex in as well, and models from both providers can be combined within one flow. So the flow does not depend on a provider: the contract, the rules and the skills are plain files in git, and the agent instructions sit in a vendor-neutral file ([chapter 4](#guardrails)). The Claude plugin marketplace is one way to distribute them, not the only one. A team's or a company's AI setup can also be shared through OpenCode or Pi, including local models.
+
 ### Analysts
 
 Analysts never touch workspaces, branches or gates; they work on the wiki and the tracker. Their main tool is an **analysis lookup**: for a reported behaviour it finds the functional analysis and the client's solution design, reads the page in the version valid on a given date, and returns a verdict of *bug*, *not a bug*, *change* or *gap*. Questions back to analysts follow a convention: only the gap in the analysis, never the development team's interim decisions. One analyst wrote the analysis plugin: resetting analyses after a release, extending one, adding a notification.

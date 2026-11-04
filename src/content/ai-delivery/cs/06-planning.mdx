@@ -24,9 +24,9 @@ Práce, která se nevejde do jedné session, dostane **mapu** (skill Wayfinder z
 
 ### Vizuální plány a&nbsp;recapy, plně lokálně
 
-Specifikace se reviduje jako interaktivní **vizuální plán** (Agent-Native): diagramy, mapy souborů, anotovaný kód, otevřené otázky, někdy klikací prototyp. **Recap** dělá totéž pro hotovou změnu, pro reviewera nebo testera. Člověk odpovídá a&nbsp;komentuje přímo v&nbsp;plánu; agent si zpětnou vazbu přečte. Od září je to formální formát specifikace ve flow, ne markdown soubor.
+Specifikace se reviduje jako interaktivní **vizuální plán** (Agent-Native): diagramy, mapy souborů, anotovaný kód, otevřené otázky, někdy klikací prototyp. **Recap** dělá totéž pro hotovou změnu, pro reviewera nebo testera. Člověk odpovídá a&nbsp;komentuje přímo v&nbsp;plánu; agent si zpětnou vazbu přečte. Je to formální formát specifikace ve flow, ne markdown soubor.
 
-Všechno běží lokálně. Hostovaný validátor by dostal obrazovky, kód i&nbsp;texty klienta, takže na každém stroji je jedna centrální aplikace, plány leží mimo jakýkoli git checkout a&nbsp;druhý stroj se k&nbsp;nim dostane přes privátní síť. Naučil jsem se to tvrdou cestou: ověření plánu bez výslovné lokální adresy pošle celý plán hostované službě. Z&nbsp;toho vzniklo pravidlo, preflight skript a&nbsp;kontrola v&nbsp;diagnostice setupu.
+Všechno běží lokálně. Hostovaný validátor by dostal obrazovky, kód i&nbsp;texty klienta, takže na každém stroji je jedna centrální aplikace, plány leží mimo jakýkoli git checkout a&nbsp;druhý stroj se k&nbsp;nim dostane přes privátní síť. Riziko je konkrétní: ověření plánu bez výslovné lokální adresy pošle celý plán hostované službě. Pravidlo, preflight skript a&nbsp;kontrola v&nbsp;diagnostice setupu zajišťují, že ji dostane vždy.
 
 <div class="example">
   <span class="k">Příklad, anonymizovaný</span>

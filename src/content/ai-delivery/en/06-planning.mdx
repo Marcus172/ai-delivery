@@ -24,9 +24,9 @@ Work that does not fit in one session gets a **map** (the Wayfinder skill from a
 
 ### Visual plans and recaps, fully local
 
-A spec is reviewed as an interactive **visual plan** (Agent-Native): diagrams, file maps, annotated code, open questions, sometimes a clickable prototype. A **recap** does the same for a finished change, for a reviewer or a tester. The person answers and comments inside the plan; the agent reads the feedback. Since September this is the formal spec format of the flow rather than a markdown file.
+A spec is reviewed as an interactive **visual plan** (Agent-Native): diagrams, file maps, annotated code, open questions, sometimes a clickable prototype. A **recap** does the same for a finished change, for a reviewer or a tester. The person answers and comments inside the plan; the agent reads the feedback. It is the flow's formal spec format, not a markdown file.
 
-Everything runs locally. A hosted validator would receive the client's screens, code and texts, so there is one central app per machine, plans live outside any git checkout, and the second machine reaches them over the private network. This was learned the hard way: the plan verifier, without an explicit local address, sends the whole plan to the hosted service. That turned into a rule, a preflight script and a check in the setup diagnostics.
+Everything runs locally. A hosted validator would receive the client's screens, code and texts, so there is one central app per machine, plans live outside any git checkout, and the second machine reaches them over the private network. The risk is concrete: without an explicit local address, the plan verifier sends the whole plan to the hosted service. A rule, a preflight script and a check in the setup diagnostics make sure it always gets one.
 
 <div class="example">
   <span class="k">Example, anonymised</span>

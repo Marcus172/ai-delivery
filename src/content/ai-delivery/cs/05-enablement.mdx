@@ -21,6 +21,10 @@ Cílem nikdy nebyl jeden rychlý člověk. Cílem bylo, aby každá role dostala
 
 Jeden git repozitář drží pluginy týmu; jeden příkaz instaluje, hlavní větev aktualizuje. **Sdílené pluginy** dostane každý: lookupy do sourozeneckých repozitářů, provoz, klientská wiki, copywriting. **Role pluginy** se instalují jen pro danou roli: backend, vývoj s&nbsp;delivery flow, analýza, testování, projektové řízení. Nikdo není nucen instalovat konvence cizí role. Většinu hodnoty napříč rolemi nese jeden vzor: vývojář nebo analytik se zeptá na backend, subagent jen pro čtení prohledá sourozenecký repozitář poté, co ho stáhne, a&nbsp;do session se vrátí jen shrnutí s&nbsp;revizí, kterou četl, nikdy zdrojový kód.
 
+### Nezávislé na jednom poskytovateli
+
+Flow je postavené nad Claude Code a&nbsp;jeho pluginy se distribuují přes marketplace pluginů pro Claude Code. Postupem času jsem zapojil i&nbsp;Codex a&nbsp;modely obou poskytovatelů jde v&nbsp;jednom flow kombinovat. Flow tak na poskytovateli nezávisí: kontrakt, pravidla i&nbsp;skilly jsou obyčejné soubory v&nbsp;gitu a&nbsp;instrukce pro agenta leží v&nbsp;souboru nezávislém na vendorovi ([kapitola 4](#guardrails)). Marketplace pluginů pro Claude je jeden způsob, jak je distribuovat, ne jediný. Týmový nebo firemní AI setup jde sdílet i&nbsp;přes OpenCode nebo Pi, a&nbsp;to včetně lokálních modelů.
+
 ### Analytici
 
 Analytici nesahají na pracoviště, větve ani brány; pracují nad wiki a&nbsp;trackerem. Jejich hlavní nástroj je **lookup analýzy**: k&nbsp;nahlášenému chování dohledá funkční analýzu a&nbsp;klientský solution design, přečte stránku ve verzi platné k&nbsp;danému datu a&nbsp;vrátí verdikt *chyba*, *není chyba*, *změna*, nebo *mezera*. Otázky zpět na analytiky mají konvenci: jen mezera v&nbsp;analýze, nikdy dočasná rozhodnutí vývoje. Jeden analytik napsal analytický plugin: vrácení analýz do výchozího stavu po releasu, rozšíření analýzy, přidání notifikace.

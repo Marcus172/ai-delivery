@@ -132,3 +132,26 @@ test.describe("label in name (WCAG 2.5.3)", () => {
     });
   }
 });
+
+// Large screens scale the whole page like a browser zoom; laptops and landscape tablets stay at 100 %.
+const SCALE: Array<[number, number]> = [
+  [1024, 16],
+  [1366, 16],
+  [1440, 16],
+  [1990, 19],
+  [2560, 19],
+];
+for (const [width, rootPx] of SCALE) {
+  test(`root font size is ${rootPx}px at ${width}px and nothing overflows sideways`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    for (const url of ["", "journey/", "ai-delivery/", "cv/"]) {
+      await page.goto(`${BASE}${url}`);
+      const { root, overflow } = await page.evaluate(() => ({
+        root: parseFloat(getComputedStyle(document.documentElement).fontSize),
+        overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      }));
+      expect(root, url).toBeCloseTo(rootPx, 0);
+      expect(overflow, url).toBe(0);
+    }
+  });
+}

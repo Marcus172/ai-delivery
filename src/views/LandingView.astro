@@ -128,23 +128,23 @@ const OFFER_ICONS: Record<string, string> = {
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-    gap: 40px;
+    gap: 2.5rem;
     align-items: center;
-    padding-block: 0 72px;
+    padding-block: 0 4.5rem;
   }
   .who {
-    font-size: 14px;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--mute);
-    margin: 0 0 18px;
+    margin: 0 0 1.125rem;
     display: flex;
-    gap: 10px;
+    gap: 0.625rem;
     align-items: center;
   }
   .who i,
   .badge i {
-    width: 8px;
-    height: 8px;
+    width: 0.5rem;
+    height: 0.5rem;
     border-radius: 50%;
     background: var(--acc);
     display: inline-block;
@@ -154,24 +154,24 @@ const OFFER_ICONS: Record<string, string> = {
     font-size: clamp(3rem, 6.2vw, 5.75rem);
   }
   .hero .lead {
-    margin: 24px 0 28px;
+    margin: 1.5rem 0 1.75rem;
   }
   .stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 16px;
-    margin-top: 40px;
-    max-width: 600px;
+    grid-template-columns: repeat(auto-fit, minmax(10.625rem, 1fr));
+    gap: 1rem;
+    margin-top: 2.5rem;
+    max-width: 37.5rem;
   }
   .period {
-    margin-top: 16px;
-    font-size: 13px;
+    margin-top: 1rem;
+    font-size: 0.8125rem;
     color: var(--mute);
     max-width: 60ch;
   }
   .period a {
     text-decoration-color: var(--line);
-    text-underline-offset: 3px;
+    text-underline-offset: 0.1875rem;
   }
   .period a:hover {
     text-decoration-color: var(--acc);
@@ -184,32 +184,32 @@ const OFFER_ICONS: Record<string, string> = {
   .split {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 32px;
+    gap: 2rem;
     align-items: start;
   }
   .intro {
     color: var(--mute);
-    font-size: 17px;
+    font-size: 1.0625rem;
     max-width: 48ch;
   }
   .pillars {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
-    margin-top: 36px;
+    gap: 1rem;
+    margin-top: 2.25rem;
   }
   .pillar {
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 26px 24px 22px;
+    border-radius: 0.875rem;
+    padding: 1.625rem 1.5rem 1.375rem;
   }
   .pillar svg {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
     color: var(--acc);
   }
   .pillar h3 {
-    margin: 18px 0 8px;
+    margin: 1.125rem 0 0.5rem;
   }
   .pillar p {
     color: var(--mute);
@@ -218,15 +218,15 @@ const OFFER_ICONS: Record<string, string> = {
   /* ---------- about ---------- */
   .about {
     display: grid;
-    grid-template-columns: 300px minmax(0, 1fr);
-    gap: 40px;
+    grid-template-columns: 18.75rem minmax(0, 1fr);
+    gap: 2.5rem;
     align-items: start;
   }
   .photo {
     margin: 0;
     position: relative;
     aspect-ratio: 2 / 3;
-    border-radius: 16px;
+    border-radius: 1rem;
     background: var(--tint);
   }
   .photo img {
@@ -234,37 +234,37 @@ const OFFER_ICONS: Record<string, string> = {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 16px;
+    border-radius: 1rem;
   }
   .badge {
     position: absolute;
-    left: -14px;
-    bottom: 22px;
+    left: -0.875rem;
+    bottom: 1.375rem;
     background: var(--bg);
     border: 1px solid var(--line);
     border-radius: 999px;
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 0.5rem;
     white-space: nowrap;
   }
   .about-text {
     min-width: 0;
   }
   .bio {
-    font-size: 17px;
-    margin: 18px 0 0;
+    font-size: 1.0625rem;
+    margin: 1.125rem 0 0;
     max-width: 60ch;
   }
   .bio.mute {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .estimate {
-    margin-top: 28px;
-    padding-top: 24px;
+    margin-top: 1.75rem;
+    padding-top: 1.5rem;
     border-top: 1px solid var(--line);
     max-width: 60ch;
   }
@@ -276,34 +276,34 @@ const OFFER_ICONS: Record<string, string> = {
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: 1rem;
   }
   .teaser {
     display: grid;
     grid-template-rows: auto 1fr auto;
-    gap: 10px;
+    gap: 0.625rem;
     height: 100%;
-    padding: 24px 22px 20px;
+    padding: 1.5rem 1.375rem 1.25rem;
     border-top: 2px solid var(--ink);
     text-decoration: none;
     background: var(--tint);
-    border-radius: 0 0 14px 14px;
+    border-radius: 0 0 0.875rem 0.875rem;
   }
   .teaser-title {
     font-weight: 800;
     font-variation-settings: "wdth" 75;
     text-transform: uppercase;
-    font-size: 28px;
+    font-size: 1.75rem;
     line-height: 1;
     letter-spacing: -0.01em;
   }
   .teaser-body {
     color: var(--mute);
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .teaser svg {
-    width: 20px;
-    height: 20px;
+    width: 1.25rem;
+    height: 1.25rem;
     justify-self: end;
     transition: transform 0.2s ease;
   }
@@ -311,15 +311,15 @@ const OFFER_ICONS: Record<string, string> = {
     border-top-color: var(--acc);
   }
   .teaser:hover svg {
-    transform: translateX(4px);
+    transform: translateX(0.25rem);
     color: var(--acc);
   }
 
   @media (max-width: 899px) {
     .hero {
       grid-template-columns: 1fr;
-      gap: 32px;
-      padding-bottom: 48px;
+      gap: 2rem;
+      padding-bottom: 3rem;
     }
     .hero-art {
       order: -1;
@@ -331,17 +331,17 @@ const OFFER_ICONS: Record<string, string> = {
       grid-template-columns: 1fr;
     }
     .split {
-      gap: 14px;
+      gap: 0.875rem;
     }
     .photo {
-      max-width: 280px;
+      max-width: 17.5rem;
     }
   }
   @media (max-width: 559px) {
     .stats {
       grid-template-columns: 1fr;
-      gap: 20px;
-      margin-top: 32px;
+      gap: 1.25rem;
+      margin-top: 2rem;
     }
   }
 </style>

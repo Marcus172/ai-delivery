@@ -41,6 +41,7 @@ for (const locale of LOCALES) {
       expect(text).toContain(CV.roles[0].company);
       expect(text).toContain(CV.contact.email);
       expect(text).toContain(CV.contact.linkedin.replace(/^https?:\/\/(www\.)?/, ""));
+      expect(text).toContain(CV.contact.github.replace(/^https?:\/\/(www\.)?/, ""));
     });
 
     it("lists every role title", async () => {

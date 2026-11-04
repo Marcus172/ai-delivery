@@ -13,7 +13,7 @@ export type Metric = {
 };
 
 /** One as-of date for the whole site; each metric additionally names its own period. */
-export const AS_OF: L10n = l("as of October 2026", "stav k říjnu 2026");
+export const AS_OF: L10n = l("as of November 2026", "stav k listopadu 2026");
 
 // Shared periods. Cohorts: six months before the change vs the five months after it (April 2026 excluded as the transition month).
 const TRACKER = l(
@@ -29,8 +29,8 @@ const REPO_TESTS = l(
   "repozitář · 31. března 2026 vs. 3. října 2026, bez end-to-end testů",
 );
 const A11Y = l(
-  "external WCAG 2.1 AA audit · status as of October 2026",
-  "externí audit WCAG 2.1 AA · stav k říjnu 2026",
+  "external WCAG 2.1 AA audit · status as of November 2026",
+  "externí audit WCAG 2.1 AA · stav k listopadu 2026",
 );
 const PERSONA = l(
   "first audit phase · October – early November 2026, about four weeks",

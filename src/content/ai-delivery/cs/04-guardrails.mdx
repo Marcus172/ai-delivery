@@ -26,7 +26,7 @@ Sada má vlastní metodiku. Sonda na pravidlo vázané na cestu musí jmenovat s
 
 ### Kontextová vrstva, měřená dvakrát
 
-Místo grepování repozitáře se agent ptá generovaného manifestu balíků a&nbsp;lokálního code grafu (CodeGraph; telemetrie vypnutá, nic neopouští stroj) přes tenký wrapper a&nbsp;průzkum dělá subagent jen pro čtení. Stavělo se to jako experiment s&nbsp;baseline, akceptačními kritérii a&nbsp;opakovanými běhy. První zapojení věci zpomalilo: dotazy byly rychlé, čtení jejich výstupu ne, a&nbsp;tak se zhustil výstup. Jedno zlepšení, které jsem ohlásil, jsem po třech kolech stáhl, protože šlo o&nbsp;šum. Přežila dvě měření, jsou oddělená, a&nbsp;proto jsou i&nbsp;ukázaná odděleně.
+Místo grepování repozitáře se agent ptá generovaného manifestu balíků a&nbsp;lokálního code grafu (CodeGraph; telemetrie vypnutá, nic neopouští stroj) přes tenký wrapper a&nbsp;průzkum dělá subagent jen pro čtení. Přínos se měří, nepředpokládá: experiment s&nbsp;baseline, akceptačními kritérii a&nbsp;opakovanými běhy. Dotazy jsou rychlé; drahé je číst jejich výstup, a&nbsp;proto je výstup zhuštěný do krátkého shrnutí. Ukázaná jsou jen zlepšení, která vydržela opakovaná kola, a&nbsp;ta dvě, která vydržela, jsou oddělená, takže jsou i&nbsp;ukázaná odděleně.
 
 <div class="stats">
   <Stat id="impact-query" locale={locale} />
@@ -36,7 +36,7 @@ Místo grepování repozitáře se agent ptá generovaného manifestu balíků a
 
 ### Deterministické brány, každá z&nbsp;incidentu
 
-Co umí zkontrolovat stroj, není v&nbsp;promptu, ale v&nbsp;bráně. Lokální zrcadlo CI brány rostlo krok za krokem a&nbsp;každý krok má v&nbsp;hlavičce svůj incident: kontrola schématu mocku poté, co obrazovky v&nbsp;mock režimu zůstaly měsíce prázdné kvůli jednomu chybějícímu poli; kontrola chyb dotazů poté, co upgrade klientské knihovny vyprázdnil desítky obrazovek; kontrola, že texty přístupnosti zůstávají v&nbsp;jednom namespace, poté, co se rozlezly do šestnácti. Kde existuje starý dluh, brána používá postupné zpřísňování: dluhový soubor se smí jen zmenšovat, takže nové chyby blokuje a&nbsp;staré se splácejí.
+Co umí zkontrolovat stroj, není v&nbsp;promptu, ale v&nbsp;bráně. Každý krok lokálního zrcadla CI brány má v&nbsp;hlavičce incident, kterému brání: kontrola schématu mocku, protože kvůli jednomu chybějícímu poli zůstaly obrazovky v&nbsp;mock režimu měsíce prázdné; kontrola chyb dotazů, protože upgrade klientské knihovny vyprázdnil desítky obrazovek; kontrola, že texty přístupnosti zůstávají v&nbsp;jednom namespace, protože se rozlezly do šestnácti. Kde existuje starý dluh, brána používá postupné zpřísňování: dluhový soubor se smí jen zmenšovat, takže nové chyby blokuje a&nbsp;staré se splácejí.
 
 <Stat id="ci-gate-steps" locale={locale} />
 

@@ -103,7 +103,7 @@ Context sentence used throughout: *a large product monorepo with several paralle
 Chapters:
 1. **Principle** — the process stays, AI does the grunt work, humans decide and approve; "almost nothing by hand, never 100 %".
 2. **The delivery flow** — layered architecture: generic contract → client preset (~20 capabilities) → repository procedures → personal layer (7 closed extension points); keys merge, first procedure wins. Diagram. The same contract was adopted for a second client by another developer unchanged.
-3. **Swappable tooling & the fleet** — cmux → Superset → (T3 Code trial) → Paseo; the contract did not change. Two symmetric machines, git-replicated state with a custom merge driver, per-ticket workspaces. Swimlane-style diagram (contract continuous, tools changing beneath).
+3. **Swappable tooling & the fleet** — current state only, no history of swaps (the history belongs to Journey): the contract names operations, each developer implements them with their own tool (Paseo / worktrunk + direct session / none); a swap touches only personal-layer files. Two symmetric machines, git-replicated state with a custom merge driver, per-ticket workspaces. Diagram: contract operations → three personal setups → one team layer.
 4. **Guardrails** — rules (always-on vs path-scoped), 37 behavioral probes of the agent setup, a 23-step CI gate, the context diet (always-loaded rules 57.6 KB → 7 KB, verified by probes — and honestly noting it regrew), context layer measurements (impact query 161 s → 58 s, −89 % tokens via subagent). Table of gates: who enforces, holds without AI.
 5. **Enablement beyond developers** — analysts (analysis lookup with verdicts), testers (E2E test ops, product coverage map of ~720 nodes, AI proposes / tester approves), incident triage calibrated on 57 real incidents; plugin marketplace: 10 plugins, 28 skills, 7 contributors across 5 roles. Phrase adoption strictly per §2 anti-goals.
 6. **Planning with AI: Wayfinder & visual plans** — decision maps (4 maps, 47 decision tickets), visual plans/recaps run fully locally; one concrete anonymized example each.
@@ -115,7 +115,7 @@ Chapters:
 
 **Number rules** *(builder's call, settled during review)*:
 - The private research notes are the only source; no re-querying of any employer or client system. "Re-check" means: every published figure traces to a line in those notes.
-- One stated **"as of October 2026"** for the site; each figure additionally names its period/baseline.
+- One stated **"as of November 2026"** for the site; each figure additionally names its period/baseline.
 - Before/after test figures come from the PR-metrics note (baseline = state on 2026-03-31) — never mixed with the whole-tree file counts from the repo inventory.
 - Context-layer figures are two separate measurements and are presented separately (precomputed impact query 161 s → 58 s; subagent route −89 % tokens).
 - Absolute ticket/PR counts are rounded or omitted (NDA verdicts in the research).

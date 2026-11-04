@@ -8,7 +8,7 @@ import { FlowLayers, Note, Stat } from "../../../components/chapter";
 
 export const locale = "en";
 
-The flow started as five personal skills. Once a second developer wanted to run it with a different workspace tool, I pulled the shared part into a **generic contract**: the order of steps, seven invariants (each one written after a real incident), the rules for how the layers resolve, and a version number with migration notes. A grep guard forbids the contract from naming a tracker, a hosting service, a CI system, a client or a tool. The skills that developers actually invoke are thin entry points; the logic lives underneath.
+At the core of the flow is a **generic contract**: the order of steps, seven invariants (each one written after a real incident), the rules for how the layers resolve, and a version number with migration notes. A grep guard forbids the contract from naming a tracker, a hosting service, a CI system, a client or a tool. The skills that developers actually invoke are thin entry points; the logic lives underneath.
 
 Every piece of logic then had to answer one question: *does this differ between two real repositories?* The answer sorted it into one of three further layers.
 
@@ -31,7 +31,7 @@ Two different rules resolve the layers. **Values** are read from the generic def
   <Stat id="contract-versions" locale={locale} />
 </div>
 
-The second client runs a different tracker with different fields and states, a trunk-based release model with a single line instead of several parallel ones, and artefacts in another language. Trunk-based meant one capability resolves to nothing and line resolution becomes trivial; the contract took that without a single new condition. The purity check found exactly one leak: the diagnostics command named the first client's CI file. The fix went into the check, the contract version stayed. A colleague wrote the preset, which is the stronger proof that the contract is portable between people and not just between clients.
+The second client runs a different tracker with different fields and states, a trunk-based release model with a single line instead of several parallel ones, and artefacts in another language. Trunk-based meant one capability resolves to nothing and line resolution becomes trivial; the contract took that without a single new condition. A colleague wrote the preset, which is the stronger proof that the contract is portable between people and not just between clients.
 
 <Note>
   <strong>A versioned contract and a doctor.</strong> Each run compares the repository's profile version with the plugin's. On a mismatch it prints one warning line and continues; it never fails. A diagnostics command shows the merged configuration with the origin of every value, where each extension point resolved, and a dry run of the resolvers. The rule behind the versioning: a personal copy of a procedure that still teaches a cancelled step is worse than a missing file.

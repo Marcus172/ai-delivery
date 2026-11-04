@@ -26,7 +26,7 @@ The suite has its own methodology. A probe for a path-scoped rule must name a fi
 
 ### A context layer, measured twice
 
-Instead of grepping the repository, the agent queries a generated package manifest and a local code graph (CodeGraph; telemetry off, nothing leaves the machine) through a thin wrapper, and a read-only subagent does the exploring. This was built as an experiment with a baseline, acceptance criteria and repeated runs. The first wiring made things slower: the queries were fast, reading their output was not, so the output was shaped. One gain I had claimed was withdrawn after three rounds showed it was noise. Two measurements survived and they are separate, so they are shown separately.
+Instead of grepping the repository, the agent queries a generated package manifest and a local code graph (CodeGraph; telemetry off, nothing leaves the machine) through a thin wrapper, and a read-only subagent does the exploring. Its value is measured, not assumed: an experiment with a baseline, acceptance criteria and repeated runs. The queries are fast; reading their output is what costs, so the output is shaped into a short summary. Only gains that held across repeated rounds are shown, and the two that held are separate, so they are shown separately.
 
 <div class="stats">
   <Stat id="impact-query" locale={locale} />
@@ -36,7 +36,7 @@ Instead of grepping the repository, the agent queries a generated package manife
 
 ### Deterministic gates, each from an incident
 
-Whatever a machine can check is not in a prompt; it is in the gate. The local mirror of the CI gate grew step by step, and every step has an incident in its header: a mock-schema check after screens in mock mode had stayed blank for months because one field was missing; a query-error check after a client-library upgrade blanked dozens of screens; a check that accessibility strings stay in one namespace after they had leaked into sixteen. Where old debt exists, the gate applies gradual tightening: a debt file may only shrink, so new mistakes are blocked while old ones are paid down.
+Whatever a machine can check is not in a prompt; it is in the gate. Every step of the local mirror of the CI gate names in its header the incident it prevents: a mock-schema check, because one missing field once left screens in mock mode blank for months; a query-error check, because a client-library upgrade once blanked dozens of screens; a check that accessibility strings stay in one namespace, because they had leaked into sixteen. Where old debt exists, the gate applies gradual tightening: a debt file may only shrink, so new mistakes are blocked while old ones are paid down.
 
 <Stat id="ci-gate-steps" locale={locale} />
 

@@ -48,14 +48,14 @@ const { locale, page } = Astro.props;
     display: inline-flex;
     flex-direction: column;
     border: 1px solid var(--line);
-    border-radius: 12px;
+    border-radius: 0.75rem;
     padding: 2px;
     gap: 2px;
   }
   .lang > * {
-    border-radius: 8px;
-    padding: 6px 8px;
-    font-size: 12px;
+    border-radius: 0.5rem;
+    padding: 0.375rem 0.5rem;
+    font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     line-height: 1;
@@ -76,11 +76,11 @@ const { locale, page } = Astro.props;
     .lang {
       flex-direction: row;
       border-radius: 999px;
-      margin-left: 4px;
+      margin-left: 0.25rem;
     }
     .lang > * {
       border-radius: 999px;
-      padding: 5px 9px;
+      padding: 0.3125rem 0.5625rem;
     }
   }
 </style>

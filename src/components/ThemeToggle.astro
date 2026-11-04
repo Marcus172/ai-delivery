@@ -55,13 +55,13 @@ const { locale } = Astro.props;
   .theme {
     border: 1px solid var(--line);
     background: transparent;
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: 999px;
     display: inline-grid;
     place-items: center;
     color: var(--ink);
-    margin-top: 8px;
+    margin-top: 0.5rem;
     padding: 0;
   }
   .theme:hover,
@@ -69,8 +69,8 @@ const { locale } = Astro.props;
     background: var(--tint);
   }
   .theme svg {
-    width: 16px;
-    height: 16px;
+    width: 1rem;
+    height: 1rem;
   }
   .sun {
     display: none;
@@ -83,7 +83,7 @@ const { locale } = Astro.props;
   }
   @media (max-width: 899px) {
     .theme {
-      margin: 0 0 0 6px;
+      margin: 0 0 0 0.375rem;
     }
   }
 </style>

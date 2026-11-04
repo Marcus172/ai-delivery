@@ -1,0 +1,197 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "How the tools fit today: one contract of seven operations, three developers implementing it with three different personal setups, one shared team layer underneath",
+  "Jak dnes do sebe nástroje zapadají: jeden kontrakt se sedmi operacemi, tři vývojáři, kteří ho implementují třemi různými osobními setupy, a pod nimi jedna společná týmová vrstva",
+);
+const DESC = l(
+  "Top: the delivery-flow contract names seven operations and no tools: where am I, who is online, create a workspace, run a command, deliver a brief, what is running, archive. Middle: the personal layer of three developers; one runs Paseo with workspaces and agents on a fleet of two machines, one runs worktrunk with a direct session on one machine, which is the team default, and one uses no tool and works in place. Bottom: the same team configuration in the repository, the same gates and the same process for all three.",
+  "Nahoře: kontrakt delivery flow jmenuje sedm operací a žádný nástroj: kde jsem, kdo je online, založ pracoviště, spusť příkaz, doruč brief, co běží, archivuj. Uprostřed: osobní vrstva tří vývojářů; jeden jede na Paseu s pracovišti a agenty na flotile dvou strojů, druhý na worktrunku s přímou session na jednom stroji, což je týmový default, a třetí nepoužívá žádný nástroj a pracuje na místě. Dole: stejná týmová konfigurace v repozitáři, stejné brány a stejný proces pro všechny tři.",
+);
+
+const CONTRACT = l("delivery-flow contract · seven operations, no tool names", "kontrakt delivery flow · sedm operací, žádná jména nástrojů");
+const OPS = l(
+  "where am I|who is online|create workspace|run command|deliver brief|what is running|archive",
+  "kde jsem|kdo je online|založ pracoviště|spusť příkaz|doruč brief|co běží|archivuj",
+)[locale].split("|");
+const PERSONAL = l("personal layer · each developer implements the operations with their own tool", "osobní vrstva · každý vývojář implementuje operace vlastním nástrojem");
+const CARDS = [
+  { cls: "now", title: l("Paseo", "Paseo"), lines: l("workspaces and agents|on a fleet of two machines", "pracoviště a agenti|na flotile dvou strojů") },
+  { cls: "", title: l("worktrunk + direct session", "worktrunk + přímá session"), lines: l("a worktree per ticket|one machine · team default", "worktree na tiket|jeden stroj · týmový default") },
+  { cls: "", title: l("no tool", "žádný nástroj"), lines: l("works in place|in the current checkout", "pracuje na místě|v aktuálním checkoutu") },
+];
+const TEAM = l("team layer", "týmová vrstva");
+const TEAM_BAND = l(
+  "the same team configuration in the repository · the same gates · the same process",
+  "stejná týmová konfigurace v repozitáři · stejné brány · stejný proces",
+);
+const LEGEND = l(
+  "Three tools, one process. A swap changes only personal-layer files; the contract and the team configuration stay as they are.",
+  "Tři nástroje, jeden proces. Výměna mění jen soubory osobní vrstvy; kontrakt i týmová konfigurace zůstávají, jak jsou.",
+);
+
+const W = 920;
+const H = 318;
+const PAD = 16;
+const INNER = W - 2 * PAD;
+
+/** Operation chips: width from label length, centred as one row. */
+const CHAR = 6.5;
+const CHIP_PAD = 20;
+const GAP = 8;
+const widths = OPS.map((o) => +(o.length * CHAR + CHIP_PAD).toFixed(1));
+const rowWidth = widths.reduce((a, b) => a + b, 0) + GAP * (OPS.length - 1);
+let cursor = PAD + (INNER - rowWidth) / 2;
+const chips = OPS.map((label, i) => {
+  const chip = { label, x: +cursor.toFixed(1), w: widths[i] };
+  cursor += widths[i] + GAP;
+  return chip;
+});
+
+const CARD_GAP = 16;
+const CARD_W = (INNER - 2 * CARD_GAP) / 3;
+const CARD_Y = 118;
+const CARD_H = 80;
+const BAND_Y = 240;
+---
+
+<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="map"
+    data-diagram="tool-map"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="tool-map-t"
+    aria-describedby="tool-map-d"
+  >
+    <title id="tool-map-t">{TITLE[locale]}</title>
+    <desc id="tool-map-d">{DESC[locale]}</desc>
+
+    <text class="head strong" x={PAD} y="20" font-size="13">{CONTRACT[locale]}</text>
+    {
+      chips.map((c) => (
+        <g class="op">
+          <rect x={c.x} y="34" width={c.w} height="28" rx="14" />
+          <text x={c.x + c.w / 2} y="52.5" text-anchor="middle" font-size="12">
+            {c.label}
+          </text>
+        </g>
+      ))
+    }
+    <line class="draw" x1={PAD} y1="78" x2={W - PAD} y2="78" pathLength="1" />
+
+    <text class="head" x={PAD} y="104" font-size="13">{PERSONAL[locale]}</text>
+    {
+      CARDS.map((c, i) => {
+        const x = PAD + i * (CARD_W + CARD_GAP);
+        return (
+          <g class:list={["card", c.cls]}>
+            <rect x={x} y={CARD_Y} width={CARD_W} height={CARD_H} rx="8" />
+            <text class="t" x={x + 16} y={CARD_Y + 28} font-size="14">
+              {c.title[locale]}
+            </text>
+            {c.lines[locale].split("|").map((line, j) => (
+              <text class="s" x={x + 16} y={CARD_Y + 50 + j * 16} font-size="12">
+                {line}
+              </text>
+            ))}
+          </g>
+        );
+      })
+    }
+
+    <text class="head" x={PAD} y={BAND_Y - 14} font-size="13">{TEAM[locale]}</text>
+    <g class="band">
+      <rect x={PAD} y={BAND_Y} width={INNER} height="32" rx="6" />
+      <text x={PAD + 16} y={BAND_Y + 20.5} font-size="13">{TEAM_BAND[locale]}</text>
+    </g>
+
+    <text class="legend" x={PAD} y={H - 10} font-size="12.5">{LEGEND[locale]}</text>
+  </svg>
+</div>
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 1.75rem;
+  }
+  .map {
+    display: block;
+    width: 100%;
+    /* At a 390 px phone the box scrolls; 860 / 920 viewBox keeps 12 px labels ≥ 11 px rendered. */
+    min-width: 53.75rem;
+    overflow: visible;
+  }
+  .head,
+  .legend,
+  .card .s {
+    fill: var(--mute);
+  }
+  .head {
+    font-weight: 600;
+  }
+  .head.strong {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .op rect {
+    fill: var(--bg);
+    stroke: var(--acc);
+    stroke-width: 1.5;
+  }
+  .op text {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  .draw {
+    stroke: var(--acc);
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .card rect {
+    fill: var(--tint);
+    stroke: var(--line);
+  }
+  .card .t {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .card.now rect {
+    fill: var(--ink);
+    stroke: var(--ink);
+  }
+  .card.now .t,
+  .card.now .s {
+    fill: var(--bg);
+  }
+  .band rect {
+    fill: none;
+    stroke: var(--mute);
+    stroke-dasharray: 4 5;
+  }
+  .band text {
+    fill: var(--ink);
+    font-weight: 600;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .draw {
+      stroke-dasharray: 1;
+      stroke-dashoffset: 1;
+      animation: map-draw 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s forwards;
+    }
+  }
+  @keyframes map-draw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

@@ -24,15 +24,15 @@ export const LANDING = {
   aboutEyebrow: l("About me", "O mně"),
   aboutTitle: l("Twelve years of shipping. One with AI for the whole team.", "Dvanáct let dodávání. Jeden rok s AI pro celý tým."),
   aboutBio: l(
-    "Web and mobile products from product design and architecture to production: TypeScript and React at the core, Kotlin and Spring Boot when the back end needs a hand. I have led a mobile team, modernised a portfolio of about twenty applications and built greenfield monitoring for IoT data.",
-    "Webové a mobilní produkty od produktového návrhu a architektury až po provoz: v jádru TypeScript a React, Kotlin a Spring Boot, když je potřeba sáhnout na backend. Vedl jsem mobilní tým, modernizoval portfolio zhruba dvaceti aplikací a stavěl greenfield monitoring IoT dat.",
+    "Web and mobile products from product design and architecture to production: TypeScript and React at the core, Node.js, Kotlin and Spring Boot when the back end needs a hand. I have led a mobile team, modernised a portfolio of about twenty applications and built greenfield monitoring for IoT data.",
+    "Webové a mobilní produkty od produktového návrhu a architektury až po provoz: v jádru TypeScript a React, Node.js, Kotlin a Spring Boot, když je potřeba sáhnout na backend. Vedl jsem mobilní tým, modernizoval portfolio zhruba dvaceti aplikací a stavěl greenfield monitoring IoT dat.",
   ),
   aboutBio2: l(
     "The process the agents follow today is the one I worked in long before them. That is why I know which steps AI speeds up and which it does not, and why the speed-up below is an estimate, not a measurement.",
     "Proces, kterým se dnes řídí agenti, je ten, ve kterém jsem pracoval dávno před nimi. Proto vím, které kroky AI zrychlí a které ne, a proto je zrychlení níž odhad, ne měření.",
   ),
   photoAlt: l("Marek Rom, portrait", "Marek Rom, portrét"),
-  badge: l("Prague · open to consulting", "Praha · k dispozici pro konzultace"),
+  badge: l("Prague · available for a new project", "Praha · k dispozici pro nový projekt"),
 
   readEyebrow: l("Read on", "Čtěte dál"),
   teasers: [

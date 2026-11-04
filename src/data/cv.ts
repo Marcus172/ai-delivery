@@ -17,7 +17,7 @@ export type Cv = {
   roles: Role[];
   skills: { group: L10n; items: string[] }[];
   languages: L10n[];
-  contact: { email: string; linkedin: string };
+  contact: { email: string; linkedin: string; github: string };
 };
 
 /** Historical job titles stay as they were (readers check them against LinkedIn and references). */
@@ -27,8 +27,8 @@ const title = (t: string): L10n => ({ en: t, cs: t });
 export const CV: Cv = {
   headline: title("Senior Product Engineer"),
   profile: l(
-    "Senior Product Engineer with 12 years of delivering web and mobile products, from product design and architecture to production. My current focus is AI-enabled software delivery for whole teams: a shared delivery flow with guardrails, measurements and quality gates that hold with or without AI, and agent tooling that analysts and testers use in their own work. The process that worked before AI stays; AI takes over the grunt work and people decide. Strong TypeScript, React and Next.js foundation, hands-on Kotlin and Spring Boot, and a widening back-end and cloud scope.",
-    "Senior Product Engineer s dvanácti lety praxe v dodávání webových a mobilních produktů – od produktového návrhu a architektury až po provoz. Dnes se soustředím na dodávání softwaru s AI pro celé týmy: sdílený delivery flow s mantinely, měřením a kvalitativními branami, které platí s AI i bez ní, a agentní nástroje, které si do své práce vzali i analytici a testeři. Proces, který fungoval před AI, zůstává; mravenčí práci přebírá AI a rozhodují lidé. Pevný základ v TypeScriptu, Reactu a Next.js, praxe s Kotlinem a Spring Bootem a postupně rozšiřovaný záběr do backendu a cloudu.",
+    "Senior Product Engineer with 12 years of delivering web and mobile products, from product design and architecture to production. My current focus is AI-enabled software delivery for whole teams: a shared delivery flow with guardrails, measurements and quality gates that hold with or without AI, and agent tooling that analysts and testers use in their own work. The process that worked before AI stays; AI takes over the grunt work and people decide. Strong TypeScript, React and Next.js foundation, hands-on Node.js, Kotlin and Spring Boot, and a widening back-end and cloud scope.",
+    "Senior Product Engineer s dvanácti lety praxe v dodávání webových a mobilních produktů – od produktového návrhu a architektury až po provoz. Dnes se soustředím na dodávání softwaru s AI pro celé týmy: sdílený delivery flow s mantinely, měřením a kvalitativními branami, které platí s AI i bez ní, a agentní nástroje, které si do své práce vzali i analytici a testeři. Proces, který fungoval před AI, zůstává; mravenčí práci přebírá AI a rozhodují lidé. Pevný základ v TypeScriptu, Reactu a Next.js, praxe s Node.js, Kotlinem a Spring Bootem a postupně rozšiřovaný záběr do backendu a cloudu.",
   ),
   roles: [
     {
@@ -128,11 +128,11 @@ export const CV: Cv = {
     },
   ],
   skills: [
-    { group: l("AI-enabled delivery", "Dodávání s AI"), items: ["Claude Code", "Cursor", "Agent skills & plugins", "MCP", "Agentic workflows", "CI/CD"] },
+    { group: l("AI-enabled delivery", "Dodávání s AI"), items: ["Claude Code", "Codex", "Cursor", "Agent skills & plugins", "MCP", "Agentic workflows", "CI/CD"] },
     { group: l("Languages", "Jazyky"), items: ["TypeScript", "Java", "Kotlin", "Swift"] },
     {
       group: l("Frameworks", "Frameworky"),
-      items: ["Next.js", "React", "React Native", "GraphQL", "React Query", "Redux", "Spring Boot", "Tailwind CSS"],
+      items: ["Next.js", "Node.js", "React", "React Native", "GraphQL", "React Query", "Redux", "Spring Boot", "Tailwind CSS"],
     },
     {
       group: l("Quality", "Kvalita"),
@@ -148,5 +148,6 @@ export const CV: Cv = {
   contact: {
     email: "marek.marcus.rom@gmail.com",
     linkedin: "https://www.linkedin.com/in/marek-rom-a91445b8",
+    github: "https://github.com/Marcus172",
   },
 };

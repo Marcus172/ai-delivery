@@ -11,4 +11,4 @@ export { default as PersonaPipeline } from "./diagrams/PersonaPipeline.astro";
 export { default as ResultsGrid } from "./diagrams/ResultsGrid.astro";
 export { default as RoleMatrix } from "./diagrams/RoleMatrix.astro";
 export { default as TestPyramid } from "./diagrams/TestPyramid.astro";
-export { default as ToolSwimlane } from "./diagrams/ToolSwimlane.astro";
+export { default as ToolMap } from "./diagrams/ToolMap.astro";

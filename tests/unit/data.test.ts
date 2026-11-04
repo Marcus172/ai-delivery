@@ -109,9 +109,9 @@ describe("metrics", () => {
     expect(RESULTS_METRIC_IDS as readonly string[]).not.toContain("same-developer-prs");
   });
 
-  it("as-of date is October 2026", () => {
-    expect(AS_OF.en).toMatch(/October 2026/);
-    expect(AS_OF.cs).toMatch(/říjn[ua] 2026/);
+  it("as-of date is November 2026", () => {
+    expect(AS_OF.en).toMatch(/November 2026/);
+    expect(AS_OF.cs).toMatch(/listopadu 2026/);
   });
 });
 
@@ -193,6 +193,7 @@ describe("cv", () => {
     expect(CV.contact).toEqual({
       email: "marek.marcus.rom@gmail.com",
       linkedin: "https://www.linkedin.com/in/marek-rom-a91445b8",
+      github: "https://github.com/Marcus172",
     });
   });
 

@@ -46,6 +46,7 @@ for (const locale of LOCALES) {
       for (const lang of CV.languages) await expect(main).toContainText(lang[locale]);
       await expect(main.locator(`a[href="mailto:${CV.contact.email}"]`)).toHaveText(CV.contact.email);
       await expect(main.locator(`a[href="${CV.contact.linkedin}"]`)).toHaveCount(1);
+      await expect(main.locator(`a[href="${CV.contact.github}"]`)).toHaveCount(1);
       const html = await page.content();
       for (const re of PHONE_PATTERNS) expect(html, String(re)).not.toMatch(re);
     });

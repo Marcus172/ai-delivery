@@ -42,7 +42,7 @@ const OFFER_ICONS: Record<string, string> = {
 
 <style>
   .offer {
-    margin-top: 32px;
+    margin-top: 2rem;
   }
   .cards {
     list-style: none;
@@ -50,28 +50,28 @@ const OFFER_ICONS: Record<string, string> = {
     padding: 0;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px;
+    gap: 1rem;
   }
   .card {
     border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 26px 24px 22px;
+    border-radius: 0.875rem;
+    padding: 1.625rem 1.5rem 1.375rem;
     min-width: 0;
   }
   .card svg {
-    width: 36px;
-    height: 36px;
+    width: 2.25rem;
+    height: 2.25rem;
     color: var(--acc);
   }
   .card h3 {
-    margin: 18px 0 8px;
+    margin: 1.125rem 0 0.5rem;
   }
   .card p {
     color: var(--mute);
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .offer :global(.cta) {
-    margin-top: 32px;
+    margin-top: 2rem;
   }
   @media (max-width: 899px) {
     .cards {

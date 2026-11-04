@@ -88,7 +88,7 @@ for (const locale of LOCALES) {
 
     test("diagrams are accessible images with localized titles; wide ones scroll in their own box", async ({ page }) => {
       await page.goto(URL[locale]);
-      for (const name of ["flow-layers", "tool-swimlane", "role-matrix", "decision-trail"]) {
+      for (const name of ["flow-layers", "tool-map", "role-matrix", "decision-trail"]) {
         const svg = page.locator(`svg[data-diagram="${name}"]`);
         await expect(svg).toHaveCount(1);
         await expect(svg).toHaveAttribute("role", "img");
@@ -123,11 +123,11 @@ for (const locale of LOCALES) {
       });
     }
 
-    test("no running animations under reduced motion; the swimlane draws when motion is allowed", async ({ browser }) => {
+    test("no running animations under reduced motion; the tool map draws when motion is allowed", async ({ browser }) => {
       const reduced = await browser.newContext({ reducedMotion: "reduce" });
       const p1 = await reduced.newPage();
       await p1.goto(URL[locale]);
-      await p1.locator("svg[data-diagram=tool-swimlane]").scrollIntoViewIfNeeded();
+      await p1.locator("svg[data-diagram=tool-map]").scrollIntoViewIfNeeded();
       await p1.waitForTimeout(300);
       expect(await p1.evaluate(() => document.getAnimations().length)).toBe(0);
       await reduced.close();
@@ -135,7 +135,7 @@ for (const locale of LOCALES) {
       const allowed = await browser.newContext({ reducedMotion: "no-preference" });
       const p2 = await allowed.newPage();
       await p2.goto(URL[locale]);
-      await p2.locator("svg[data-diagram=tool-swimlane]").scrollIntoViewIfNeeded();
+      await p2.locator("svg[data-diagram=tool-map]").scrollIntoViewIfNeeded();
       await p2.waitForTimeout(300);
       expect(await p2.evaluate(() => document.getAnimations().length)).toBeGreaterThan(0);
       await allowed.close();

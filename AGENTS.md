@@ -92,6 +92,7 @@ git-tracked files: `git add -N <file>` a new file before running `npm run nda` o
 - `AGENTS.md`: this file, the one source of agent instructions. `CLAUDE.md` -> `AGENTS.md`.
 - `.agents/skills/<name>/SKILL.md`: project skills, shared by all agents. `.claude/skills` is a
   symlink to it, so Claude Code and Codex see the same set. See `.agents/skills/README.md`.
-- Personal Claude Code settings go to `.claude/settings.local.json` (git-ignored).
+- `.claude/settings.json`: shared Claude Code settings (allowlist for the npm scripts above).
+  Personal overrides go to `.claude/settings.local.json` (git-ignored).
 - New specs go to `docs/superpowers/specs/`, plans to `docs/superpowers/plans/`, named
   `YYYY-MM-DD-<topic>.md`. Working notes that must not be public go to `.private/`.

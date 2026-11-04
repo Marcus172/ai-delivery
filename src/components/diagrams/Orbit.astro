@@ -191,7 +191,9 @@ const pill = (label: string, font: number) => Math.round(label.length * font * 0
     fill: var(--mute);
   }
   .spin {
-    transform-origin: 18.75rem 18.75rem;
+    /* px here are SVG user units (C = 300). Never rem: the root font size is fluid, so a rem origin
+       drifts off the centre on wide screens and the ring wanders. */
+    transform-origin: 300px 300px;
     transform-box: view-box;
   }
   @media (prefers-reduced-motion: no-preference) {

@@ -51,6 +51,20 @@ for (const locale of LOCALES) {
       await expect(page.locator("[data-stats-period]")).toBeVisible();
     });
 
+    test("phone: the name and headline open the page, the orbit comes after", async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(URL_OF[locale]);
+      const who = page.locator("[data-hero-name]");
+      await expect(who).toContainText(t(locale, "site.name"));
+      await expect(who).toBeInViewport({ ratio: 1 });
+      await expect(page.locator("main h1")).toBeInViewport();
+      const whoBox = await who.boundingBox();
+      const orbitBox = await page.locator(".hero-art").boundingBox();
+      expect(whoBox!.y).toBeLessThan(orbitBox!.y);
+    });
+
     test("5–10× lives in the about block as an estimate, not among the stats", async ({
       page,
     }) => {

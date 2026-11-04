@@ -17,6 +17,27 @@ const rules = parseDenylist(
 const html = (body: string) => `<!doctype html><html><body>${body}</body></html>`;
 const scan = (path: string, text: string) => scanDocuments([{ path, text }], rules);
 
+const pdfWith = (text: string) => {
+  const objs = [
+    "<< /Type /Catalog /Pages 2 0 R >>",
+    "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
+    "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 100] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
+    `<< /Length ${`BT /F1 12 Tf 10 50 Td (${text}) Tj ET`.length} >>\nstream\nBT /F1 12 Tf 10 50 Td (${text}) Tj ET\nendstream`,
+    "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+  ];
+  let out = "%PDF-1.4\n";
+  const offs: number[] = [];
+  objs.forEach((o, i) => {
+    offs.push(out.length);
+    out += `${i + 1} 0 obj\n${o}\nendobj\n`;
+  });
+  const xref = out.length;
+  out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n`;
+  for (const o of offs) out += `${String(o).padStart(10, "0")} 00000 n \n`;
+  out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+  return Buffer.from(out, "latin1");
+};
+
 describe("parseDenylist", () => {
   it("ignores comments and blanks, maps scopes", () => {
     expect(rules.map((r) => r.scope)).toEqual(["cv-only", "never", "never"]);
@@ -59,6 +80,19 @@ describe("scanDocuments", () => {
     const uri = `data:image/png;base64,${Buffer.from("Globex").toString("base64")}Globex`;
     expect(scan("dist/index.html", html(`<img src="${uri}">`))).toEqual([]);
   });
+  it("catches a term after a metadata: prefix in text (data: is only stripped in real data URIs)", () => {
+    expect(scan("dist/index.html", html("<p>metadata:Globex</p>"))).toHaveLength(1);
+    expect(scan("dist/a.txt", "metadata:Globex")).toHaveLength(1);
+    expect(scan("dist/index.html", html('<a title="metadata:Globex">x</a>'))).toHaveLength(1);
+  });
+  it("strips only real data URIs in src, href, srcset and url()", () => {
+    const uri = "data:image/png;base64,Globex";
+    expect(scan("dist/index.html", html(`<img src="${uri}">`))).toEqual([]);
+    expect(scan("dist/index.html", html(`<a href='${uri}'>x</a>`))).toEqual([]);
+    expect(scan("dist/index.html", html(`<img srcset="${uri} 2x">`))).toEqual([]);
+    expect(scan("dist/a.css", `a{background:url(${uri})}`)).toEqual([]);
+    expect(scan("dist/index.html", html(`<img src="${uri}"> metadata:Globex`))).toHaveLength(1);
+  });
   it("rejects phone numbers everywhere, CV included", () => {
     expect(scan("dist/index.html", html("+420 111 222 333"))).toHaveLength(1);
     expect(scan("dist/cv/index.html", html("+420 111 222 333"))).toHaveLength(1);
@@ -93,27 +127,6 @@ describe("scanDist", () => {
 });
 
 describe("scanDist non-html files and pdf", () => {
-  const pdfWith = (text: string) => {
-    const objs = [
-      "<< /Type /Catalog /Pages 2 0 R >>",
-      "<< /Type /Pages /Kids [3 0 R] /Count 1 >>",
-      "<< /Type /Page /Parent 2 0 R /MediaBox [0 0 300 100] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>",
-      `<< /Length ${`BT /F1 12 Tf 10 50 Td (${text}) Tj ET`.length} >>\nstream\nBT /F1 12 Tf 10 50 Td (${text}) Tj ET\nendstream`,
-      "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
-    ];
-    let out = "%PDF-1.4\n";
-    const offs: number[] = [];
-    objs.forEach((o, i) => {
-      offs.push(out.length);
-      out += `${i + 1} 0 obj\n${o}\nendobj\n`;
-    });
-    const xref = out.length;
-    out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n`;
-    for (const o of offs) out += `${String(o).padStart(10, "0")} 00000 n \n`;
-    out += `trailer\n<< /Size ${objs.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
-    return Buffer.from(out, "latin1");
-  };
-
   it("scans xml, svg and other text files, skips binaries", async () => {
     const dir = mkdtempSync(join(tmpdir(), "nda-t-"));
     writeFileSync(join(dir, "sitemap.xml"), "<urlset><loc>Globex</loc></urlset>");
@@ -233,7 +246,7 @@ describe("commit mode", () => {
     const del = run("(delete) 0000000000000000000000000000000000000000 refs/heads/x 1111111111111111111111111111111111111111\n");
     expect(del.status).toBe(0);
   });
-  it("reports a never term in any commit of the range by short sha, path and label, even if later removed", () => {
+  it("reports a never term in any commit of the range by short sha, path and label, even if later removed", async () => {
     const dir = mkdtempSync(join(tmpdir(), "nda-commits-"));
     const git = (...args: string[]) => spawnSync("git", args, { cwd: dir, encoding: "utf8" }).stdout.trim();
     git("init", "-q");
@@ -252,8 +265,48 @@ describe("commit mode", () => {
     writeFileSync(join(dir, "b.ts"), "clean again");
     git("add", "b.ts");
     git("commit", "-q", "-m", "three");
-    const hits = scanCommits([`${base}..HEAD`], rules, dir);
+    const hits = await scanCommits([`${base}..HEAD`], rules, dir);
     expect(hits.map((h) => [h.commit, h.path, h.rule])).toEqual([[dirty, "b.ts", "never@3"]]);
-    expect(scanCommits([base], rules, dir)).toEqual([]);
+    expect(await scanCommits([base], rules, dir)).toEqual([]);
+  });
+  const repo = () => {
+    const dir = mkdtempSync(join(tmpdir(), "nda-meta-"));
+    const git = (...args: string[]) => spawnSync("git", args, { cwd: dir, encoding: "utf8" }).stdout.trim();
+    git("init", "-q");
+    git("config", "user.email", "t@example.com");
+    git("config", "user.name", "t");
+    git("config", "commit.gpgsign", "false");
+    return { dir, git };
+  };
+  it("scans commit messages and author names", async () => {
+    const { dir, git } = repo();
+    writeFileSync(join(dir, "a.md"), "clean");
+    git("add", "a.md");
+    git("commit", "-q", "-m", "mention Globex here");
+    const sha = git("rev-parse", "--short=7", "HEAD");
+    git("-c", "user.name=Zed Globex", "commit", "-q", "--allow-empty", "-m", "innocent");
+    const sha2 = git("rev-parse", "--short=7", "HEAD");
+    const hits = await scanCommits(["HEAD"], rules, dir);
+    expect(hits.map((h) => [h.commit, h.path, h.rule])).toEqual([
+      [sha, "(message)", "never@3"],
+      [sha2, "(message)", "never@3"],
+    ]);
+  });
+  it("scans file paths", async () => {
+    const { dir, git } = repo();
+    writeFileSync(join(dir, "Globex notes.md"), "clean");
+    git("add", ".");
+    git("commit", "-q", "-m", "x");
+    const hits = await scanCommits(["HEAD"], rules, dir);
+    expect(hits.map((h) => [h.path, h.rule])).toEqual([["Globex notes.md", "never@3"]]);
+  });
+  it("extracts text from committed pdfs", async () => {
+    const { dir, git } = repo();
+    writeFileSync(join(dir, "doc.pdf"), pdfWith("Globex"));
+    writeFileSync(join(dir, "ok.pdf"), pdfWith("harmless"));
+    git("add", ".");
+    git("commit", "-q", "-m", "x");
+    const hits = await scanCommits(["HEAD"], rules, dir);
+    expect(hits.map((h) => [h.path, h.rule])).toEqual([["doc.pdf", "never@3"]]);
   });
 });

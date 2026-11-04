@@ -35,10 +35,22 @@ export function decodeEntities(s: string): string {
 
 /** Views of an html file to scan: raw (attributes, svg text) and tag-stripped (terms split by inline tags). */
 export function htmlViews(html: string): string[] {
-  const noData = html.replace(/data:[^"')\s>]+/gi, "data:");
-  const raw = decodeEntities(noData);
-  const stripped = decodeEntities(noData.replace(/<[^>]*>/g, ""));
+  const raw = decodeEntities(stripDataUris(html));
+  // The tag-stripped text view gets no data: stripping: visible text such as "metadata:Term" must stay scannable.
+  const stripped = decodeEntities(html.replace(/<[^>]*>/g, ""));
   return [raw, stripped];
+}
+
+/**
+ * Drops the payload of real data URIs (`data:<mime>[;params],<payload>`) in attribute/url() contexts only
+ * (`src=`, `href=`, `srcset=`, `url(`), so base64 noise cannot false-positive while a bare "metadata:Term" in
+ * text or any other attribute is left untouched.
+ */
+export function stripDataUris(s: string): string {
+  return s.replace(
+    /((?:\b(?:src|href|srcset)\s*=\s*|url\(\s*)["']?)data:[a-z0-9.+-]+\/[a-z0-9.+-]+(?:;[^,"')\s>]*)?,[^"')\s>]*/gi,
+    "$1data:",
+  );
 }
 
 function excerpt(text: string, index: number, len: number): string {
@@ -52,7 +64,7 @@ export function scanDocuments(docs: Doc[], rules: Rule[]): Hit[] {
       ? htmlViews(doc.text)
       : doc.path.endsWith(".pdf")
         ? [doc.text]
-        : [decodeEntities(doc.text.replace(/data:[^"')\s>]+/gi, "data:"))];
+        : [decodeEntities(stripDataUris(doc.text))];
     const isCv = CV_PATH.test(doc.path.replace(/\\/g, "/"));
     const checks: { label: string; re: RegExp }[] = [
       ...rules.filter((r) => r.scope === "never" || !isCv).map((r) => ({ label: r.label, re: r.pattern })),
@@ -78,9 +90,9 @@ function walk(dir: string): string[] {
   );
 }
 
-async function pdfText(file: string): Promise<string> {
+async function pdfText(data: Uint8Array): Promise<string> {
   const { extractText, getDocumentProxy } = await import("unpdf");
-  const pdf = await getDocumentProxy(new Uint8Array(readFileSync(file)));
+  const pdf = await getDocumentProxy(data);
   const { text } = await extractText(pdf, { mergePages: true });
   return text;
 }
@@ -89,7 +101,7 @@ export async function scanDist(dir = "dist", rules?: Rule[]): Promise<Hit[]> {
   const active = rules ?? parseDenylist(loadDenylistText() ?? "");
   const docs: Doc[] = [];
   for (const file of walk(dir)) {
-    if (file.endsWith(".pdf")) docs.push({ path: file, text: await pdfText(file) });
+    if (file.endsWith(".pdf")) docs.push({ path: file, text: await pdfText(new Uint8Array(readFileSync(file))) });
     else if (!BINARY.test(file)) docs.push({ path: file, text: readFileSync(file, "utf8") });
   }
   return scanDocuments(docs, active);
@@ -133,20 +145,26 @@ export function scanSourceDocuments(docs: Doc[], never: Rule[]): Hit[] {
 }
 
 /**
- * Commit mode: every text file of every commit in `range` (git rev-list syntax, e.g. `a..b` or
- * `sha --not --remotes`), `never` rules only, read from the object store so the working tree is irrelevant.
+ * Commit mode: for every commit in `range` (git rev-list syntax, e.g. `a..b` or `sha --not --remotes`), the
+ * message, author and committer names, every path string and every file (text as-is, PDFs via text extraction),
+ * `never` rules only, read from the object store so the working tree is irrelevant. Message and name hits are
+ * reported with the path "(message)".
  */
-export function scanCommits(range: string[], rules: Rule[], cwd = process.cwd()): (Hit & { commit: string })[] {
-  const git = (...args: string[]) => execFileSync("git", args, { cwd, encoding: "utf8", maxBuffer: 1 << 28 });
+export async function scanCommits(range: string[], rules: Rule[], cwd = process.cwd()): Promise<(Hit & { commit: string })[]> {
+  const run = (args: string[], encoding: "utf8" | "buffer") =>
+    execFileSync("git", args, { cwd, encoding, maxBuffer: 1 << 28 }) as string & Buffer;
+  const git = (...args: string[]): string => run(args, "utf8");
   const never = rules.filter((r) => r.scope === "never");
   const commits = git("rev-list", "--reverse", ...range).split("\n").filter(Boolean);
   const hits: (Hit & { commit: string })[] = [];
   for (const sha of commits) {
     const entries = git("ls-tree", "-r", "-z", "--name-only", sha).split("\0").filter(Boolean);
-    const docs: Doc[] = [];
+    const docs: Doc[] = [{ path: "(message)", text: git("log", "-1", "--format=%B%n%an%n%cn", sha) }];
     for (const path of entries) {
-      if (BINARY.test(path) || path.endsWith(".pdf")) continue;
-      docs.push({ path, text: git("show", `${sha}:${path}`) });
+      docs.push({ path, text: path }); // the path string itself
+      if (BINARY.test(path)) continue;
+      if (path.endsWith(".pdf")) docs.push({ path, text: await pdfText(new Uint8Array(run(["show", `${sha}:${path}`], "buffer"))) });
+      else docs.push({ path, text: git("show", `${sha}:${path}`) });
     }
     for (const h of scanSourceDocuments(docs, never)) hits.push({ ...h, commit: sha.slice(0, 7) });
   }
@@ -195,7 +213,7 @@ async function main() {
         process.exit(2);
       }
     }
-    const hits = ranges.flatMap((r) => scanCommits(r, rules));
+    const hits = (await Promise.all(ranges.map((r) => scanCommits(r, rules)))).flat();
     if (hits.length) {
       // Never print the matched term: only the commit, the path and the rule label.
       for (const h of hits) console.error(`NDA hit: ${h.commit} ${h.path} (${h.rule})`);

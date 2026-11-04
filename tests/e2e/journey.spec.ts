@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
+import { matchesRule } from "../helpers/denylist";
 import { JOURNEY } from "../../src/data/journey";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
 
@@ -60,7 +61,7 @@ for (const locale of LOCALES) {
       const bandText = await page.locator("[data-band='2026']").innerText();
       expect(bandText).not.toMatch(/bank|banc/i);
       const html = await page.locator("main").innerHTML();
-      for (const rule of cvOnly) expect(html, rule.label).not.toMatch(rule.pattern);
+      for (const rule of cvOnly) expect(matchesRule(rule, html), rule.label).toBe(false);
       expect(html).not.toMatch(/front-?end/i);
       expect(html).not.toMatch(/\bratchet\b|ráčn/i);
     });

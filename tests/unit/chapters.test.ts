@@ -2,6 +2,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
+import { matchesRule } from "../helpers/denylist";
 import { metric } from "../../src/data/metrics";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
 
@@ -123,8 +124,7 @@ describe("ai-delivery chapters", () => {
     for (const c of ALL) {
       const text = `${c.title} ${c.summary} ${c.body}`;
       for (const r of rules) {
-        r.pattern.lastIndex = 0;
-        expect(r.pattern.test(text), `${c.file}: ${r.label}`).toBe(false);
+        expect(matchesRule(r, text), `${c.file}: ${r.label}`).toBe(false);
       }
     }
   });

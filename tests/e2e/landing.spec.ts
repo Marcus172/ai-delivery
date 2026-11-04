@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
+import { matchesRule } from "../helpers/denylist";
 import { LANDING_METRIC_IDS, metric } from "../../src/data/metrics";
 import { OFFER } from "../../src/data/offer";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
@@ -150,7 +151,7 @@ for (const locale of LOCALES) {
       expect(html).not.toMatch(/bank|banc/i);
       expect(html).not.toMatch(/front-?end/i);
       for (const rule of cvOnly)
-        expect(html, rule.label).not.toMatch(rule.pattern);
+        expect(matchesRule(rule, html), rule.label).toBe(false);
     });
 
     for (const width of [390, 1000, 1440]) {

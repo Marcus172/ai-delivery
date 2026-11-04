@@ -1,6 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
+import { matchesRule } from "../helpers/denylist";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
 import { t } from "../../src/i18n/ui";
 
@@ -205,7 +206,7 @@ for (const locale of LOCALES) {
         expect(await examples.count(), id).toBeGreaterThan(0);
         const text = (await page.locator(`section#${id}`).textContent()) ?? "";
         expect(text, id).toContain(FICTIONAL_BRAND);
-        for (const rule of cvOnly) expect(text, rule.label).not.toMatch(rule.pattern);
+        for (const rule of cvOnly) expect(matchesRule(rule, text), rule.label).toBe(false);
       }
     });
 
@@ -239,7 +240,7 @@ for (const locale of LOCALES) {
       expect(html).not.toMatch(/bank|banc/i);
       expect(html).not.toMatch(/ratchet|ráčn/i);
       expect(html).not.toMatch(/AI does everything|AI dělá všechno|10× engineer/i);
-      for (const rule of cvOnly) expect(html, rule.label).not.toMatch(rule.pattern);
+      for (const rule of cvOnly) expect(matchesRule(rule, html), rule.label).toBe(false);
       const text = (await page.locator("main").textContent()) ?? "";
       expect(text).toMatch(/2026/);
     });

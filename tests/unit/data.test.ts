@@ -12,6 +12,7 @@ import {
 import { OFFER } from "../../src/data/offer";
 import { LOCALES } from "../../src/i18n/locales";
 import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
+import { matchesRule } from "../helpers/denylist";
 import { PHONE_PATTERNS } from "../../scripts/nda-gate";
 
 const NBSP = "\u00a0";
@@ -132,12 +133,12 @@ describe("all data modules", () => {
   });
 
   it.skipIf(!denylist)("contain no never-scope denylist term", () => {
-    for (const s of collectStrings(modules)) for (const r of never) expect(re(r.pattern, s), r.label).toBe(false);
+    for (const s of collectStrings(modules)) for (const r of never) expect(matchesRule(r, s), r.label).toBe(false);
   });
 
   it.skipIf(!denylist)("metrics, offer and journey hold no cv-only term (they render outside the CV page)", () => {
     for (const s of collectStrings({ METRICS, OFFER, JOURNEY, AS_OF }))
-      for (const r of cvOnly) expect(re(r.pattern, s), r.label).toBe(false);
+      for (const r of cvOnly) expect(matchesRule(r, s), r.label).toBe(false);
   });
 
   it("metrics and offer never mention a bank (they render on AI Delivery and Landing)", () => {
@@ -229,11 +230,7 @@ describe("journey", () => {
 
   it.skipIf(!denylist)("2026 entries contain no cv-only denylist term", () => {
     for (const s of collectStrings(JOURNEY.filter((m) => is2026(m.date))))
-      for (const r of cvOnly) expect(re(r.pattern, s), r.label).toBe(false);
+      for (const r of cvOnly) expect(matchesRule(r, s), r.label).toBe(false);
   });
 });
 
-function re(pattern: RegExp, s: string): boolean {
-  pattern.lastIndex = 0;
-  return pattern.test(s);
-}

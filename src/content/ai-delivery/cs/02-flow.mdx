@@ -24,15 +24,6 @@ Každý kus logiky pak musel odpovědět na jednu otázku: *liší se to mezi dv
 
 Vrstvy rozlišují dvě různá pravidla. **Hodnoty** se čtou od generického defaultu dolů k&nbsp;osobní vrstvě a&nbsp;slučují se po klíčích, takže nižší vrstva přebije jen to, co sama uvede. **Procedury** se hledají opačně, osobní vrstva první, a&nbsp;první nalezený soubor platí celý, protože dva postupy sloučit nejde. Jedna asymetrie je záměrná: poskytovatel checkoutu má týmový default v&nbsp;repozitáři, jediný osobní soubor ho přebije a&nbsp;po jeho smazání se default vrátí. Bez defaultu by nový člen týmu tiše pracoval v&nbsp;checkoutu orchestrátoru. Každá capability navíc hlásí, který soubor vyhrál, takže po běhu jde dokázat, že se osobní override opravdu hledal.
 
-### Druhý klient, stejný kontrakt
-
-<div class="stats">
-  <Stat id="second-preset" locale={locale} />
-  <Stat id="contract-versions" locale={locale} />
-</div>
-
-Druhý klient má jiný tracker s&nbsp;jinými poli a&nbsp;stavy, trunk-based release model s&nbsp;jedinou linií místo několika paralelních a&nbsp;artefakty v&nbsp;jiném jazyce. Trunk znamená, že jedna capability nedělá nic a&nbsp;rozlišení linií je triviální; kontrakt to unesl bez jediné nové podmínky. Preset napsal kolega, a&nbsp;to je silnější důkaz, že kontrakt je přenositelný mezi lidmi, ne jen mezi klienty.
-
 <Note>
   <strong>Verzovaný kontrakt a&nbsp;doctor.</strong> Každý běh porovná verzi profilu repozitáře s&nbsp;verzí pluginu. Při neshodě vypíše jeden řádek varování a&nbsp;pokračuje; nikdy nespadne. Diagnostický příkaz ukáže sloučenou konfiguraci s&nbsp;původem každé hodnoty, kde se který bod rozšíření rozlišil, a&nbsp;suchý běh resolverů. Pravidlo za verzováním: osobní kopie procedury, která pořád učí zrušený krok, je horší než chybějící soubor.
 </Note>

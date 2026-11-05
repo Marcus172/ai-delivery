@@ -1,14 +1,15 @@
 ---
-id: case-a11y
-order: 8
-title: "Případ: přístupnost ve velkém"
+id: accessibility
+order: 2
+highlights: ["a11y-patterns", "a11y-criteria"]
+title: "Přístupnost ve velkém"
 summary: "Externí audit dodal tisíce značek v matici stránka × kritérium a žádné selektory. Čteno jako vzorce to bylo osmnáct vad ve sdílených komponentách. Z opravy se stal testovací systém o šesti vrstvách a ta nejvyšší zůstává lidská."
 ---
 import { Note, Stat, TestPyramid } from "../../../components/chapter";
 
 export const locale = "cs";
 
-### Tisíce značek, osmnáct vad
+## Tisíce značek, osmnáct vad
 
 Auditní matice pokrývala každou stránku ve dvou jazycích a&nbsp;dvou motivech a&nbsp;kritérium označila jako padající po stránkách. Nic neukazovalo na element. Než jsem cokoli opravil, nechal jsem matici rozebrat jako data: většina padajících kritérií padala téměř na každé stránce, což znamená, že vada seděla ve sdílené komponentě, ne na stránce. Z&nbsp;toho plynula strategie: opravit komponentu a&nbsp;test, který opravu dokazuje, místo procházení značek jedné po druhé.
 
@@ -17,7 +18,7 @@ Auditní matice pokrývala každou stránku ve dvou jazycích a&nbsp;dvou motive
   <Stat id="a11y-fix-reach" locale={locale} />
 </div>
 
-### Manifest se stavovým automatem
+## Manifest se stavovým automatem
 
 Každé systémové kritérium a&nbsp;každý zbývající stránkový nález žije ve strojově čitelném manifestu se schématem a&nbsp;životním cyklem: čeká, rozpracováno, test napsán, prochází, hotovo, přičemž blokováno a&nbsp;neřešíme nesou důvod. Stavy nejsou ozdoba: *prochází* znamená zelený automatický test, *hotovo* znamená, že to člověk potvrdil se čtečkou obrazovky. Nad manifestem pracují tři agenti, jeden převede novou auditní matici na nálezy, jeden napíše k&nbsp;nálezu regresní test vedle kódu, jeden spustí vizuální audit, a&nbsp;hrstka příkazů vypíše stav, navrhne další položku, vyexportuje stav pro management a&nbsp;vstřebá rozšířený audit bez resetu. Když analytik klienta v&nbsp;září rozšířil rozsah, manifest nové řádky pojal, aniž by se začínalo znovu.
 
@@ -26,7 +27,7 @@ Každé systémové kritérium a&nbsp;každý zbývající stránkový nález ž
   <Stat id="a11y-page-findings" locale={locale} />
 </div>
 
-### Šest vrstev, jedna z&nbsp;nich lidská
+## Šest vrstev, jedna z&nbsp;nich lidská
 
 <TestPyramid locale={locale} />
 

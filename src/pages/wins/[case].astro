@@ -1,0 +1,17 @@
+---
+import type { GetStaticPaths } from "astro";
+import { CASE_IDS, type CaseId } from "../../content.config";
+import { loadCases } from "../../data/cases";
+import Base from "../../layouts/Base.astro";
+import CaseView from "../../views/CaseView.astro";
+
+export const getStaticPaths = (() => CASE_IDS.map((id) => ({ params: { case: id } }))) satisfies GetStaticPaths;
+
+const locale = "en";
+const id = Astro.params.case as CaseId;
+const c = (await loadCases(locale)).find((x) => x.id === id);
+---
+
+<Base locale={locale} page="wins" sub={id} title={c?.title ?? id} description={c?.summary ?? ""}>
+  <CaseView locale={locale} id={id} />
+</Base>

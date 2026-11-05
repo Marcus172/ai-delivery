@@ -1,10 +1,9 @@
 ---
-id: results
-order: 10
 title: "Výsledky, nejdřív s výhradami"
 summary: "Šest měsíců před flow proti pěti měsícům po něm, z trackeru a z pull requestů téhož produktu. Výhrady jdou před čísla, protože právě na ně se skeptik zeptá nejdřív."
 ---
-import { ResultsGrid, Stat } from "../../../components/chapter";
+import { ResultsGrid, Stat } from "../../components/chapter";
+import { localizedPath } from "../../i18n/routes";
 
 export const locale = "cs";
 
@@ -30,5 +29,5 @@ Dvě z&nbsp;těchto čísel měří proces, ne kvalitu: strukturované poznámky
 ### A&nbsp;číslo, které změřit neumím
 
 <div class="estimate" data-estimate>
-  Jediné číslo o&nbsp;tom, o&nbsp;kolik rychleji pracuji já, je můj vlastní odhad. Stojí <a href="#principle">v&nbsp;první kapitole</a>, se svým štítkem, a&nbsp;od měřené sady je schválně oddělené. Měřená čísla jsou týmová, s&nbsp;menším týmem a&nbsp;stejným měsíčním objemem tiketů. Když se ta dvě neshodnou, věřte měřeným.
+  Jediné číslo o&nbsp;tom, o&nbsp;kolik rychleji pracuji já, je můj vlastní odhad. Stojí <a href={localizedPath(locale, "ai-delivery", "principle")}>v&nbsp;první kapitole</a>, se svým štítkem, a&nbsp;od měřené sady je schválně oddělené. Měřená čísla jsou týmová, s&nbsp;menším týmem a&nbsp;stejným měsíčním objemem tiketů. Když se ta dvě neshodnou, věřte měřeným.
 </div>

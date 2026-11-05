@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import type { Locale } from "../i18n/locales";
 import { LOCALES } from "../i18n/locales";
-import { href, localizedPath, type PageId } from "../i18n/routes";
+import { href, localizedPath, subPagePath, type PageId } from "../i18n/routes";
 import { t } from "../i18n/ui";
 import Rail from "../components/Rail.astro";
 import CtaRow from "../components/CtaRow.astro";
@@ -11,15 +11,18 @@ import Eyebrow from "../components/Eyebrow.astro";
 interface Props {
   locale: Locale;
   page: PageId;
+  /** Subpage segment under `page` (a case under `wins`); the rail still marks `page` as current. */
+  sub?: string;
   title: string;
   description: string;
 }
 
-const { locale, page, title, description } = Astro.props;
+const { locale, page, sub, title, description } = Astro.props;
 const siteName = t(locale, "site.name");
 const fullTitle = title === siteName || title.startsWith(`${siteName} `) ? title : `${title} — ${siteName}`;
 const site = Astro.site ?? new URL("http://localhost:4321/");
-const alternate = (l: Locale) => new URL(localizedPath(l, page), site).href;
+const pathIn = (l: Locale) => (sub ? subPagePath(l, page, sub) : localizedPath(l, page));
+const alternate = (l: Locale) => new URL(pathIn(l), site).href;
 const year = new Date().getFullYear();
 ---
 
@@ -52,7 +55,7 @@ const year = new Date().getFullYear();
     <a class="skip" href="#content">{t(locale, "skip")}</a>
     <div class="progress" aria-hidden="true" data-progress></div>
     <div class="shell">
-      <Rail locale={locale} page={page} />
+      <Rail locale={locale} page={page} sub={sub} />
       <div class="page">
         <main id="content" class="wrap" tabindex="-1">
           <slot />

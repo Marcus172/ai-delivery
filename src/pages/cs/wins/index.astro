@@ -1,0 +1,12 @@
+---
+import Base from "../../../layouts/Base.astro";
+import WinsView from "../../../views/WinsView.astro";
+import { t } from "../../../i18n/ui";
+
+const locale = "cs";
+const page = "wins";
+---
+
+<Base locale={locale} page={page} title={t(locale, "page.wins.title")} description={t(locale, "page.wins.description")}>
+  <WinsView locale={locale} />
+</Base>

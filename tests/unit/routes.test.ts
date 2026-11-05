@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { href, localizedPath, switchLocalePath, type PageId } from "../../src/i18n/routes";
+import { href, localizedPath, subPagePath, switchLocalePath, type PageId } from "../../src/i18n/routes";
 import type { Locale } from "../../src/i18n/locales";
 
 beforeEach(() => {
@@ -34,10 +34,12 @@ describe("localizedPath", () => {
     ["en", "landing", "/ai-delivery/"],
     ["en", "journey", "/ai-delivery/journey/"],
     ["en", "ai-delivery", "/ai-delivery/ai-delivery/"],
+    ["en", "wins", "/ai-delivery/wins/"],
     ["en", "cv", "/ai-delivery/cv/"],
     ["cs", "landing", "/ai-delivery/cs/"],
     ["cs", "journey", "/ai-delivery/cs/journey/"],
     ["cs", "ai-delivery", "/ai-delivery/cs/ai-delivery/"],
+    ["cs", "wins", "/ai-delivery/cs/wins/"],
     ["cs", "cv", "/ai-delivery/cs/cv/"],
   ];
 
@@ -76,5 +78,17 @@ describe("switchLocalePath", () => {
   it("is a no-op when already in the target locale", () => {
     expect(switchLocalePath("/ai-delivery/cs/cv/", "", "cs")).toBe("/ai-delivery/cs/cv/");
     expect(switchLocalePath("/ai-delivery/cv/", "", "en")).toBe("/ai-delivery/cv/");
+  });
+});
+
+describe("subPagePath", () => {
+  it("puts a case under its page in each locale, with one trailing slash", () => {
+    expect(subPagePath("en", "wins", "tailwind")).toBe("/ai-delivery/wins/tailwind/");
+    expect(subPagePath("cs", "wins", "tailwind")).toBe("/ai-delivery/cs/wins/tailwind/");
+    expect(subPagePath("en", "wins", "/brand-voice/")).toBe("/ai-delivery/wins/brand-voice/");
+  });
+
+  it("appends a hash", () => {
+    expect(subPagePath("cs", "wins", "accessibility", "#top")).toBe("/ai-delivery/cs/wins/accessibility/#top");
   });
 });

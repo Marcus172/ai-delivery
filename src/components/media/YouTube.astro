@@ -1,0 +1,138 @@
+---
+/**
+ * A YouTube video behind a click-to-load facade. Nothing is requested from YouTube until the visitor
+ * clicks: the thumbnail is self-hosted, and only the click inserts the youtube-nocookie iframe.
+ */
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import type { Locale } from "../../i18n/locales";
+import { t } from "../../i18n/ui";
+
+interface Props {
+  locale: Locale;
+  /** The YouTube video id (the `v=` part of the URL). */
+  id: string;
+  title: string;
+  /** Self-hosted thumbnail; never hot-linked from YouTube. */
+  thumbnail: ImageMetadata;
+  caption?: string;
+  /** Link to a transcript, if there is one. */
+  transcript?: string;
+}
+
+const { locale, id, title, thumbnail, caption, transcript } = Astro.props;
+if (!/^[\w-]{6,20}$/.test(id)) throw new Error(`YouTube: suspicious video id "${id}"`);
+---
+
+<figure class="media yt" data-media="youtube">
+  <div class="frame">
+    <div class="player" data-yt={id} data-yt-title={title}>
+      <button type="button" class="facade" aria-label={`${t(locale, "media.play")}: ${title}`}>
+        <Image src={thumbnail} alt="" width={Math.min(thumbnail.width, 1200)} loading="lazy" />
+        <span class="play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" /></svg>
+        </span>
+      </button>
+    </div>
+  </div>
+  <figcaption>
+    {caption && <span>{caption} </span>}
+    <span class="note">{t(locale, "media.youtube")}</span>
+    {transcript && <a href={transcript}>{t(locale, "media.transcript")}</a>}
+  </figcaption>
+</figure>
+
+<script>
+  for (const player of document.querySelectorAll<HTMLElement>("[data-yt]")) {
+    player.querySelector("button")?.addEventListener(
+      "click",
+      () => {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(player.dataset.yt ?? "")}?autoplay=1&rel=0`;
+        iframe.title = player.dataset.ytTitle ?? "";
+        iframe.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+        iframe.allowFullscreen = true;
+        player.replaceChildren(iframe);
+        iframe.focus();
+      },
+      { once: true },
+    );
+  }
+</script>
+
+<style>
+  .media {
+    margin: 2rem 0 0;
+    max-width: 56rem;
+  }
+  .frame {
+    padding: 0.5rem;
+    background: var(--tint);
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+  }
+  .player {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .facade {
+    all: unset;
+    position: absolute;
+    inset: 0;
+    cursor: pointer;
+  }
+  .facade:focus-visible {
+    outline: 3px solid var(--acc);
+    outline-offset: -3px;
+  }
+  .facade :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .play {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    translate: -50% -50%;
+    display: grid;
+    place-items: center;
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--acc);
+    color: #fff;
+    transition: scale 0.15s ease;
+  }
+  .facade:hover .play {
+    scale: 1.08;
+  }
+  .play svg {
+    width: 2rem;
+    height: 2rem;
+  }
+  .player :global(iframe) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  figcaption {
+    margin-top: 0.625rem;
+    font-size: 0.875rem;
+    color: var(--mute);
+    max-width: 68ch;
+  }
+  figcaption a {
+    margin-left: 0.375rem;
+    color: var(--ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .play {
+      transition: none;
+    }
+  }
+</style>

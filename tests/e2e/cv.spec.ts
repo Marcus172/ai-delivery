@@ -5,7 +5,7 @@ import { LOCALES, type Locale } from "../../src/i18n/locales";
 
 const BASE = "/ai-delivery/";
 const CV_URL: Record<Locale, string> = { en: "cv/", cs: "cs/cv/" };
-const OTHER_PAGES = ["", "journey/", "ai-delivery/", "cs/", "cs/journey/", "cs/ai-delivery/"];
+const OTHER_PAGES = ["", "journey/", "ai-delivery/", "wins/", "wins/accessibility/", "cs/", "cs/journey/", "cs/ai-delivery/", "cs/wins/"];
 const employer = CV.roles[0].company;
 
 for (const locale of LOCALES) {

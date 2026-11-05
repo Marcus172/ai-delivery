@@ -6,20 +6,10 @@ import { matchesRule } from "../helpers/denylist";
 import { metric } from "../../src/data/metrics";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
 
-const ROOT = join(__dirname, "../../src/content/ai-delivery");
-const CHAPTER_IDS = [
-  "principle",
-  "flow",
-  "tooling",
-  "guardrails",
-  "enablement",
-  "planning",
-  "case-persona",
-  "case-a11y",
-  "case-tailwind",
-  "results",
-  "offer",
-] as const;
+const CONTENT = join(__dirname, "../../src/content");
+const ROOT = join(CONTENT, "ai-delivery");
+const CHAPTER_IDS = ["principle", "flow", "tooling", "guardrails", "enablement", "planning", "offer"] as const;
+const CASE_IDS = ["brand-voice", "accessibility", "tailwind"] as const;
 
 type Chapter = { file: string; id: string; order: number; title: string; summary: string; body: string };
 
@@ -34,8 +24,8 @@ function parse(file: string, text: string): Chapter {
   return { file, id: fm.id, order: Number(fm.order), title: fm.title, summary: fm.summary, body: m[2] };
 }
 
-function chapters(locale: Locale): Chapter[] {
-  const dir = join(ROOT, locale);
+function chapters(locale: Locale, root = ROOT): Chapter[] {
+  const dir = join(root, locale);
   return readdirSync(dir)
     .filter((f) => f.endsWith(".mdx"))
     .sort()
@@ -43,7 +33,15 @@ function chapters(locale: Locale): Chapter[] {
 }
 
 const BY_LOCALE = Object.fromEntries(LOCALES.map((l) => [l, chapters(l)])) as Record<Locale, Chapter[]>;
-const ALL = LOCALES.flatMap((l) => BY_LOCALE[l]);
+const CASES = Object.fromEntries(LOCALES.map((l) => [l, chapters(l, join(CONTENT, "cases"))])) as Record<Locale, Chapter[]>;
+const RESULTS = Object.fromEntries(
+  LOCALES.map((l) => [l, parse(`results/${l}.mdx`, readFileSync(join(CONTENT, "results", `${l}.mdx`), "utf8"))]),
+) as Record<Locale, Chapter>;
+/** Every MDX body on the site: AI Delivery chapters, case pages and Results. The copy rules hold for all of them. */
+const ALL = LOCALES.flatMap((l) => [...BY_LOCALE[l], ...CASES[l], RESULTS[l]]);
+const DIAGRAM_RE =
+  /<(FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards)\b/g;
+const diagrams = (c: Chapter) => [...c.body.matchAll(DIAGRAM_RE)].map((m) => m[1]);
 
 const denylist = loadDenylistText();
 const rules = denylist ? parseDenylist(denylist) : [];
@@ -61,14 +59,10 @@ const BANNED = [
 
 describe("ai-delivery chapters", () => {
   it("keep HTML entities out of frontmatter, which renders as escaped text (use the literal U+00A0)", () => {
-    for (const locale of LOCALES) {
-      for (const c of chapters(locale)) {
-        expect(`${c.title} ${c.summary}`, c.file).not.toMatch(/&[#\w]+;/);
-      }
-    }
+    for (const c of ALL) expect(`${c.title} ${c.summary}`, c.file).not.toMatch(/&[#\w]+;/);
   });
 
-  it("exist for both locales, all eleven", () => {
+  it("exist for both locales, all seven", () => {
     for (const l of LOCALES) expect(BY_LOCALE[l].map((c) => c.id), l).toEqual([...CHAPTER_IDS]);
   });
 
@@ -87,7 +81,7 @@ describe("ai-delivery chapters", () => {
   });
 
   it("file names carry the order and the id", () => {
-    for (const c of ALL) expect(c.file).toMatch(new RegExp(`/${String(c.order).padStart(2, "0")}-${c.id}\\.mdx$`));
+    for (const c of LOCALES.flatMap((l) => BY_LOCALE[l])) expect(c.file).toMatch(new RegExp(`/${String(c.order).padStart(2, "0")}-${c.id}\\.mdx$`));
   });
 
   it("have a non-empty title and summary", () => {
@@ -100,25 +94,15 @@ describe("ai-delivery chapters", () => {
   it("embed the same Stat ids in the same order in both locales, and every id resolves", () => {
     const ids = (c: Chapter) => [...c.body.matchAll(/<Stat\s[^>]*\bid="([^"]+)"/g)].map((m) => m[1]);
     for (const c of ALL) for (const id of ids(c)) expect(() => metric(id), `${c.file}: ${id}`).not.toThrow();
-    const [en, cs] = LOCALES.map((l) => BY_LOCALE[l]);
-    for (const [i, c] of en.entries()) expect(ids(cs[i]), c.id).toEqual(ids(c));
+    const [en, cs] = LOCALES.map((l) => [...BY_LOCALE[l], ...CASES[l], RESULTS[l]]);
+    for (const [i, c] of en.entries()) expect(ids(cs[i]), c.file).toEqual(ids(c));
   });
 
   it("embed the same diagrams in both locales", () => {
-    const diagrams = (c: Chapter) =>
-      [
-        ...c.body.matchAll(
-          /<(FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards)\b/g,
-        ),
-      ].map((m) => m[1]);
-    const [en, cs] = LOCALES.map((l) => BY_LOCALE[l]);
-    for (const [i, c] of en.entries()) expect(diagrams(cs[i]), c.id).toEqual(diagrams(c));
+    const [en, cs] = LOCALES.map((l) => [...BY_LOCALE[l], ...CASES[l], RESULTS[l]]);
+    for (const [i, c] of en.entries()) expect(diagrams(cs[i]), c.file).toEqual(diagrams(c));
     // Spec §5.3: every chapter has at least one diagram; a Stat is a figure, not a visual.
-    for (const c of en) expect(diagrams(c).length, `${c.id} has a diagram`).toBeGreaterThan(0);
-    // Chapters 7–9 are cases and need a real diagram, not a stat grid or the offer cards.
-    for (const c of en.filter((c) => c.id.startsWith("case-"))) {
-      expect(diagrams(c).some((d) => !["ResultsGrid", "OfferCards"].includes(d)), `${c.id} has a real diagram`).toBe(true);
-    }
+    for (const c of BY_LOCALE.en) expect(diagrams(c).length, `${c.id} has a diagram`).toBeGreaterThan(0);
   });
 
   it("contain no banned phrasing, no bank, no front-end, no over-claim", () => {
@@ -143,7 +127,7 @@ describe("ai-delivery chapters", () => {
   });
 
   it("use the fictional brand in the persona and accessibility examples, and only fictional rule-id prefixes", () => {
-    for (const c of ALL.filter((c) => c.id === "case-persona" || c.id === "case-a11y")) {
+    for (const c of ALL.filter((c) => c.id === "brand-voice" || c.id === "accessibility")) {
       expect(c.body, c.file).toMatch(/Ferrylane/);
       for (const [id] of c.body.matchAll(/\b[A-Z]{2,}-[A-Z]{2,}-\d{2}\b/g)) expect(id, c.file).toMatch(/^(BRAND|BASE)-/);
     }
@@ -158,5 +142,43 @@ describe("ai-delivery chapters", () => {
 
   it("label 5–10× as an estimate only through its metric, never inline", () => {
     for (const c of ALL) expect(c.body, c.file).not.toMatch(/5\s?[–-]\s?10\s?×/);
+  });
+});
+
+describe("wins & cases content", () => {
+  it("has the three cases in both locales, same ids and orders, file names carrying both", () => {
+    for (const l of LOCALES) {
+      expect(CASES[l].map((c) => c.id), l).toEqual([...CASE_IDS]);
+      expect(CASES[l].map((c) => c.order), l).toEqual([1, 2, 3]);
+      for (const c of CASES[l]) expect(c.file).toMatch(new RegExp(`/0${c.order}-${c.id}\\.mdx$`));
+    }
+  });
+
+  it("gives every case a real diagram, not a stat grid or the offer cards", () => {
+    for (const c of CASES.en) {
+      expect(diagrams(c).some((d) => !["ResultsGrid", "OfferCards"].includes(d)), `${c.id} has a real diagram`).toBe(true);
+    }
+  });
+
+  it("lists the same resolvable highlight metrics for a case in both locales", () => {
+    const highlights = (c: Chapter) => {
+      const m = /^highlights:\s*\[(.*)\]\s*$/m.exec(readFileSync(join(CONTENT, "cases", c.file), "utf8"));
+      return m ? [...m[1].matchAll(/"([^"]+)"/g)].map((x) => x[1]) : [];
+    };
+    for (const [i, c] of CASES.en.entries()) {
+      const ids = highlights(c);
+      expect(ids.length, c.id).toBeGreaterThan(0);
+      for (const id of ids) expect(() => metric(id), `${c.id}: ${id}`).not.toThrow();
+      expect(highlights(CASES.cs[i]), c.id).toEqual(ids);
+    }
+  });
+
+  it("keeps Results whole: caveats, the measured grid and the estimate pointer to AI Delivery", () => {
+    for (const l of LOCALES) {
+      const body = RESULTS[l].body;
+      expect(body.indexOf("data-caveats"), l).toBeGreaterThan(-1);
+      expect(body.indexOf("data-caveats"), l).toBeLessThan(body.indexOf("<ResultsGrid"));
+      expect(body, l).toMatch(/localizedPath\(locale, "ai-delivery", "principle"\)/);
+    }
   });
 });

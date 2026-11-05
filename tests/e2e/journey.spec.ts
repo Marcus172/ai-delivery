@@ -73,6 +73,7 @@ for (const locale of LOCALES) {
       await expect(main.locator("[data-journey-intro]")).toBeVisible();
       const prefix = locale === "cs" ? "/ai-delivery/cs/" : "/ai-delivery/";
       await expect(main.locator(`[data-journey-next] a[href="${prefix}ai-delivery/"]`)).toHaveCount(1);
+      await expect(main.locator(`[data-journey-next] a[href="${prefix}wins/"]`)).toHaveCount(1);
       await expect(main.locator(`[data-journey-next] a[href="${prefix}cv/"]`)).toHaveCount(1);
     });
 

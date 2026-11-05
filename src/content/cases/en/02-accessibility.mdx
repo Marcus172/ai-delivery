@@ -1,14 +1,15 @@
 ---
-id: case-a11y
-order: 8
-title: "Case: accessibility at scale"
+id: accessibility
+order: 2
+highlights: ["a11y-patterns", "a11y-criteria"]
+title: "Accessibility at scale"
 summary: "An external audit delivered thousands of marks in a page-by-criterion matrix and no selectors. Read as patterns, they were eighteen defects in shared components. The fix became a test system with six layers, and the top layer stays human."
 ---
 import { Note, Stat, TestPyramid } from "../../../components/chapter";
 
 export const locale = "en";
 
-### Thousands of marks, eighteen defects
+## Thousands of marks, eighteen defects
 
 The audit matrix covered every page in two languages and two themes, and marked a criterion as failing per page. Nothing pointed at an element. Before fixing anything I had the matrix analysed as data: most failing criteria failed on almost every page, which means the defect was in a shared component, not on the page. The strategy followed from that: fix the component, and the test that proves it fixed, instead of working through the marks one by one.
 
@@ -17,7 +18,7 @@ The audit matrix covered every page in two languages and two themes, and marked 
   <Stat id="a11y-fix-reach" locale={locale} />
 </div>
 
-### A manifest with a state machine
+## A manifest with a state machine
 
 Each systemic criterion and each remaining page-level finding lives in a machine-readable manifest with a schema and a lifecycle: pending, in progress, test written, passing, done, with blocked and won't-fix carrying a reason. The states are not decoration: *passing* means an automated test is green, *done* means a person confirmed it with a screen reader. Three agents work on the manifest, one that turns a new audit matrix into findings, one that writes the regression test for a finding next to the code, one that runs the vision audit, and a handful of commands print status, propose the next item, export the state for management and absorb a re-scoped audit without a reset. When the client's analyst widened the scope in September, the manifest took the new rows in without starting over.
 
@@ -26,7 +27,7 @@ Each systemic criterion and each remaining page-level finding lives in a machine
   <Stat id="a11y-page-findings" locale={locale} />
 </div>
 
-### Six layers, one of them human
+## Six layers, one of them human
 
 <TestPyramid locale={locale} />
 

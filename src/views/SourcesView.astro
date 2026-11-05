@@ -22,15 +22,33 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, "");
     <p class="lead">{tt("sources.lead")}</p>
     <nav class="jump" aria-label={tt("sources.tools")}>
       <ul>
-        {TOOL_GROUPS.map((g) => <li><a href={`#${g.id}`}>{g.title[locale]}</a></li>)}
         <li><a href="#people">{tt("sources.people")}</a></li>
+        {TOOL_GROUPS.map((g) => <li><a href={`#${g.id}`}>{g.title[locale]}</a></li>)}
       </ul>
     </nav>
   </header>
 
+  <Section id="people" first>
+    <h2>{tt("sources.people")}</h2>
+    <p class="intro">{tt("sources.peopleLead")}</p>
+    <ul class="people">
+      {
+        PEOPLE.map((p) => (
+          <li class="person" data-person={p.handle}>
+            <h3>{p.name}</h3>
+            <p class="what">{p.known[locale]}</p>
+            <p class="links">
+              <a href={`https://x.com/${p.handle}`}>@{p.handle}</a>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
   {
-    TOOL_GROUPS.map((g, i) => (
-      <Section id={g.id} first={i === 0}>
+    TOOL_GROUPS.map((g) => (
+      <Section id={g.id}>
         <h2>{g.title[locale]}</h2>
         <ul class="tools" data-tool-group={g.id}>
           {toolsIn(g.id).map((x) => (
@@ -59,23 +77,6 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, "");
     ))
   }
 
-  <Section id="people">
-    <h2>{tt("sources.people")}</h2>
-    <p class="intro">{tt("sources.peopleLead")}</p>
-    <ul class="people">
-      {
-        PEOPLE.map((p) => (
-          <li class="person" data-person={p.handle}>
-            <h3>{p.name}</h3>
-            <p class="what">{p.known[locale]}</p>
-            <p class="links">
-              <a href={`https://x.com/${p.handle}`}>@{p.handle}</a>
-            </p>
-          </li>
-        ))
-      }
-    </ul>
-  </Section>
 </div>
 
 <style>

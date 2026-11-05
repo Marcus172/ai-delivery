@@ -65,11 +65,6 @@ export const TOOLS: Tool[] = [
     name: "OpenCode",
     url: "https://opencode.ai/",
     match: /\bOpenCode\b/,
-    group: "agents",
-    what: l(
-      "An open-source agent that can carry a team's AI setup, local models included.",
-      "Open-source agent, který unese týmový AI setup včetně lokálních modelů.",
-    ),
     docs: "https://opencode.ai/docs",
   },
   {
@@ -77,11 +72,18 @@ export const TOOLS: Tool[] = [
     name: "Pi",
     url: "https://pi.dev/",
     match: /(?<=OpenCode (?:or|nebo) )Pi\b/,
+  },
+  {
+    id: "oh-my-pi",
+    name: "Oh My Pi",
+    url: "https://omp.sh/",
+    match: /\bOh My Pi\b/,
     group: "agents",
     what: l(
-      "A minimal open-source coding agent; another way to share the same setup.",
-      "Minimalistický open-source agent; další cesta, jak sdílet stejný setup.",
+      "A feature-rich fork of the minimal Pi coding agent: subagents, language-server integration, a debugger.",
+      "Bohatší fork minimalistického agenta Pi: subagenti, napojení na language server, debugger.",
     ),
+    docs: "https://github.com/can1357/oh-my-pi",
   },
   { id: "cursor", name: "Cursor", url: "https://cursor.com/", match: /\bCursor\b/ },
   {

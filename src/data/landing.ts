@@ -12,7 +12,7 @@ export const LANDING = {
     "Measured on one team; periods, baselines and caveats are in the ",
     "Měřeno na jednom týmu; období, výchozí stavy a výhrady jsou v ",
   ),
-  statsPeriodLink: l("Results chapter", "kapitole Výsledky"),
+  statsPeriodLink: l("Wins & cases", "Výsledcích a případech"),
 
   offerEyebrow: l("Consulting", "Konzultace"),
   offerTitle: l("What I can set up for you", "Co vám můžu nastavit"),
@@ -40,8 +40,16 @@ export const LANDING = {
       page: "ai-delivery" as const,
       title: l("AI Delivery", "AI Delivery"),
       body: l(
-        "The long read: principle, flow, tooling, guardrails, enablement, planning, three cases, results and the offer.",
-        "Dlouhé čtení: princip, flow, nástroje, mantinely, enablement, plánování, tři případy, výsledky a nabídka.",
+        "How the system works: principle, flow, tooling, guardrails, enablement, planning and the offer.",
+        "Jak systém funguje: princip, flow, nástroje, mantinely, enablement, plánování a nabídka.",
+      ),
+    },
+    {
+      page: "wins" as const,
+      title: l("Wins & cases", "Výsledky a případy"),
+      body: l(
+        "What it delivered: measured results with their caveats, and three cases in depth.",
+        "Co to přineslo: měřené výsledky i s výhradami a tři případy do hloubky.",
       ),
     },
     {

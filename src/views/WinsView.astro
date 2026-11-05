@@ -1,0 +1,232 @@
+---
+import { getEntry, render } from "astro:content";
+import Eyebrow from "../components/Eyebrow.astro";
+import Prose from "../components/Prose.astro";
+import Section from "../components/Section.astro";
+import Stat from "../components/Stat.astro";
+import { caseNumber, loadCases } from "../data/cases";
+import { csTypo } from "../data/l10n";
+import type { Locale } from "../i18n/locales";
+import { localizedPath, subPagePath } from "../i18n/routes";
+import { t, type UiKey } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const typo = (s: string) => (locale === "cs" ? csTypo(s) : s);
+const tt = (key: UiKey) => typo(t(locale, key));
+
+const resultsEntry = await getEntry("results", locale);
+if (!resultsEntry) throw new Error(`results/${locale}.mdx is missing`);
+const { Content: Results } = await render(resultsEntry);
+const cases = await loadCases(locale);
+---
+
+<div class="column">
+<header class="head">
+  <Eyebrow>{tt("wins.eyebrow")}</Eyebrow>
+  <h1>{tt("wins.title")}</h1>
+  <p class="lead">{tt("wins.lead")}</p>
+  <p class="as-of">{t(locale, "ai.asOf")}</p>
+</header>
+
+<Section id="results" class="results">
+  <Eyebrow>{tt("wins.resultsEyebrow")}</Eyebrow>
+  <h2>{typo(resultsEntry.data.title)}</h2>
+  <p class="summary">{typo(resultsEntry.data.summary)}</p>
+  <Prose>
+    <Results />
+  </Prose>
+</Section>
+
+<Section id="cases">
+  <Eyebrow>{tt("wins.casesEyebrow")}</Eyebrow>
+  <h2>{tt("wins.casesTitle")}</h2>
+  <p class="summary">{tt("wins.casesIntro")}</p>
+  <ol class="cards" data-case-cards>
+    {
+      cases.map((c) => (
+        <li class="card" data-case={c.id}>
+          <p class="card-n">
+            {t(locale, "wins.case")} {caseNumber(c.order)}
+          </p>
+          <h3>
+            <a href={subPagePath(locale, "wins", c.id)}>{c.title}</a>
+          </h3>
+          <p class="card-summary">{c.summary}</p>
+          <div class="card-stats">
+            {c.highlights.map((id) => <Stat id={id} locale={locale} detail={false} />)}
+          </div>
+          <a class="card-more" href={subPagePath(locale, "wins", c.id)} aria-hidden="true" tabindex="-1">
+            {t(locale, "wins.readCase")}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</Section>
+
+<Section id="next">
+  <ul class="next">
+    <li>
+      <p class="next-k">{tt("wins.howEyebrow")}</p>
+      <p>{tt("wins.howText")}</p>
+      <a href={localizedPath(locale, "ai-delivery")}>{tt("wins.howLink")}</a>
+    </li>
+    <li>
+      <p class="next-k">{tt("ai.bridgeEyebrow")}</p>
+      <p>{tt("wins.offerText")}</p>
+      <a href={localizedPath(locale, "ai-delivery", "offer")}>{tt("wins.offerLink")}</a>
+    </li>
+  </ul>
+</Section>
+</div>
+
+<style>
+  /* No side TOC here: the reading column is centred in the page instead of hugging the left edge. */
+  .column {
+    max-width: 54rem;
+    margin-inline: auto;
+  }
+  .head {
+    padding-bottom: 3rem;
+  }
+  .head h1 {
+    font-size: clamp(3rem, 6.2vw, 5.75rem);
+    max-width: 14ch;
+  }
+  .head .lead {
+    margin-top: 1.5rem;
+    max-width: 64ch;
+  }
+  .as-of {
+    margin-top: 0.875rem;
+    font-size: 0.8125rem;
+    color: var(--mute);
+  }
+  h2 {
+    font-size: clamp(2rem, 3.6vw, 3.2rem);
+    max-width: 18ch;
+  }
+  .summary {
+    margin-top: 1.125rem;
+    font-size: 1.125rem;
+    color: var(--mute);
+    max-width: 60ch;
+  }
+  :global(#results),
+  :global(#cases) {
+    scroll-margin-top: 0.75rem;
+  }
+
+  /* ---------- case cards ---------- */
+  .cards {
+    list-style: none;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 0.875rem;
+    padding: 1.5rem 1.375rem 1.25rem;
+    border-top: 2px solid var(--ink);
+    background: var(--tint);
+    border-radius: 0 0 0.875rem 0.875rem;
+  }
+  .card:hover,
+  .card:focus-within {
+    border-top-color: var(--acc);
+  }
+  .card-n {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--acc-text);
+  }
+  .card h3 {
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    text-transform: uppercase;
+    font-size: 1.75rem;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .card h3 a {
+    text-decoration: none;
+  }
+  .card h3 a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.2em;
+  }
+  .card-summary {
+    color: var(--mute);
+    font-size: 0.9375rem;
+  }
+  .card-stats {
+    display: grid;
+    gap: 0.875rem;
+  }
+  .card-more {
+    justify-self: end;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .card-more svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    transition: transform 0.2s ease;
+  }
+  .card:hover .card-more svg {
+    transform: translateX(0.25rem);
+    color: var(--acc);
+  }
+
+  /* ---------- next ---------- */
+  .next {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+  .next li {
+    display: grid;
+    gap: 0.5rem;
+    align-content: start;
+    max-width: 44ch;
+  }
+  .next-k {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--acc-text);
+  }
+  .next a {
+    font-weight: 700;
+  }
+
+  @media (max-width: 1099px) {
+    .cards {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 699px) {
+    .next {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+</style>

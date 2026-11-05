@@ -1,14 +1,15 @@
 ---
-id: case-tailwind
-order: 9
-title: "Případ: z CSS-in-JS na Tailwind za deset týdnů"
+id: tailwind
+order: 3
+highlights: ["tailwind-components", "story-coverage"]
+title: "Z CSS-in-JS na Tailwind za deset týdnů"
 summary: "Každá komponenta tří aplikací přešla z CSS-in-JS na Tailwind s čistě tokenovými škálami. Nejdřív vznikl harness pro vizuální regrese, teprve potom migrace, a největší nález přišel ze čtení snímků, ne ze zelené brány."
 ---
 import { MigrationBand, Note, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
 
-### Harness před první komponentou
+## Harness před první komponentou
 
 Přepsat styly celého produktu je práce, kterou AI zlevní a&nbsp;které se tým právem bojí, protože sto drobných vizuálních regresí je pro každý existující test neviditelných. První fáze proto nepřevedla nic. Postavila harness pro vizuální regrese, který v&nbsp;jednom běhu vykreslí každou story základu i&nbsp;změny, světlou i&nbsp;tmavou, a&nbsp;porovná je pixel po pixelu, se samotestem komparátoru a&nbsp;CI jobem na každý pull request. Teprve pak začala konverze: primitiva layoutu a&nbsp;textu, která převádějí props pro rozestupy a&nbsp;layout na třídy, pak sdílené UI, pak domény, pak odstranění starých knihoven. Jedna etapa, jeden pull request; stav plánu se mění ve stejném commitu.
 
@@ -20,7 +21,7 @@ Přepsat styly celého produktu je práce, kterou AI zlevní a&nbsp;které se t�
   <Stat id="bundle-size" locale={locale} />
 </div>
 
-### Brány byly zelené, pravda byla v&nbsp;pixelech
+## Brány byly zelené, pravda byla v&nbsp;pixelech
 
 Harness měl slepou skvrnu a&nbsp;ta přinesla nejužitečnější lekci migrace. Každá story knihovny grafů byla snímek prázdného grafu, pořízený v&nbsp;prvním snímku animace, a&nbsp;každá brána byla zelená, protože základ i&nbsp;změna byly stejně prázdné. Přišel na to člověk, který snímky četl. Odpovědí nebyla další brána: značka u&nbsp;každé story, na kterou se člověk opravdu podíval, a&nbsp;kontrola, která dovolí počtu nepřečtených stories jen klesat. Stejnou poctivost dostal i&nbsp;měřicí přístroj: když se ukázalo, že sčítání zbývajících míst počítá i&nbsp;prózu v&nbsp;komentářích, opravilo se a&nbsp;dokumentace varuje, aby se tabulky přes tu opravu nesrovnávaly.
 

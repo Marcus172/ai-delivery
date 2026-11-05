@@ -1,4 +1,4 @@
-/** Everything an AI Delivery chapter (MDX) may embed, one import line per file. */
+/** Everything an MDX body (AI Delivery chapter, Results, case) may embed, one import line per file. */
 export { default as Note } from "./Note.astro";
 export { default as Stat } from "./Stat.astro";
 export { default as DecisionTrail } from "./diagrams/DecisionTrail.astro";
@@ -12,3 +12,6 @@ export { default as ResultsGrid } from "./diagrams/ResultsGrid.astro";
 export { default as RoleMatrix } from "./diagrams/RoleMatrix.astro";
 export { default as TestPyramid } from "./diagrams/TestPyramid.astro";
 export { default as ToolMap } from "./diagrams/ToolMap.astro";
+export { default as Figure } from "./media/Figure.astro";
+export { default as Clip } from "./media/Clip.astro";
+export { default as YouTube } from "./media/YouTube.astro";

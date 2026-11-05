@@ -22,7 +22,7 @@ const { locale } = Astro.props;
 const name = t(locale, "site.name");
 const stats = LANDING_METRIC_IDS.map((id) => metric(id));
 const estimate = metric("five-to-ten-x");
-const resultsHref = localizedPath(locale, "ai-delivery", "results");
+const resultsHref = localizedPath(locale, "wins", "results");
 // Each sentence of the claim stays on its own line when the two do not fit side by side.
 const claimSentences = LANDING.headline[locale].split(/(?<=\.)\s+/);
 
@@ -311,7 +311,7 @@ const OFFER_ICONS: Record<string, string> = {
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
   }
   .teaser {
@@ -351,6 +351,11 @@ const OFFER_ICONS: Record<string, string> = {
     color: var(--acc);
   }
 
+  @media (max-width: 1299px) {
+    .teasers {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
   @media (max-width: 899px) {
     .hero {
       grid-template-columns: 1fr;

@@ -14,6 +14,7 @@ interface Props {
 const { locale } = Astro.props;
 const next = [
   { page: "ai-delivery", title: t(locale, "nav.ai-delivery"), body: t(locale, "journey.nextAi") },
+  { page: "wins", title: t(locale, "nav.wins"), body: t(locale, "journey.nextWins") },
   { page: "cv", title: t(locale, "nav.cv"), body: t(locale, "journey.nextCv") },
 ] as const;
 ---
@@ -64,9 +65,9 @@ const next = [
     margin: 0;
     padding: 0;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
-    max-width: 50rem;
+    max-width: 72rem;
   }
   .next-link {
     display: grid;

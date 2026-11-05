@@ -2,7 +2,24 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 /** All 8 pages, relative to the base URL. */
-const PAGES = ["", "journey/", "ai-delivery/", "cv/", "cs/", "cs/journey/", "cs/ai-delivery/", "cs/cv/"];
+const PAGES = [
+  "",
+  "journey/",
+  "ai-delivery/",
+  "wins/",
+  "wins/brand-voice/",
+  "wins/accessibility/",
+  "wins/tailwind/",
+  "cv/",
+  "cs/",
+  "cs/journey/",
+  "cs/ai-delivery/",
+  "cs/wins/",
+  "cs/wins/brand-voice/",
+  "cs/wins/accessibility/",
+  "cs/wins/tailwind/",
+  "cs/cv/",
+];
 const THEMES = ["light", "dark"] as const;
 const TAGS = ["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"];
 

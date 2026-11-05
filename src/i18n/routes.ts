@@ -1,13 +1,14 @@
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "./locales";
 
-export type PageId = "landing" | "journey" | "ai-delivery" | "cv";
+export type PageId = "landing" | "journey" | "ai-delivery" | "wins" | "cv";
 
-export const PAGE_IDS: readonly PageId[] = ["landing", "journey", "ai-delivery", "cv"];
+export const PAGE_IDS: readonly PageId[] = ["landing", "journey", "ai-delivery", "wins", "cv"];
 
 const PAGE_SEGMENT: Record<PageId, string> = {
   landing: "",
   journey: "journey/",
   "ai-delivery": "ai-delivery/",
+  wins: "wins/",
   cv: "cv/",
 };
 
@@ -32,6 +33,14 @@ export function localizedPath(locale: Locale, page: PageId, hash?: string): stri
   const fragment = hash ? `#${hash.replace(/^#/, "")}` : "";
 
   return `${href(`${localePrefix(locale)}${PAGE_SEGMENT[page]}`)}${fragment}`;
+}
+
+/** Full path of a subpage under a page, e.g. a case under `wins`: `/ai-delivery/cs/wins/tailwind/`. */
+export function subPagePath(locale: Locale, page: PageId, sub: string, hash?: string): string {
+  const fragment = hash ? `#${hash.replace(/^#/, "")}` : "";
+  const segment = sub.replace(/^\/+|\/+$/g, "");
+
+  return `${href(`${localePrefix(locale)}${PAGE_SEGMENT[page]}${segment}/`)}${fragment}`;
 }
 
 /** Same page in another locale. `pathname` includes the base, `hash` includes its `#` (or is empty). */

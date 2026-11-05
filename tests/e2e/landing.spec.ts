@@ -10,16 +10,18 @@ import { t } from "../../src/i18n/ui";
 const URL_OF: Record<Locale, string> = { en: "", cs: "cs/" };
 const PATH_OF: Record<
   Locale,
-  Record<"journey" | "ai-delivery" | "cv", string>
+  Record<"journey" | "ai-delivery" | "wins" | "cv", string>
 > = {
   en: {
     journey: "/ai-delivery/journey/",
     "ai-delivery": "/ai-delivery/ai-delivery/",
+    wins: "/ai-delivery/wins/",
     cv: "/ai-delivery/cv/",
   },
   cs: {
     journey: "/ai-delivery/cs/journey/",
     "ai-delivery": "/ai-delivery/cs/ai-delivery/",
+    wins: "/ai-delivery/cs/wins/",
     cv: "/ai-delivery/cs/cv/",
   },
 };
@@ -103,10 +105,10 @@ for (const locale of LOCALES) {
       expect(alt).toMatch(locale === "cs" ? /portrét/i : /portrait/i);
     });
 
-    test("links to Journey, AI Delivery and CV", async ({ page }) => {
+    test("links to Journey, AI Delivery, Wins & cases and CV", async ({ page }) => {
       await page.goto(URL_OF[locale]);
       const main = page.locator("main");
-      for (const key of ["journey", "ai-delivery", "cv"] as const) {
+      for (const key of ["journey", "ai-delivery", "wins", "cv"] as const) {
         const links = main.locator(`a[href^="${PATH_OF[locale][key]}"]`);
         expect(await links.count(), key).toBeGreaterThan(0);
       }

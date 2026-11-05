@@ -7,10 +7,14 @@ import { t } from "../../src/i18n/ui";
 
 const URL: Record<Locale, string> = { en: "ai-delivery/", cs: "cs/ai-delivery/" };
 const CHAPTERS_1_6 = ["principle", "flow", "tooling", "guardrails", "enablement", "planning"];
-const CHAPTERS_7_11 = ["case-persona", "case-a11y", "case-tailwind", "results", "offer"];
-const ALL_CHAPTERS = [...CHAPTERS_1_6, ...CHAPTERS_7_11];
-/** The fictional brand used for every persona and accessibility example. */
-const FICTIONAL_BRAND = "Ferrylane";
+const ALL_CHAPTERS = [...CHAPTERS_1_6, "offer"];
+/** Anchors that moved to Wins & cases, and where they land now (relative to the locale root). */
+const MOVED: Record<string, string> = {
+  results: "wins/#results",
+  "case-persona": "wins/brand-voice/",
+  "case-a11y": "wins/accessibility/",
+  "case-tailwind": "wins/tailwind/",
+};
 const denylist = loadDenylistText();
 const cvOnly = denylist ? parseDenylist(denylist).filter((r) => r.scope === "cv-only") : [];
 
@@ -74,7 +78,7 @@ for (const locale of LOCALES) {
       await page.goto(URL[locale]);
       const stats = page.locator("main .stat");
       const n = await stats.count();
-      expect(n).toBeGreaterThanOrEqual(8);
+      expect(n).toBeGreaterThanOrEqual(6);
       for (let i = 0; i < n; i++) {
         const badge = stats.nth(i).locator("small").first();
         await expect(badge).toBeVisible();
@@ -169,7 +173,7 @@ for (const locale of LOCALES) {
       });
     }
 
-    test("chapters 7–11 follow 1–6 as sections with their own h2 and TOC entry", async ({ page }) => {
+    test("the offer follows 1–6 as chapter 07, with the bridge to Wins & cases before it", async ({ page }) => {
       await page.goto(URL[locale]);
       const ids = await page.locator("main section[data-chapter]").evaluateAll((els) => els.map((el) => el.id));
       expect(ids).toEqual(ALL_CHAPTERS);
@@ -180,35 +184,33 @@ for (const locale of LOCALES) {
       }
       const hrefs = await page.locator("nav[data-toc]").first().locator("a").evaluateAll((els) => els.map((el) => el.getAttribute("href")));
       expect(hrefs).toEqual(ALL_CHAPTERS.map((id) => `#${id}`));
+
+      const bridge = page.locator("[data-wins-bridge]");
+      await expect(bridge).toHaveCount(1);
+      const next = await bridge.evaluate((el) => el.nextElementSibling?.id);
+      expect(next).toBe("offer");
+      const prefix = locale === "cs" ? "/ai-delivery/cs/" : "/ai-delivery/";
+      const links = await bridge.locator("a").evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+      expect(links).toEqual([
+        `${prefix}wins/brand-voice/`,
+        `${prefix}wins/accessibility/`,
+        `${prefix}wins/tailwind/`,
+        `${prefix}wins/`,
+      ]);
     });
 
-    test("the results chapter has the measured set with periods and an open caveats block of four or more", async ({ page }) => {
+    test("no case or results chapter is left on the page", async ({ page }) => {
       await page.goto(URL[locale]);
-      const results = page.locator("section#results");
-      const measured = results.locator(".stat[data-kind=measured]");
-      expect(await measured.count()).toBeGreaterThanOrEqual(8);
-      for (let i = 0; i < (await measured.count()); i++) await expect(measured.nth(i).locator(".period")).toBeVisible();
-      const caveats = results.locator("[data-caveats]");
-      await expect(caveats).toHaveCount(1);
-      expect(await caveats.locator("li").count()).toBeGreaterThanOrEqual(4);
-      // The one estimate on the page lives in chapter 1; Results only points at it, never repeats it among measured figures.
-      await expect(results.locator(".stat[data-kind=estimate]")).toHaveCount(0);
-      const pointer = results.locator("[data-estimate]");
-      await expect(pointer).toHaveCount(1);
-      await expect(pointer.locator("a[href='#principle']")).toHaveCount(1);
-      expect(await pointer.textContent()).not.toMatch(/5\s?[–-]\s?10\s?×/);
+      for (const id of Object.keys(MOVED)) await expect(page.locator(`#${id}`)).toHaveCount(0);
     });
 
-    test("persona and accessibility examples use the fictional brand only", async ({ page }) => {
-      await page.goto(URL[locale]);
-      for (const id of ["case-persona", "case-a11y"]) {
-        const examples = page.locator(`section#${id} .example`);
-        expect(await examples.count(), id).toBeGreaterThan(0);
-        const text = (await page.locator(`section#${id}`).textContent()) ?? "";
-        expect(text, id).toContain(FICTIONAL_BRAND);
-        for (const rule of cvOnly) expect(matchesRule(rule, text), rule.label).toBe(false);
-      }
-    });
+    for (const [anchor, target] of Object.entries(MOVED)) {
+      test(`old anchor #${anchor} forwards to ${target}`, async ({ page }) => {
+        await page.goto(`${URL[locale]}#${anchor}`);
+        const prefix = locale === "cs" ? "/ai-delivery/cs/" : "/ai-delivery/";
+        await expect(page).toHaveURL(new RegExp(`${(prefix + target).replace(/[/#]/g, "\\$&")}$`));
+      });
+    }
 
     test("the offer chapter closes into the three offer cards and the calls to action", async ({ page }) => {
       await page.goto(URL[locale]);
@@ -229,7 +231,8 @@ for (const locale of LOCALES) {
     test("says front-end only inside the tracker-scope caveat", async ({ page }) => {
       await page.goto(URL[locale]);
       const text = (await page.locator("main").textContent()) ?? "";
-      const caveat = (await page.locator(".stat[data-metric=tracker-scope]").textContent()) ?? "";
+      // The tracker-scope caveat lives with Results on Wins & cases now; nothing here may say front-end.
+      const caveat = (await page.locator(".stat[data-metric=tracker-scope]").allTextContents()).join("");
       const outside = text.replace(caveat, "");
       expect(outside).not.toMatch(/front[-\s]?end/i);
     });

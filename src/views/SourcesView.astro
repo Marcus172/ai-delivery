@@ -170,8 +170,32 @@ const photo = (handle: string) => {
     line-height: 1.5;
   }
   .person {
+    position: relative;
     grid-template-rows: auto 1fr;
     gap: 0.75rem;
+    transition: background-color 0.15s ease;
+  }
+  /* The whole card is the link: the profile link stretches over it, so there is one link per person. */
+  .profile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .person:hover {
+    background: color-mix(in srgb, var(--tint) 80%, var(--ink) 8%);
+  }
+  .person:focus-within {
+    outline: 2px solid var(--acc);
+    outline-offset: 2px;
+  }
+  .profile:focus-visible {
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .person {
+      transition: none;
+    }
   }
   .profile {
     display: grid;
@@ -199,7 +223,7 @@ const photo = (handle: string) => {
     color: var(--mute);
     overflow-wrap: anywhere;
   }
-  .profile:hover .name {
+  .person:hover .name {
     text-decoration: underline;
   }
   .x {

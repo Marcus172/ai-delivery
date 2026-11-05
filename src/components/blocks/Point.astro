@@ -1,5 +1,5 @@
 ---
-/** One claim in a `<Glance>`: a short title, one or two sentences, optionally the figure that proves it. */
+/** One claim in a `<Glance>`: a short title, one or two sentences, optionally the figure that proves it (only an estimate shows its badge, as on the rest of AI Delivery). */
 import { metric } from "../../data/metrics";
 import type { Locale } from "../../i18n/locales";
 import { t } from "../../i18n/ui";
@@ -20,7 +20,7 @@ const m = stat ? metric(stat) : undefined;
     m && (
       <p class="v">
         <b>{m.value[locale]}</b>
-        <small>{t(locale, m.kind === "measured" ? "badge.measured" : "badge.estimate")}</small>
+        {m.kind === "estimate" && <small>{t(locale, "badge.estimate")}</small>}
       </p>
     )
   }

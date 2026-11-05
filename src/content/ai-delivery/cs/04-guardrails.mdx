@@ -4,9 +4,28 @@ order: 4
 title: "Brány, které platí i bez AI"
 summary: "Každé pravidlo pro agenta stojí kontext, proto jsou pravidla krátká a jejich velikost se měří. Co umí zkontrolovat stroj, kontroluje kód, nikdy to nezůstane na promptu, a samotný AI setup má vlastní regresní testy."
 ---
-import { GatesTable, Note, Stat } from "../../../components/chapter";
+import { Detail, GatesTable, Glance, Note, Point, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
+
+<Glance locale={locale}>
+  <Point locale={locale} title="Nejdřív skripty, štíhlý kontext" stat="context-diet">
+    Deterministické kroky jsou skripty, které agentovi vrátí krátký výsledek, a&nbsp;každé pravidlo i&nbsp;skill prošly dietou kontextu.
+  </Point>
+  <Point locale={locale} title="AI setup má vlastní testy">
+    Sondy po každé změně pravidel nebo skillů spustí čisté session agenta a&nbsp;ověří, že pořád ví, co má.
+  </Point>
+  <Point locale={locale} title="Brány z incidentů">
+    Co umí zkontrolovat stroj, je v&nbsp;bráně, každý krok jmenuje incident, kterému brání, a&nbsp;starý dluh se smí jen zmenšovat.
+  </Point>
+  <Point locale={locale} title="Měřená kontextová vrstva">
+    Agent se ptá lokálního grafu kódu místo prohledávání repozitáře; ukazuju jen zisky, které vydržely opakovaná kola.
+  </Point>
+</Glance>
+
+<GatesTable locale={locale} />
+
+<Detail locale={locale}>
 
 ### Nejdřív skripty, štíhlý kontext
 
@@ -40,8 +59,8 @@ Co umí zkontrolovat stroj, není v&nbsp;promptu, ale v&nbsp;bráně. Každý kr
 
 <Stat id="ci-gate-steps" locale={locale} />
 
-<GatesTable locale={locale} />
-
 <Note>
   <strong>Provozní mantinely</strong> leží pod tím: allowlist a&nbsp;denylist toho, co agent smí spouštět, obsah stránek z&nbsp;prohlížeče jako nedůvěryhodná data, ne instrukce, pravidla pro osobní údaje v&nbsp;zachyceném provozu a&nbsp;žádný plán ani zdroj poslaný hostovanému validátoru. Paralelní agenty řeší infrastruktura (jeden worktree, jeden port pro každého), ne disciplína.
 </Note>
+
+</Detail>

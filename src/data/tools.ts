@@ -276,13 +276,13 @@ export const TOOLS: Tool[] = [
   {
     id: "typescript-go",
     name: "TypeScript 7 native",
-    label: l("TypeScript 7 (native preview)", "TypeScript 7 (nativní preview)"),
+    label: l("TypeScript 7 LSP", "TypeScript 7 LSP"),
     url: "https://github.com/microsoft/typescript-go",
     match: /\bTypeScript 7\b/,
     group: "context",
     what: l(
-      "The native TypeScript 7 compiler and language server: type-checks fast enough for agents running in parallel.",
-      "Nativní kompilátor a language server TypeScriptu 7: typecheck dost rychlý pro paralelní agenty.",
+      "The native TypeScript 7 language server: type information fast enough for agents running in parallel.",
+      "Nativní language server TypeScriptu 7: typové informace dost rychlé pro paralelní agenty.",
     ),
   },
   {

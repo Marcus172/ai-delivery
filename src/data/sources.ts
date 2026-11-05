@@ -14,6 +14,7 @@ export const TOOL_GROUPS: { id: ToolGroup; title: L10n }[] = [
 
 export const toolsIn = (group: ToolGroup): Tool[] => TOOLS.filter((x) => x.group === group);
 
+/** The public X profile picture lives in `src/assets/people/<handle, lowercase, no leading _>.jpg`, so the page makes no request to X. */
 export type Person = { name: string; handle: string; known: L10n };
 
 /** People whose work I follow and borrow ideas from. Only what they are publicly known for. */

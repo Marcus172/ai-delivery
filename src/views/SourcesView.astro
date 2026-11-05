@@ -1,4 +1,6 @@
 ---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
 import Eyebrow from "../components/Eyebrow.astro";
 import Section from "../components/Section.astro";
 import { csTypo } from "../data/l10n";
@@ -13,6 +15,13 @@ interface Props {
 const { locale } = Astro.props;
 const tt = (key: UiKey) => (locale === "cs" ? csTypo(t(locale, key)) : t(locale, key));
 const host = (url: string) => new URL(url).host.replace(/^www\./, "");
+const photos = import.meta.glob<{ default: ImageMetadata }>("../assets/people/*.jpg", { eager: true });
+const photo = (handle: string) => {
+  const file = photos[`../assets/people/${handle.toLowerCase().replace(/^_/, "")}.jpg`];
+  if (!file) throw new Error(`Missing photo for @${handle}`);
+
+  return file.default;
+};
 ---
 
 <div class="column">
@@ -35,11 +44,17 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, "");
       {
         PEOPLE.map((p) => (
           <li class="person" data-person={p.handle}>
-            <h3>{p.name}</h3>
+            <a class="profile" href={`https://x.com/${p.handle}`}>
+              <Image class="avatar" src={photo(p.handle)} alt="" width={96} widths={[56, 96]} sizes="3.5rem" loading="lazy" />
+              <span class="who">
+                <span class="name">{p.name}</span>
+                <span class="handle">@{p.handle}</span>
+              </span>
+              <svg class="x" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78zm-1.08 16.17h1.7L7.42 4.73H5.6z" />
+              </svg>
+            </a>
             <p class="what">{p.known[locale]}</p>
-            <p class="links">
-              <a href={`https://x.com/${p.handle}`}>@{p.handle}</a>
-            </p>
           </li>
         ))
       }
@@ -153,6 +168,45 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, "");
     font-size: 0.875rem;
     color: var(--mute);
     line-height: 1.5;
+  }
+  .person {
+    grid-template-rows: auto 1fr;
+    gap: 0.75rem;
+  }
+  .profile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+  .profile :global(.avatar) {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .who {
+    display: grid;
+    min-width: 0;
+  }
+  .name {
+    font-weight: 700;
+    font-size: 1.0625rem;
+  }
+  .handle {
+    font-size: 0.875rem;
+    color: var(--mute);
+    overflow-wrap: anywhere;
+  }
+  .profile:hover .name {
+    text-decoration: underline;
+  }
+  .x {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--mute);
+    align-self: start;
   }
   .links {
     display: flex;

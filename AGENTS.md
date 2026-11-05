@@ -73,6 +73,12 @@ git-tracked files: `git add -N <file>` a new file before running `npm run nda` o
 - EN and CS stay structurally in sync: same chapters, same order, same components. Change both in the
   same commit. CS copy uses Czech typography (the `l()` helper handles it in data files).
 - Never hard-code the base path; use the i18n route helpers.
+- Third-party tools: every mention links to the tool's official site. Add the tool to
+  `src/data/tools.ts` and prose, CV and Journey link it automatically, once per paragraph. A tool in
+  use today also gets `group`, `what` (EN + CS) and `docs` so it shows on the Sources page; a tool
+  only from the past (CV, Journey) gets `past: true` instead. Not linked: programming languages,
+  operating systems, employers and clients, historical job titles, page and chapter titles, SVG
+  diagrams.
 - Accessibility is a showcased result: WCAG 2.2 AA, axe-clean, diagrams legible in both themes,
   motion off under `prefers-reduced-motion`.
 

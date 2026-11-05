@@ -67,6 +67,8 @@ git-tracked files: `git add -N <file>` a new file before running `npm run nda` o
   everything", "10×"). The words *ratchet* and *ráčna* are banned (the dist gate enforces it).
 - Numbers: every figure is labeled **measured** (with period/baseline) or **estimate**. The 5–10×
   is Marek's estimate and is always shown separately. Follow the number rules in spec §5.3.
+  Exception (author's call): AI Delivery hides the measured badge and the period; the estimate keeps
+  its badge there. Wins & cases and the landing page keep the full labels.
 - The site reads as the current state. History belongs to Journey.
 - EN and CS stay structurally in sync: same chapters, same order, same components. Change both in the
   same commit. CS copy uses Czech typography (the `l()` helper handles it in data files).

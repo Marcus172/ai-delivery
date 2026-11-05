@@ -297,6 +297,13 @@ const moved: Record<string, string> = {
     color: var(--mute);
     max-width: 60ch;
   }
+  /* AI Delivery explains how the system works: figures stand without the measured badge and period
+     (those live on Wins & cases). Only the estimate keeps its badge, so it never reads as measured. */
+  .chapters :global(.stat[data-kind="measured"] > small),
+  .chapters :global(.stat > .period) {
+    display: none;
+  }
+
   /* ---------- bridge to Wins & cases ---------- */
   .bridge {
     margin-block: 1rem 0;

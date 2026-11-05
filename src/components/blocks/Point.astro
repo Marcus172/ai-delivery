@@ -1,0 +1,71 @@
+---
+/** One claim in a `<Glance>`: a short title, one or two sentences, optionally the figure that proves it. */
+import { metric } from "../../data/metrics";
+import type { Locale } from "../../i18n/locales";
+import { t } from "../../i18n/ui";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  /** Metric id whose value and measured/estimate badge back the claim. */
+  stat?: string;
+}
+
+const { locale, title, stat } = Astro.props;
+const m = stat ? metric(stat) : undefined;
+---
+
+<li class="point" data-metric={stat}>
+  {
+    m && (
+      <p class="v">
+        <b>{m.value[locale]}</b>
+        <small>{t(locale, m.kind === "measured" ? "badge.measured" : "badge.estimate")}</small>
+      </p>
+    )
+  }
+  <p class="t">{title}</p>
+  <div class="x"><slot /></div>
+</li>
+
+<style>
+  .point {
+    display: grid;
+    align-content: start;
+    gap: 0.375rem;
+    padding: 1rem 1.125rem 1.125rem;
+    background: var(--tint);
+    border-top: 2px solid var(--acc);
+    border-radius: 0 0 0.75rem 0.75rem;
+  }
+  .v {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0 0 0.125rem;
+  }
+  .v b {
+    font-size: 1.75rem;
+    font-weight: 800;
+    font-variation-settings: "wdth" 75;
+    line-height: 1;
+  }
+  .v small {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    color: var(--mute);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.125rem 0.5rem;
+  }
+  .t {
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .x {
+    font-size: 0.875rem;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+</style>

@@ -1,0 +1,12 @@
+---
+import Base from "../../layouts/Base.astro";
+import SourcesView from "../../views/SourcesView.astro";
+import { t } from "../../i18n/ui";
+
+const locale = "cs";
+const page = "sources";
+---
+
+<Base locale={locale} page={page} title={t(locale, "page.sources.title")} description={t(locale, "page.sources.description")}>
+  <SourcesView locale={locale} />
+</Base>

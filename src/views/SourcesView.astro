@@ -1,0 +1,164 @@
+---
+import Eyebrow from "../components/Eyebrow.astro";
+import Section from "../components/Section.astro";
+import { csTypo } from "../data/l10n";
+import { PEOPLE, TOOL_GROUPS, toolsIn } from "../data/sources";
+import type { Locale } from "../i18n/locales";
+import { t, type UiKey } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tt = (key: UiKey) => (locale === "cs" ? csTypo(t(locale, key)) : t(locale, key));
+const host = (url: string) => new URL(url).host.replace(/^www\./, "");
+---
+
+<div class="column">
+  <header class="head">
+    <Eyebrow>{tt("sources.eyebrow")}</Eyebrow>
+    <h1>{tt("sources.title")}</h1>
+    <p class="lead">{tt("sources.lead")}</p>
+    <nav class="jump" aria-label={tt("sources.tools")}>
+      <ul>
+        {TOOL_GROUPS.map((g) => <li><a href={`#${g.id}`}>{g.title[locale]}</a></li>)}
+        <li><a href="#people">{tt("sources.people")}</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  {
+    TOOL_GROUPS.map((g, i) => (
+      <Section id={g.id} first={i === 0}>
+        <h2>{g.title[locale]}</h2>
+        <ul class="tools" data-tool-group={g.id}>
+          {toolsIn(g.id).map((x) => (
+            <li class="tool" data-tool={x.id}>
+              <h3>{x.label?.[locale] ?? x.name}</h3>
+              <p class="what">{x.what?.[locale]}</p>
+              <p class="links">
+                <a href={x.url}>
+                  <span class="k">{tt("sources.site")}</span> {host(x.url)}
+                </a>
+                {x.docs && (
+                  <a href={x.docs}>
+                    <span class="k">{tt("sources.docs")}</span> {host(x.docs)}
+                  </a>
+                )}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    ))
+  }
+
+  <Section id="people">
+    <h2>{tt("sources.people")}</h2>
+    <p class="intro">{tt("sources.peopleLead")}</p>
+    <ul class="people">
+      {
+        PEOPLE.map((p) => (
+          <li class="person" data-person={p.handle}>
+            <h3>{p.name}</h3>
+            <p class="what">{p.known[locale]}</p>
+            <p class="links">
+              <a href={`https://x.com/${p.handle}`}>@{p.handle}</a>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+</div>
+
+<style>
+  .column {
+    max-width: 54rem;
+    margin-inline: auto;
+  }
+  .head {
+    padding-bottom: 2.5rem;
+  }
+  .head h1 {
+    font-size: var(--page-title-size);
+    max-width: 20ch;
+  }
+  .lead {
+    margin-top: 1.5rem;
+    max-width: 64ch;
+    font-size: 1.125rem;
+  }
+  .jump ul {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .jump a {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .jump a:hover {
+    border-color: var(--acc);
+  }
+  h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  :global(section[id]) {
+    scroll-margin-top: 0.75rem;
+  }
+  .intro {
+    margin-top: 0.75rem;
+    color: var(--mute);
+  }
+  .tools,
+  .people {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+    gap: 0.75rem;
+  }
+  .tool,
+  .person {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.5rem;
+    padding: 1.125rem 1.25rem;
+    background: var(--tint);
+    border-radius: 0.75rem;
+  }
+  .tool h3,
+  .person h3 {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+  .what {
+    font-size: 0.875rem;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 1rem;
+    font-size: 0.8125rem;
+  }
+  .links a {
+    font-weight: 600;
+  }
+  .links .k {
+    color: var(--mute);
+    font-weight: 400;
+  }
+</style>

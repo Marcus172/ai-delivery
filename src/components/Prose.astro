@@ -3,9 +3,18 @@
  * Long-form body for MDX content (AI Delivery chapters, Results, case pages): text measure, lists, stats, examples, caveats.
  * Text rules target the body's own children only (`>`), so they never leak into the markup of a diagram.
  */
+import { linkToolsInHtml } from "../lib/link-tools-html";
+
+interface Props {
+  /** Link the first mention of each external tool (off for a nested body that the outer one covers). */
+  toolLinks?: boolean;
+}
+
+const { toolLinks = true } = Astro.props;
+const html = await Astro.slots.render("default");
 ---
 
-<div class="body"><slot /></div>
+<div class="body" set:html={toolLinks ? linkToolsInHtml(html) : html} />
 
 <style>
   .body {

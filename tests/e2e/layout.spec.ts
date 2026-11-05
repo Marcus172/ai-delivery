@@ -9,12 +9,14 @@ const PAGES: Array<[string, string]> = [
   ["ai-delivery/", `${BASE}cs/ai-delivery/`],
   ["wins/", `${BASE}cs/wins/`],
   ["wins/tailwind/", `${BASE}cs/wins/tailwind/`],
+  ["sources/", `${BASE}cs/sources/`],
   ["cv/", `${BASE}cs/cv/`],
   ["cs/", BASE],
   ["cs/journey/", `${BASE}journey/`],
   ["cs/ai-delivery/", `${BASE}ai-delivery/`],
   ["cs/wins/", `${BASE}wins/`],
   ["cs/wins/brand-voice/", `${BASE}wins/brand-voice/`],
+  ["cs/sources/", `${BASE}sources/`],
   ["cs/cv/", `${BASE}cv/`],
 ];
 
@@ -148,7 +150,7 @@ const SCALE: Array<[number, number]> = [
 for (const [width, rootPx] of SCALE) {
   test(`root font size is ${rootPx}px at ${width}px and nothing overflows sideways`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    for (const url of ["", "journey/", "ai-delivery/", "wins/", "wins/brand-voice/", "cv/"]) {
+    for (const url of ["", "journey/", "ai-delivery/", "wins/", "wins/brand-voice/", "sources/", "cv/"]) {
       await page.goto(`${BASE}${url}`);
       const { root, overflow } = await page.evaluate(() => ({
         root: parseFloat(getComputedStyle(document.documentElement).fontSize),

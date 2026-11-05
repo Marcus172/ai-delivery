@@ -4,11 +4,30 @@ order: 2
 title: "Jeden kontrakt, čtyři vrstvy"
 summary: "Delivery flow je kontrakt. Co se liší mezi klienty, repozitáři a lidmi, žije ve třech dalších vrstvách s jasným vlastníkem, takže výměna nástroje ani druhý klient se choreografie nedotknou."
 ---
-import { FlowLayers, Note, Stat } from "../../../components/chapter";
+import { Detail, FlowLayers, Glance, Note, Point, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
 
-Jádrem flow je **generický kontrakt**: pořadí kroků, sedm invariantů (každý vznikl po skutečném incidentu), pravidla, jak se vrstvy rozlišují, a&nbsp;číslo verze s&nbsp;migračními poznámkami. Grep guard kontraktu zakazuje jmenovat tracker, hosting, CI, klienta i&nbsp;nástroj. Skilly, které vývojáři skutečně spouštějí, jsou tenké vstupní body; logika žije pod nimi.
+<Glance locale={locale}>
+  <Point locale={locale} title="Kontrakt nezná žádný nástroj">
+    Pořadí kroků a&nbsp;sedm invariantů, každý sepsaný po skutečném incidentu. Grep guard mu zakazuje jmenovat tracker, hosting, CI, klienta i&nbsp;nástroj.
+  </Point>
+  <Point locale={locale} title="Čtyři vrstvy, každá s vlastníkem">
+    Co se liší mezi klienty, repozitáři a&nbsp;lidmi, má vlastní vrstvu. Nástroje žijí jen v&nbsp;osobní, za uzavřeným seznamem bodů rozšíření.
+  </Point>
+  <Point locale={locale} title="Hodnoty se slučují, procedura vyhrává celá">
+    Hodnoty se slučují po klíčích shora dolů; procedury se hledají zdola a&nbsp;první nalezený soubor platí celý.
+  </Point>
+  <Point locale={locale} title="Doctor ukáže, odkud se hodnota vzala">
+    Kontrola verze, která varuje a&nbsp;nikdy nespadne, a&nbsp;diagnostický příkaz s&nbsp;původem každé hodnoty.
+  </Point>
+</Glance>
+
+<FlowLayers locale={locale} />
+
+<Detail locale={locale}>
+
+Jádrem flow je **generický kontrakt**: pořadí kroků, sedm invariantů (každý vznikl po skutečném incidentu), pravidla, jak se vrstvy rozlišují, a&nbsp;číslo verze s&nbsp;migračními poznámkami. Skilly, které vývojáři skutečně spouštějí, jsou tenké vstupní body; logika žije pod nimi.
 
 Každý kus logiky pak musel odpovědět na jednu otázku: *liší se to mezi dvěma skutečnými repozitáři?* Odpověď ho zařadila do jedné ze tří dalších vrstev.
 
@@ -20,10 +39,10 @@ Každý kus logiky pak musel odpovědět na jednu otázku: *liší se to mezi dv
 
 **Klientský preset** implementuje capabilities, které kontrakt pojmenovává, pro tracker, hosting a&nbsp;release model daného klienta: najdi pracovní položku, zvol režim triáže, urči cílové release linie, otevři pull request, zamerguj změnu, posuň stav položky. **Vrstva repozitáře** přidává těch pár procedur, které jsou vlastností kódu, třeba jeho quality gate a&nbsp;způsob, jak se zakládá pracoviště. **Osobní vrstva** se nikdy necommituje; drží volbu nástrojů každého vývojáře za uzavřeným seznamem bodů rozšíření a&nbsp;k&nbsp;tomu preference jako modely nebo umístění na stroje.
 
-<FlowLayers locale={locale} />
-
-Vrstvy rozlišují dvě různá pravidla. **Hodnoty** se čtou od generického defaultu dolů k&nbsp;osobní vrstvě a&nbsp;slučují se po klíčích, takže nižší vrstva přebije jen to, co sama uvede. **Procedury** se hledají opačně, osobní vrstva první, a&nbsp;první nalezený soubor platí celý, protože dva postupy sloučit nejde. Jedna asymetrie je záměrná: poskytovatel checkoutu má týmový default v&nbsp;repozitáři, jediný osobní soubor ho přebije a&nbsp;po jeho smazání se default vrátí. Bez defaultu by nový člen týmu tiše pracoval v&nbsp;checkoutu orchestrátoru. Každá capability navíc hlásí, který soubor vyhrál, takže po běhu jde dokázat, že se osobní override opravdu hledal.
+Jedna asymetrie je záměrná: poskytovatel checkoutu má týmový default v&nbsp;repozitáři, jediný osobní soubor ho přebije a&nbsp;po jeho smazání se default vrátí. Bez defaultu by nový člen týmu tiše pracoval v&nbsp;checkoutu orchestrátoru.
 
 <Note>
   <strong>Verzovaný kontrakt a&nbsp;doctor.</strong> Každý běh porovná verzi profilu repozitáře s&nbsp;verzí pluginu. Při neshodě vypíše jeden řádek varování a&nbsp;pokračuje; nikdy nespadne. Diagnostický příkaz ukáže sloučenou konfiguraci s&nbsp;původem každé hodnoty, kde se který bod rozšíření rozlišil, a&nbsp;suchý běh resolverů. Pravidlo za verzováním: osobní kopie procedury, která pořád učí zrušený krok, je horší než chybějící soubor.
 </Note>
+
+</Detail>

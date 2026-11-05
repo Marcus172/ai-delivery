@@ -1,0 +1,267 @@
+---
+import { l, type L10n } from "../../data/l10n";
+import { toolByName } from "../../data/tools";
+import { localizedPath } from "../../i18n/routes";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+type State = "mine" | "default" | "also" | "earlier";
+type Row = { slot: L10n; what: L10n; layer: "team" | "personal"; tools: { name: string; state: State }[] };
+
+const LABEL = l("Which layer offers which tools", "Která vrstva nabízí jaké nástroje");
+const LAYER = { team: l("team", "tým"), personal: l("personal", "osobní") };
+const STATE: Record<State, L10n> = {
+  mine: l("my choice", "moje volba"),
+  default: l("team default", "týmový default"),
+  also: l("also works", "funguje také"),
+  earlier: l("earlier", "dříve"),
+};
+const HEAD = { slot: l("what for", "k čemu"), layer: l("layer", "vrstva"), tools: l("tools", "nástroje") };
+
+// Sources: chapters 3, 5 and 6 of this page and the Journey page; tool names only, nothing client-specific.
+const ROWS: Row[] = [
+  {
+    slot: l("Agent and model", "Agent a model"),
+    what: l("reads, drafts, writes the code and the tests", "čte, navrhuje, píše kód a testy"),
+    layer: "team",
+    tools: [
+      { name: "Claude Code", state: "default" },
+      { name: "Codex", state: "also" },
+      { name: "OpenCode", state: "also" },
+      { name: "Pi", state: "also" },
+    ],
+  },
+  {
+    slot: l("Rules and skills", "Pravidla a skilly"),
+    what: l("how the team's flow reaches every machine", "jak se týmový flow dostane na každý stroj"),
+    layer: "team",
+    tools: [
+      { name: "Claude Code plugin marketplace", state: "default" },
+      { name: "AGENTS.md", state: "default" },
+    ],
+  },
+  {
+    slot: l("Workspace and orchestration", "Pracoviště a orchestrace"),
+    what: l("a workspace per ticket, agents in it, what is running", "pracoviště na tiket, agenti v něm, co běží"),
+    layer: "personal",
+    tools: [
+      { name: "Paseo", state: "mine" },
+      { name: "worktrunk", state: "default" },
+      { name: l("none, in place", "nic, na místě")[locale], state: "also" },
+      { name: "Superset", state: "earlier" },
+      { name: "cmux", state: "earlier" },
+    ],
+  },
+  {
+    slot: l("Planning and review", "Plánování a review"),
+    what: l("decision maps and specs a person reviews visually", "mapy rozhodnutí a specy, které člověk čte vizuálně"),
+    layer: "personal",
+    tools: [
+      { name: "Agent-Native", state: "mine" },
+      { name: "Wayfinder", state: "mine" },
+    ],
+  },
+  {
+    slot: l("Fleet and state", "Flotila a stav"),
+    what: l("several machines, one state of the work", "víc strojů, jeden stav práce"),
+    layer: "personal",
+    tools: [
+      { name: "git", state: "mine" },
+      { name: "chezmoi", state: "mine" },
+      { name: "Tailscale", state: "mine" },
+    ],
+  },
+];
+const MORE = l("Every tool, what it is for and its documentation:", "Všechny nástroje, k čemu jsou a jejich dokumentace:");
+const MORE_LINK = l("Sources", "Zdroje");
+const NOTE = l(
+  "The contract names none of them: tools live only in the team and personal layers, so a swap never touches the process.",
+  "Kontrakt nezná žádný z nich: nástroje žijí jen v týmové a osobní vrstvě, takže výměna nikdy nesáhne na proces.",
+);
+---
+
+<figure class="tl" data-diagram="tool-layers">
+  <figcaption class="sr">{LABEL[locale]}</figcaption>
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">{HEAD.slot[locale]}</th>
+        <th scope="col">{HEAD.layer[locale]}</th>
+        <th scope="col">{HEAD.tools[locale]}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        ROWS.map((r) => (
+          <tr data-layer={r.layer}>
+            <th scope="row">
+              <b>{r.slot[locale]}</b>
+              <span>{r.what[locale]}</span>
+            </th>
+            <td>
+              <span class="layer">{LAYER[r.layer][locale]}</span>
+            </td>
+            <td>
+              <ul class="chips">
+                {r.tools.map((tool) => {
+                  const ext = toolByName(tool.name);
+
+                  return (
+                    <li class="chip" data-state={tool.state}>
+                      {ext ? <a href={ext.url}>{tool.name}</a> : tool.name}
+                      <span class="sr"> ({STATE[tool.state][locale]})</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+  <p class="legend" aria-hidden="true">
+    {(["mine", "default", "also", "earlier"] as State[]).map((s) => <span class="chip" data-state={s}>{STATE[s][locale]}</span>)}
+  </p>
+  <p class="note">
+    {NOTE[locale]} {MORE[locale]} <a href={localizedPath(locale, "sources")}>{MORE_LINK[locale]}</a>.
+  </p>
+</figure>
+
+<style>
+  .tl {
+    margin: 2rem 0 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead th {
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--mute);
+    padding: 0 0.75rem 0.5rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody th,
+  tbody td {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.875rem 0.75rem 0.875rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  tbody th {
+    width: 34%;
+    font-weight: 400;
+  }
+  tbody th b {
+    display: block;
+    font-size: 0.9375rem;
+  }
+  tbody th span {
+    display: block;
+    font-size: 0.8125rem;
+    color: var(--mute);
+    line-height: 1.4;
+    margin-top: 0.125rem;
+  }
+  .layer {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.1875rem 0.5rem;
+    border-radius: 0.375rem;
+    background: var(--tint);
+  }
+  tr[data-layer="personal"] .layer {
+    background: transparent;
+    border: 1px dashed var(--acc);
+    color: var(--acc-text);
+  }
+  .chips {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+  }
+  .chip {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 0.3125rem 0.625rem;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .chip a {
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+  .chip a:hover {
+    text-decoration-thickness: 2px;
+  }
+  .chip[data-state="mine"] {
+    background: var(--acc);
+    border-color: var(--acc);
+    /* Dark ink on the accent in both themes: 5:1 in light, 7:1 in dark. */
+    color: #17191c;
+  }
+  .chip[data-state="default"] {
+    border-color: var(--ink);
+  }
+  .chip[data-state="also"] {
+    border-style: dashed;
+    color: var(--mute);
+  }
+  .chip[data-state="earlier"] {
+    color: var(--mute);
+    text-decoration: line-through;
+    border-color: transparent;
+    background: var(--tint);
+  }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin: 0.875rem 0 0;
+  }
+  .legend .chip {
+    font-size: 0.75rem;
+  }
+  .note {
+    margin: 0.75rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--mute);
+    max-width: 68ch;
+  }
+  @media (max-width: 699px) {
+    thead {
+      display: none;
+    }
+    tbody tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      border-bottom: 1px solid var(--line);
+      padding: 0.75rem 0;
+    }
+    tbody th,
+    tbody td {
+      border: 0;
+      padding: 0;
+      width: auto;
+    }
+    tbody td:last-child {
+      grid-column: 1 / -1;
+      padding-top: 0.5rem;
+    }
+  }
+</style>

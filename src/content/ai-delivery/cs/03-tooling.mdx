@@ -2,30 +2,76 @@
 id: tooling
 order: 3
 title: "Vyměnitelné nástroje a malá flotila"
-summary: "Kontrakt jmenuje operace, ne nástroje. Každý vývojář je implementuje v osobní vrstvě vlastním nástrojem, takže výměna mění jen jeho soubory. Dva rovnocenné stroje sdílejí stav práce přes git."
+summary: "Kontrakt jmenuje operace, ne nástroje. Každý vývojář je implementuje v osobní vrstvě vlastním nástrojem, takže výměna mění jen osobní soubory. Dva rovnocenné stroje sdílejí stav práce přes git."
 ---
-import { Note, ToolMap } from "../../../components/chapter";
+import { Detail, Fact, Facts, Glance, Note, Point, ToolLayers, ToolMap } from "../../../components/chapter";
 
 export const locale = "cs";
 
-Kontrakt jmenuje **operace**, ne nástroje: kde jsem, kdo je online, založ pracoviště, spusť v&nbsp;něm příkaz, doruč agentovi brief, co běží, archivuj. Každý vývojář tyhle operace implementuje v&nbsp;osobní vrstvě tím, co mu vyhovuje. Nad jedním repozitářem dnes jeden vývojář jede na Paseu, druhý na worktrunku s&nbsp;přímou session a&nbsp;třetí nepoužívá nic a&nbsp;pracuje na místě. Tři nástroje, jeden proces.
-
-Kontrakt drží od sebe dvě osy: kde vzniká pracovní kopie a&nbsp;kam padá brief pro agenta. Nástroje na pracoviště je pokrývají v&nbsp;různých kombinacích; nástroj, který pokrývá obě, si předá neprůhledný handle sám sobě. Právě to oddělení drží jména nástrojů mimo generickou vrstvu.
+<Glance locale={locale}>
+  <Point locale={locale} title="Operace, ne nástroje">
+    Kontrakt jmenuje sedm operací. Nad jedním repozitářem je tři vývojáři implementují třemi různými nástroji; proces je stejný.
+  </Point>
+  <Point locale={locale} title="Výměna mění jen osobní soubory">
+    Kontrakt i&nbsp;týmová konfigurace zůstávají, jak jsou. Orchestrátor se zatím vyměnil dvakrát a&nbsp;flow se nezměnil.
+  </Point>
+  <Point locale={locale} title="Můj setup: Paseo na flotile">
+    Dva rovnocenné stroje sdílejí stav práce přes git. Osobní setup, ne týmový standard: týmový default je worktrunk na jednom stroji.
+  </Point>
+</Glance>
 
 <ToolMap locale={locale} />
 
-### Co výměna změní
+<ToolLayers locale={locale} />
 
-Výměna nástroje mění jen soubory osobní vrstvy: poskytovatele flotily, poskytovatele checkoutu, UI pracoviště, preference. Kontrakt i&nbsp;týmová konfigurace v&nbsp;repozitáři zůstávají, jak jsou. Všechno ostatní (git replika stavu, profil dotfiles, ssh, worktree hooky, orchestrační smyčka, plan app, privátní síť) na nástroji nezávisí a&nbsp;výměnu přežije beze změny.
-
-Moje vlastní osobní vrstva běží na Paseu: zdarma, end-to-end relay, příkazová řádka na všechno, daemon jako služba, mobilní aplikace.
-
-### Flotila
-
-Delivery flow umožnilo pracovat na mnoha úlohách paralelně a&nbsp;naplno využít rozpočet tokenů (token maxxing). Úzkým hrdlem tím přestaly být tokeny a&nbsp;začal jím být hardware: RAM a&nbsp;CPU pro to, co agenti skutečně spouštějí, třeba end-to-end testy, build a&nbsp;typecheck monorepa nebo dlouho běžící research agenty. Moje osobní vrstva proto sahá přes **flotilu**, která zátěž hardwaru rozkládá: dnes **dva rovnocenné stroje**, notebook a&nbsp;desktop s&nbsp;Linuxem pod Windows. Další stroj nebo VPS se připojí stejným řízeným postupem, bez přestavby. Každý stroj umí řídit i&nbsp;vykonávat; žádná role workera. Práce na tiketu dostane vlastní izolované pracoviště, git worktree s&nbsp;vlastním portem dev serveru odvozeným z&nbsp;názvu větve, takže víc agentů pracuje paralelně na tiketech, review a&nbsp;portech na jiné release linie, a&nbsp;to na kterémkoli stroji, u&nbsp;kterého vývojář zrovna sedí.
-
-Stav práce (meta tiketů, ledgery, paměť, znalosti) je git replika s&nbsp;vlastním merge driverem, který slučuje JSON po klíčích. Konflikt ve stejném poli s&nbsp;různými hodnotami je tvrdý stop, protože znamená, že stejná práce běží dvakrát. Konfigurace je profil v&nbsp;chezmoi, pull-based, takže žádný stroj není hlavní; oba spolu mluví přes privátní síť Tailscale. Když dochází paměť, správce paměti pozastaví nejmladší dávkovou úlohu: plná paměť práci zpomalí, nikdy ji nezabije.
+<Facts label="Flotila">
+  <Fact k="Proč">Paralelní agenti přesunuli úzké hrdlo z&nbsp;tokenů na RAM a&nbsp;CPU: end-to-end testy, build a&nbsp;typecheck monorepa, dlouho běžící research agenti.</Fact>
+  <Fact k="Stroje">Dnes dva, notebook a&nbsp;desktop s&nbsp;Linuxem pod Windows. Další stroj nebo VPS se připojí stejným řízeným postupem.</Fact>
+  <Fact k="Role">Žádné. Každý stroj umí řídit i&nbsp;vykonávat; role workera neexistuje.</Fact>
+  <Fact k="Izolace">Git worktree na tiket, s&nbsp;vlastním portem dev serveru odvozeným z&nbsp;názvu větve.</Fact>
+  <Fact k="Stav práce">Git replika s&nbsp;merge driverem, který slučuje JSON po klíčích. Stejné pole se dvěma hodnotami je tvrdý stop: stejná práce běží dvakrát.</Fact>
+  <Fact k="Konfigurace">Profil v&nbsp;chezmoi, pull-based, takže žádný stroj není hlavní.</Fact>
+  <Fact k="Síť">Privátní síť Tailscale mezi stroji.</Fact>
+  <Fact k="Paměť">Správce paměti pozastaví nejmladší dávkovou úlohu. Plná paměť práci zpomalí, nikdy ji nezabije.</Fact>
+</Facts>
 
 <Note>
   <strong>Poctivě:</strong> flotila je můj osobní setup, ověřený end-to-end oběma směry na skutečných tiketech. Není to týmový standard. Týmový default je worktrunk na jednom stroji a&nbsp;flow tam funguje bez jakékoli flotily.
 </Note>
+
+<Detail locale={locale}>
+
+Kontrakt jmenuje **operace**, ne nástroje: kde jsem, kdo je online, založ pracoviště, spusť v&nbsp;něm příkaz, doruč agentovi brief, co běží, archivuj. Každý vývojář tyhle operace implementuje v&nbsp;osobní vrstvě tím, co mu vyhovuje. Nad jedním repozitářem dnes jeden vývojář jede na Paseu, druhý na worktrunku s&nbsp;přímou session a&nbsp;třetí nepoužívá nic a&nbsp;pracuje na místě.
+
+Kontrakt drží od sebe dvě osy: kde vzniká pracovní kopie a&nbsp;kam padá brief pro agenta. Nástroje na pracoviště je pokrývají v&nbsp;různých kombinacích; nástroj, který pokrývá obě, si předá neprůhledný handle sám sobě. Právě to oddělení drží jména nástrojů mimo generickou vrstvu.
+
+Výměna nástroje mění jen soubory osobní vrstvy: poskytovatele flotily, poskytovatele checkoutu, UI pracoviště, preference. Všechno ostatní (git replika stavu, profil dotfiles, ssh, worktree hooky, orchestrační smyčka, plan app, privátní síť) na nástroji nezávisí a&nbsp;výměnu přežije beze změny.
+
+Moje vlastní osobní vrstva běží na Paseu: zdarma, end-to-end relay, příkazová řádka na všechno, daemon jako služba, mobilní aplikace. Delivery flow umožnilo pracovat na mnoha úlohách paralelně a&nbsp;naplno využít rozpočet tokenů, a&nbsp;proto sahá přes flotilu výše.
+
+### Flotila v&nbsp;kontraktu
+
+Flotila přišla do kontraktu jako dva další body rozšíření, ne jako nástroj. **Poskytovatel flotily** odpovídá, kdo je online, založí pracoviště na zvoleném stroji a&nbsp;spustí v&nbsp;něm příkaz; **úložiště stavu** říká, kde žije stav práce. Každý krok, který rozjíždí práci, přijímá cílový stroj, takže tiket jde spustit z&nbsp;notebooku a&nbsp;nechat běžet na desktopu. Bez té vrstvy se flow chová přesně jako na jednom stroji.
+
+Pár pravidel vzešlo ze selhání, ne z&nbsp;návrhu:
+
+- **Offline stroj je stop.** Převzetí práce jiným strojem je výslovná volba, nikdy tichý přesun.
+- **Žádná práce dvakrát.** Než vznikne pracoviště, zkontrolují se po pořadě tři zdroje: úložiště stavu, vlastní registr nástroje a&nbsp;větev, která se pushne hned, jak pracoviště existuje.
+- **Vzdálený shell je nouzový nástroj, ne transport.** Orchestrace (pracoviště, spuštění agenta, doručení briefu) jde přes control plane nástroje; kopírování souborů a&nbsp;spouštění příkazů jde přes ssh, s&nbsp;kontrolními součty a&nbsp;návratovými kódy, protože vlastní doručování kláves v&nbsp;nástroji se ukázalo jako nespolehlivé.
+
+### Stav práce: git replika a&nbsp;ledgery
+
+Všechno, co flow o&nbsp;práci ví, jsou obyčejné soubory v&nbsp;jednom git repozitáři, replikovaném na každý stroj: meta tiketů, strojově kontrolovatelná kritéria, která dokazují červenou před zelenou, paměť, mapy rozhodnutí a&nbsp;research. Dva druhy souborů brání tomu, aby se dva stroje přetahovaly:
+
+- **Meta** je jeden JSON soubor na tiket. Vlastní merge driver ho slučuje po klíčích, takže do něj může psát orchestrátor na jednom stroji i&nbsp;agent na druhém. Sloučení zastaví jen stejné pole se dvěma různými hodnotami, protože to znamená, že stejná práce běží dvakrát.
+- **Ledgery** jsou průběžné záznamy, které si orchestrační smyčka vede, aby se neopakovala: které pull requesty prošly review a&nbsp;na kterém commitu, které opravy už jsou zkontrolované proti každé novější release linii, které tikety už ukázal ranní briefing. Každý stroj píše jen do vlastního souboru ledgeru a&nbsp;smyčka čte jejich sjednocení, takže ledgery nekonfliktují vůbec.
+
+### Konfigurace: profil v&nbsp;chezmoi
+
+chezmoi spravuje dotfiles z&nbsp;git repozitáře. Můj profil drží všechno, co stroj potřebuje, aby se k&nbsp;flotile připojil: nastavení shellu, osobní vrstvu flow, nastavení agentů, hooky a&nbsp;osobní skilly, služby, které drží daemony v&nbsp;chodu, a&nbsp;tajemství šifrovaná přes age. Je pull-based: každý stroj si profil aplikuje z&nbsp;gitu a&nbsp;žádný stroj není ten, kde se konfigurace píše. Nový stroj se připojí přes řízený setup skill a&nbsp;doctor na každém stroji projde zhruba dvacet kontrol (verze, ssh oběma směry, porty, keychain, profil, pluginy), u&nbsp;každého červeného řádku s&nbsp;přesným krokem opravy.
+
+### Když dochází paměť
+
+S&nbsp;výchozím nastavením služby jednou nedostatek paměti zastavil celý daemon agentů se všemi agenty v&nbsp;něm. Dnes služba při tlaku na paměť běží dál, správce paměti pozastaví nejmladší dávkovou úlohu (běh testů, typecheck, nikdy session agenta), dokud se paměť neuvolní, a&nbsp;obal pro opakování zopakuje úlohu jen tehdy, když umřela na paměť, nikdy když test opravdu selhal.
+
+</Detail>

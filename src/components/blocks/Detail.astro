@@ -1,0 +1,70 @@
+---
+/** The long read behind a chapter's diagrams, collapsed by default: everything is still there for whoever wants it. */
+import Prose from "../Prose.astro";
+import type { Locale } from "../../i18n/locales";
+import { t } from "../../i18n/ui";
+
+interface Props {
+  locale: Locale;
+  /** Summary line; defaults to "How it works, in detail". */
+  label?: string;
+}
+
+const { locale, label = t(locale, "ai.detail") } = Astro.props;
+---
+
+<details class="detail" data-detail>
+  <summary>{label}</summary>
+  <Prose>
+    <slot />
+  </Prose>
+</details>
+
+<style>
+  .detail {
+    margin-top: 2.25rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    max-width: 47.5rem;
+  }
+  summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1rem 0;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  summary::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--acc);
+    border-bottom: 2px solid var(--acc);
+    transform: rotate(-45deg);
+    transition: transform 0.15s ease;
+    flex: none;
+    margin-left: 2px;
+  }
+  .detail[open] summary::before {
+    transform: rotate(45deg);
+  }
+  summary:hover {
+    color: var(--acc-text);
+  }
+  .detail[open] {
+    padding-bottom: 1.5rem;
+  }
+  .detail :global(.body) {
+    margin-top: 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    summary::before {
+      transition: none;
+    }
+  }
+</style>

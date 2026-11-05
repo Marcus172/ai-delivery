@@ -2,17 +2,17 @@
 id: guardrails
 order: 4
 title: "Gates that hold without AI"
-summary: "Rules are a budget and gates are code. The agent setup has its own regression tests, the context it loads is measured, and whatever a machine can check never depends on a prompt."
+summary: "Every rule for the agent costs context, so the rules stay short and their size is measured. Whatever a machine can check is checked by code, never left to a prompt, and the agent setup itself has regression tests."
 ---
 import { GatesTable, Note, Stat } from "../../../components/chapter";
 
 export const locale = "en";
 
-### Rules: always-on or scoped to a path
+### Scripts first, a lean context
 
-The agent instructions live in one vendor-neutral file at the root of the repository, with symlinks so that two different agent tools read the same source, and nested files per package that carry only what is unique there. Rules come in two kinds. A handful are **always on** (safety, release lines, tracker workflow, browser automation). The rest are **path-scoped** through frontmatter and load only when the agent touches a file in their scope: styling, i18n, accessibility, testing, TypeScript. Every rule should fit in two lines, say "do this, not that", and point to the docs instead of repeating them.
+Tokens are not spent on what a script can do. The deterministic steps of the flow, such as resolving the target release lines, provisioning a workspace, running the gate or merging the state, are scripts: the agent calls them and gets a short result back instead of reading files and working it out itself. The agent's context is left for what needs judgement.
 
-Context is a budget, not a storage room. A dedicated clean-up moved history and rationale into the docs and kept the directives word for word.
+What does go into the context went through a context diet. Skills, rules and instructions say what to do in a line or two and point to the docs for the why; most rules load only when the agent touches a file they apply to. The instructions live in one vendor-neutral file that every agent tool reads.
 
 <Stat id="context-diet" locale={locale} />
 

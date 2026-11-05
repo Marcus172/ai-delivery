@@ -46,6 +46,11 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, "");
                     <span class="k">{tt("sources.docs")}</span> {host(x.docs)}
                   </a>
                 )}
+                {x.video && (
+                  <a href={x.video}>
+                    <span class="k">{tt("sources.video")}</span> {host(x.video)}
+                  </a>
+                )}
               </p>
             </li>
           ))}

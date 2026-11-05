@@ -17,6 +17,7 @@ for (const locale of LOCALES) {
           await expect(item.locator(".what")).toHaveText(x.what?.[locale] ?? "");
           await expect(item.locator(`a[href="${x.url}"]`)).toHaveCount(1);
           if (x.docs) await expect(item.locator(`a[href="${x.docs}"]`)).toHaveCount(1);
+          if (x.video) await expect(item.locator(`a[href="${x.video}"]`)).toHaveCount(1);
         }
       }
     });

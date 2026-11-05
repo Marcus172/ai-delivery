@@ -20,6 +20,8 @@ export type Tool = {
   what?: L10n;
   /** Documentation, when it lives somewhere else than `url`. */
   docs?: string;
+  /** A video where the author shows how the tool is used. */
+  video?: string;
   /** Name on the Sources page, when it differs from the name used in the text. */
   label?: L10n;
 };
@@ -145,16 +147,29 @@ export const TOOLS: Tool[] = [
     docs: "https://www.agent-native.com/docs",
   },
   {
-    id: "wayfinder",
-    name: "Wayfinder",
-    label: l("Matt Pocock's skills (Wayfinder, grilling)", "Skilly Matta Pococka (Wayfinder, grilling)"),
+    id: "mattpocock-skills",
+    name: "Matt Pocock's skills",
+    label: l("Matt Pocock's skills", "Skilly Matta Pococka"),
     url: "https://github.com/mattpocock/skills",
-    match: /\bWayfinder\b/,
+    match: /Matt Pocock's skills/,
     group: "skills",
     what: l(
-      "Matt Pocock's skills: Wayfinder decision maps for large, unclear work, and grilling before implementation.",
-      "Skilly Matta Pococka: mapy rozhodnutí Wayfinder pro velkou nejasnou práci a grilování před implementací.",
+      "An open set of engineering skills; I use grilling before implementation and Wayfinder for large, unclear work.",
+      "Otevřená sada inženýrských skillů; používám grilování před implementací a Wayfinder pro velkou nejasnou práci.",
     ),
+  },
+  {
+    id: "wayfinder",
+    name: "Wayfinder",
+    url: "https://github.com/mattpocock/skills/tree/main/skills/engineering/wayfinder",
+    match: /\bWayfinder\b/,
+    group: "planning",
+    what: l(
+      "Matt Pocock's skill for work bigger than one session: a shared map of decision tickets, resolved one at a time before any code.",
+      "Skill Matta Pococka pro práci větší než jedna session: sdílená mapa rozhodovacích tiketů, které se uzavírají jeden po druhém dřív, než vznikne kód.",
+    ),
+    docs: "https://github.com/mattpocock/skills/blob/main/docs/engineering/wayfinder.md",
+    video: "https://www.youtube.com/watch?v=F3lL98Pj90o",
   },
   {
     id: "codegraph",

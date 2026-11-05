@@ -23,6 +23,8 @@ const name = t(locale, "site.name");
 const stats = LANDING_METRIC_IDS.map((id) => metric(id));
 const estimate = metric("five-to-ten-x");
 const resultsHref = localizedPath(locale, "ai-delivery", "results");
+// Each sentence of the claim stays on its own line when the two do not fit side by side.
+const claimSentences = LANDING.headline[locale].split(/(?<=\.)\s+/);
 
 const OFFER_ICONS: Record<string, string> = {
   assessment: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21M8 11h6M11 8v6"/>',
@@ -34,13 +36,15 @@ const OFFER_ICONS: Record<string, string> = {
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero-text">
     <div class="who" data-hero-name>
-      <Image class="avatar" src={photo} alt="" width={128} widths={[64, 128]} sizes="4rem" loading="eager" />
-      <p>
-        <span class="name">{name}</span>
-        <span class="role"><i aria-hidden="true"></i>{LANDING.who[locale]}</span>
-      </p>
+      <Image class="avatar" src={photo} alt="" width={240} widths={[120, 240]} sizes="(max-width: 559px) 5.5rem, 7.5rem" loading="eager" />
+      <div>
+        <h1 id="hero-title">{name}</h1>
+        <p class="role"><i aria-hidden="true"></i>{LANDING.who[locale]}</p>
+      </div>
     </div>
-    <h1 id="hero-title">{LANDING.headline[locale]}</h1>
+    <p class="claim" data-hero-claim>
+      {claimSentences.map((sentence, i) => <>{i > 0 && " "}<span>{sentence}</span></>)}
+    </p>
     <p class="lead">{LANDING.lead[locale]}</p>
     <CtaRow locale={locale} />
     <div class="stats" data-stats>
@@ -140,30 +144,27 @@ const OFFER_ICONS: Record<string, string> = {
   }
   .who {
     display: flex;
-    gap: 1rem;
+    gap: 1.5rem;
     align-items: center;
-    margin: 0 0 1.75rem;
+    margin: 0 0 2rem;
   }
   .who .avatar {
-    width: 4rem;
-    height: 4rem;
+    width: 7.5rem;
+    height: 7.5rem;
     border-radius: 50%;
     object-fit: cover;
     flex: none;
-    box-shadow: 0 0 0 2px var(--bg), 0 0 0 3px var(--acc);
+    box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--acc);
   }
-  .who p {
+  .who > div {
     display: grid;
-    gap: 0.25rem;
+    gap: 0.625rem;
   }
-  .who .name {
-    font-size: clamp(1.75rem, 2.6vw, 2.25rem);
-    font-weight: 800;
-    letter-spacing: -0.015em;
-    line-height: 1;
+  .who h1 {
+    font-size: clamp(3rem, 6vw, 5rem);
   }
   .who .role {
-    font-size: 0.9375rem;
+    font-size: 1.0625rem;
     font-weight: 600;
     color: var(--mute);
     display: flex;
@@ -179,8 +180,14 @@ const OFFER_ICONS: Record<string, string> = {
     display: inline-block;
     flex: none;
   }
-  .hero h1 {
-    font-size: clamp(3rem, 6.2vw, 5.75rem);
+  .hero .claim {
+    font-size: clamp(1.625rem, 2.8vw, 2.375rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  .claim span {
+    display: inline-block;
   }
   .hero .lead {
     margin: 1.5rem 0 1.75rem;
@@ -364,6 +371,13 @@ const OFFER_ICONS: Record<string, string> = {
     }
   }
   @media (max-width: 559px) {
+    .who {
+      gap: 1rem;
+    }
+    .who .avatar {
+      width: 5.5rem;
+      height: 5.5rem;
+    }
     .stats {
       grid-template-columns: 1fr;
       gap: 1.25rem;

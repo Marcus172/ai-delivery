@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { loadDenylistText, parseDenylist } from "../../scripts/denylist";
 import { matchesRule } from "../helpers/denylist";
+import { LANDING } from "../../src/data/landing";
 import { LANDING_METRIC_IDS, metric } from "../../src/data/metrics";
 import { OFFER } from "../../src/data/offer";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
@@ -33,12 +34,16 @@ for (const locale of LOCALES) {
   const estimate = t(locale, "badge.estimate");
 
   test.describe(`landing (${locale})`, () => {
-    test("hero: h1, three measured stats in order, period line", async ({
+    test("hero: the name is the h1, claim below it, three measured stats in order, period line", async ({
       page,
     }) => {
       await page.goto(URL_OF[locale]);
       await expect(page.locator("main h1")).toHaveCount(1);
       await expect(page.locator("main h1")).toBeVisible();
+      await expect(page.locator("main h1")).toHaveText(t(locale, "site.name"));
+      await expect(page.locator("[data-hero-claim]")).toHaveText(
+        LANDING.headline[locale],
+      );
 
       const stats = page.locator("[data-stats] [data-metric]");
       await expect(stats).toHaveCount(3);
@@ -51,7 +56,7 @@ for (const locale of LOCALES) {
       await expect(page.locator("[data-stats-period]")).toBeVisible();
     });
 
-    test("phone: the name and headline open the page, the orbit comes after", async ({
+    test("phone: the name and claim open the page, the orbit comes after", async ({
       page,
     }) => {
       await page.setViewportSize({ width: 390, height: 844 });
@@ -59,7 +64,7 @@ for (const locale of LOCALES) {
       const who = page.locator("[data-hero-name]");
       await expect(who).toContainText(t(locale, "site.name"));
       await expect(who).toBeInViewport({ ratio: 1 });
-      await expect(page.locator("main h1")).toBeInViewport();
+      await expect(page.locator("[data-hero-claim]")).toBeInViewport();
       const whoBox = await who.boundingBox();
       const orbitBox = await page.locator(".hero-art").boundingBox();
       expect(whoBox!.y).toBeLessThan(orbitBox!.y);

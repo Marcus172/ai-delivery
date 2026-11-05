@@ -53,6 +53,14 @@ export const PEOPLE: Person[] = [
     ),
   },
   {
+    name: "Better Stack",
+    handle: "BetterStackHQ",
+    known: l(
+      "Observability platform whose channel covers new developer and AI coding tools.",
+      "Observability platforma, jejíž kanál mapuje nové vývojářské a AI nástroje.",
+    ),
+  },
+  {
     name: "Theo Browne",
     handle: "theo",
     known: l("Founder of Ping, creator of the T3 Stack and T3 Code.", "Zakladatel Ping, autor T3 Stacku a T3 Code."),

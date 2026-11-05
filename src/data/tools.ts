@@ -241,7 +241,7 @@ export const TOOLS: Tool[] = [
     name: "T3 Code",
     url: "https://t3.codes/",
     match: /\bT3 Code\b/,
-    group: "planning",
+    group: "workspaces",
     what: l(
       "An orchestrator I evaluate against Paseo, with the gaps tracked and re-checked.",
       "Orchestrátor, který porovnávám s Paseem; mezery mám sepsané a znovu ověřované.",

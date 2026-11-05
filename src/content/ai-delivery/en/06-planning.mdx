@@ -4,9 +4,28 @@ order: 6
 title: "Planning with AI: decision maps and visual plans"
 summary: "Large, foggy work is turned into decisions before any code. Specs are reviewed as interactive plans that never leave the machine, and a person always picks the direction."
 ---
-import { DecisionTrail, Note, Stat } from "../../../components/chapter";
+import { DecisionTrail, Detail, Glance, Note, Point, Stat } from "../../../components/chapter";
 
 export const locale = "en";
+
+<Glance locale={locale}>
+  <Point locale={locale} title="Decisions before code">
+    Large, unclear work gets a map of decision tickets, settled one at a time. A map produces decisions, not code.
+  </Point>
+  <Point locale={locale} title="Specs as visual plans">
+    A spec or a finished change is an interactive page with diagrams and annotated code that a person reviews and comments on.
+  </Point>
+  <Point locale={locale} title="Fully local">
+    Plans never leave the machine: one plan app per machine, reached from the other one over the private network.
+  </Point>
+  <Point locale={locale} title="A person picks the direction">
+    The agent prepares the options with their trade-offs and a person chooses. An optional grill gate questions the brief first.
+  </Point>
+</Glance>
+
+<DecisionTrail locale={locale} />
+
+<Detail locale={locale}>
 
 ### Decision maps
 
@@ -19,8 +38,6 @@ Work that does not fit in one session gets a **map** (the Wayfinder skill from a
   <p>A configurable dashboard layout. Before the first widget existed, the map settled a dozen decisions: the widget model (locked versus configurable), that "the grid is a wrapping list, not a grid", how the layout persists on the server (deep merge, last write wins), which drag-and-drop library to use (the existing one could not do it, recorded as an architecture decision record), and where the load time went (one unnecessary section computation was most of it).</p>
   <p>Each later widget is its own map that only references the layout map. The layout map is never reopened.</p>
 </div>
-
-<DecisionTrail locale={locale} />
 
 ### Visual plans and recaps, fully local
 
@@ -37,3 +54,5 @@ Everything runs locally. A hosted validator would receive the client's screens, 
 <Note>
   <strong>The grill gate.</strong> An optional gate in the contract: before implementing, the agent questions the person on the brief until the open points are closed, and writes the decisions into the ticket metadata and the pull-request description. Finalising stops on an unconfirmed grill; it can only be skipped explicitly. It exists because of a risk I named early: delivering software without understanding the product, the brief or the impact.
 </Note>
+
+</Detail>

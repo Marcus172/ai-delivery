@@ -4,13 +4,30 @@ order: 5
 title: "Beyond developers"
 summary: "The developers on this codebase run the full flow daily. Analysts use the shared plugins in their own work, testers and the project manager meet the gates through its outputs, and several of them wrote their own skills."
 ---
-import { Note, RoleMatrix, Stat } from "../../../components/chapter";
+import { Detail, Glance, Note, Point, RoleMatrix, Stat } from "../../../components/chapter";
 
 export const locale = "en";
 
-The goal was never one fast person. It was each role getting AI into *its own* flow, plus standards that pull along the people who would rather not. So the adoption claim is specific: the developers on this codebase run the full ticket flow daily; analysts use the shared plugins in their own work on the wiki and the tracker; testers and the project manager meet the gates through what the flow hands them; and some of them contribute tools back.
+<Glance locale={locale}>
+  <Point locale={locale} title="Each role gets its own flow">
+    Developers run the full ticket flow; analysts, testers and the project manager use plugins for their own work, and several of them wrote their own.
+  </Point>
+  <Point locale={locale} title="One marketplace, one install">
+    Shared plugins go to everyone, role plugins only to the role; one command installs, the main branch updates.
+  </Point>
+  <Point locale={locale} title="AI proposes, the tester approves">
+    Testers run a local toolkit whose output is always a draft a person approves; nothing writes to the tracker on its own.
+  </Point>
+  <Point locale={locale} title="Not tied to one provider">
+    The contract, the rules and the skills are plain files in git; Claude Code and Codex work from the same ones.
+  </Point>
+</Glance>
 
 <RoleMatrix locale={locale} />
+
+<Detail locale={locale}>
+
+The goal was never one fast person. It was each role getting AI into *its own* flow, plus standards that pull along the people who would rather not. So the adoption claim is specific: the developers on this codebase run the full ticket flow daily; analysts use the shared plugins in their own work on the wiki and the tracker; testers and the project manager meet the gates through what the flow hands them; and some of them contribute tools back.
 
 ### A marketplace as the distribution channel
 
@@ -45,6 +62,8 @@ The product map has three layers, generated from the routes, recorded from brows
 <Stat id="incident-triage" locale={locale} />
 
 Triage of a client incident runs in two phases. A sieve checks the mandatory evidence (screenshot, captured traffic, log) and unpacks archives before any verdict. The evaluation crosses failed requests, logs and the analysis into a recommendation: ours, backend, third party, or a not-a-bug candidate. The rules were calibrated on real incidents: the second round showed that about a fifth were not bugs and that several cases had been wrongly attributed to the backend when a third-party mobile app was at fault. Every rule now carries its counterexample.
+
+</Detail>
 
 <Note>
   <strong>Pull without pressure.</strong> The entry level is two files and ten minutes. Nobody has to change their tool: the team has a default, the override is one file, deleting it restores the default. And the outputs of the flow are needed by people who never run it (testers read the notes, analysts get questions as gaps), so the process spreads through artefacts rather than installations. The project manager and the backend developers took the platform too, with plugins of their own.

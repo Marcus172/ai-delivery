@@ -4,9 +4,28 @@ order: 4
 title: "Gates that hold without AI"
 summary: "Every rule for the agent costs context, so the rules stay short and their size is measured. Whatever a machine can check is checked by code, never left to a prompt, and the agent setup itself has regression tests."
 ---
-import { GatesTable, Note, Stat } from "../../../components/chapter";
+import { Detail, GatesTable, Glance, Note, Point, Stat } from "../../../components/chapter";
 
 export const locale = "en";
+
+<Glance locale={locale}>
+  <Point locale={locale} title="Scripts first, a lean context" stat="context-diet">
+    Deterministic steps are scripts that hand the agent a short result, and every rule and skill went through a context diet.
+  </Point>
+  <Point locale={locale} title="The agent setup has its own tests">
+    Probes start fresh agent sessions after every change to the rules or skills and check that the agent still knows what it should.
+  </Point>
+  <Point locale={locale} title="Gates from incidents">
+    Whatever a machine can check sits in the gate, each step names the incident it prevents, and old debt may only shrink.
+  </Point>
+  <Point locale={locale} title="A measured context layer">
+    The agent queries a local code graph instead of searching the repository; only gains that held over repeated rounds are shown.
+  </Point>
+</Glance>
+
+<GatesTable locale={locale} />
+
+<Detail locale={locale}>
 
 ### Scripts first, a lean context
 
@@ -40,8 +59,8 @@ Whatever a machine can check is not in a prompt; it is in the gate. Every step o
 
 <Stat id="ci-gate-steps" locale={locale} />
 
-<GatesTable locale={locale} />
-
 <Note>
   <strong>Operational guardrails</strong> sit underneath: an allowlist and denylist for what the agent may run, page content from a browser treated as untrusted data rather than instructions, PII rules for captured traffic, and no plan or source ever sent to a hosted validator. Parallel agents are solved by infrastructure (one worktree, one port each), not by discipline.
 </Note>
+
+</Detail>

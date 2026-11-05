@@ -4,13 +4,30 @@ order: 5
 title: "Za hranice vývoje"
 summary: "Vývojáři na tomto kódu jedou plný flow denně. Analytici používají sdílené pluginy ve vlastní práci, testeři a projektový manažer se s branami potkávají přes jeho výstupy a několik z nich si napsalo vlastní skilly."
 ---
-import { Note, RoleMatrix, Stat } from "../../../components/chapter";
+import { Detail, Glance, Note, Point, RoleMatrix, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
 
-Cílem nikdy nebyl jeden rychlý člověk. Cílem bylo, aby každá role dostala AI do *vlastního* flow, a&nbsp;k&nbsp;tomu standardy, které potáhnou i&nbsp;ty, kdo by raději ne. Tvrzení o&nbsp;adopci je proto konkrétní: vývojáři na tomto kódu jedou plný flow tiketu denně; analytici používají sdílené pluginy ve vlastní práci nad wiki a&nbsp;trackerem; testeři a&nbsp;projektový manažer se s&nbsp;branami potkávají přes to, co jim flow předá; a&nbsp;někteří z&nbsp;nich přispívají nástroji zpět.
+<Glance locale={locale}>
+  <Point locale={locale} title="Každá role má vlastní flow">
+    Vývojáři jedou plný flow tiketu; analytici, testeři a&nbsp;projektový manažer používají pluginy pro svou práci a&nbsp;několik z&nbsp;nich si napsalo vlastní.
+  </Point>
+  <Point locale={locale} title="Jeden marketplace, jedna instalace">
+    Sdílené pluginy dostane každý, pluginy pro roli jen ta role; instaluje jeden příkaz, aktualizuje hlavní větev.
+  </Point>
+  <Point locale={locale} title="AI navrhuje, tester schvaluje">
+    Testeři mají lokální sadu nástrojů, jejímž výstupem je vždy návrh ke schválení člověkem; nic samo nezapisuje do trackeru.
+  </Point>
+  <Point locale={locale} title="Bez vazby na poskytovatele">
+    Kontrakt, pravidla i&nbsp;skilly jsou obyčejné soubory v&nbsp;gitu; Claude Code i&nbsp;Codex pracují z&nbsp;týchž.
+  </Point>
+</Glance>
 
 <RoleMatrix locale={locale} />
+
+<Detail locale={locale}>
+
+Cílem nikdy nebyl jeden rychlý člověk. Cílem bylo, aby každá role dostala AI do *vlastního* flow, a&nbsp;k&nbsp;tomu standardy, které potáhnou i&nbsp;ty, kdo by raději ne. Tvrzení o&nbsp;adopci je proto konkrétní: vývojáři na tomto kódu jedou plný flow tiketu denně; analytici používají sdílené pluginy ve vlastní práci nad wiki a&nbsp;trackerem; testeři a&nbsp;projektový manažer se s&nbsp;branami potkávají přes to, co jim flow předá; a&nbsp;někteří z&nbsp;nich přispívají nástroji zpět.
 
 ### Marketplace jako distribuční kanál
 
@@ -45,6 +62,8 @@ Produktová mapa má tři vrstvy: generovanou z&nbsp;rout, zaznamenanou z&nbsp;p
 <Stat id="incident-triage" locale={locale} />
 
 Triáž klientského incidentu běží ve dvou fázích. Síto zkontroluje povinné podklady (snímek obrazovky, zachycený provoz, log) a&nbsp;před jakýmkoli verdiktem rozbalí archivy. Vyhodnocení zkříží padlé requesty, logy a&nbsp;analýzu do doporučení: naše, backend, třetí strana, nebo kandidát na „není chyba“. Pravidla se kalibrovala na skutečných incidentech: druhé kolo ukázalo, že zhruba pětina nebyla chyba a&nbsp;že několik případů bylo mylně připsáno backendu, i&nbsp;když šlo o&nbsp;vadu mobilní aplikace třetí strany. Každé pravidlo dnes nese svůj protipříklad.
+
+</Detail>
 
 <Note>
   <strong>Tah bez nátlaku.</strong> Vstupní úroveň jsou dva soubory a&nbsp;deset minut. Nikdo nemusí měnit nástroj: tým má default, override je jeden soubor a&nbsp;jeho smazání default vrátí. A&nbsp;výstupy flow potřebují i&nbsp;lidé, kteří ho nikdy nespustí (testeři čtou poznámky, analytici dostávají otázky jako mezery), takže proces se šíří přes artefakty, ne přes instalace. Platformu převzali i&nbsp;projektový manažer a&nbsp;backendoví vývojáři s&nbsp;vlastními pluginy.

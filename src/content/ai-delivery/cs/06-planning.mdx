@@ -4,9 +4,28 @@ order: 6
 title: "Plánování s AI: mapy rozhodnutí a vizuální plány"
 summary: "Velká, mlhavá práce se promění v rozhodnutí dřív, než vznikne kód. Specifikace se revidují jako interaktivní plány, které nikdy neopustí stroj, a směr vždy vybírá člověk."
 ---
-import { DecisionTrail, Note, Stat } from "../../../components/chapter";
+import { DecisionTrail, Detail, Glance, Note, Point, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
+
+<Glance locale={locale}>
+  <Point locale={locale} title="Rozhodnutí před kódem">
+    Velká nejasná práce dostane mapu rozhodovacích tiketů, které se uzavírají jeden po druhém. Mapa vyrábí rozhodnutí, ne kód.
+  </Point>
+  <Point locale={locale} title="Specy jako vizuální plány">
+    Spec i&nbsp;hotová změna jsou interaktivní stránka s&nbsp;diagramy a&nbsp;anotovaným kódem, kterou člověk reviduje a&nbsp;komentuje.
+  </Point>
+  <Point locale={locale} title="Plně lokálně">
+    Plány nikdy neopustí stroj: jedna aplikace na plány na každém stroji, z&nbsp;druhého dostupná přes privátní síť.
+  </Point>
+  <Point locale={locale} title="Směr vybírá člověk">
+    Agent připraví možnosti i&nbsp;s&nbsp;jejich kompromisy a&nbsp;člověk vybere. Volitelná grill brána nejdřív prověří zadání.
+  </Point>
+</Glance>
+
+<DecisionTrail locale={locale} />
+
+<Detail locale={locale}>
 
 ### Mapy rozhodnutí
 
@@ -19,8 +38,6 @@ Práce, která se nevejde do jedné session, dostane **mapu** (skill Wayfinder z
   <p>Konfigurovatelný layout dashboardu. Dřív, než existoval první widget, mapa uzavřela zhruba tucet rozhodnutí: model widgetu (zamčený, nebo konfigurovatelný), že „mřížka není mřížka, ale zalamovaný seznam“, jak se layout ukládá na serveru (hluboké sloučení, poslední zápis vyhrává), kterou knihovnu na drag-and-drop použít (stávající to neuměla, zapsáno jako architektonické rozhodnutí) a&nbsp;kam mizí čas načítání (většinu dělal jeden zbytečný výpočet sekce).</p>
   <p>Každý další widget je vlastní mapa, která se na mapu layoutu jen odkazuje. Mapa layoutu se znovu neotevírá.</p>
 </div>
-
-<DecisionTrail locale={locale} />
 
 ### Vizuální plány a&nbsp;recapy, plně lokálně
 
@@ -37,3 +54,5 @@ Všechno běží lokálně. Hostovaný validátor by dostal obrazovky, kód i&nb
 <Note>
   <strong>Grill brána.</strong> Volitelná brána v&nbsp;kontraktu: před implementací agent člověka vyptává k&nbsp;zadání, dokud nejsou otevřené body uzavřené, a&nbsp;rozhodnutí zapíše do meta tiketu a&nbsp;do popisu pull requestu. Finalizace se na nepotvrzeném grillu zastaví; přeskočit ho jde jen výslovně. Existuje kvůli riziku, které jsem pojmenoval brzy: dodávat software bez porozumění produktu, zadání a&nbsp;dopadům.
 </Note>
+
+</Detail>

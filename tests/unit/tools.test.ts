@@ -47,6 +47,13 @@ describe("tools registry", () => {
     }
   });
 
+  it("puts every tool either on the Sources page or explicitly in the text only", () => {
+    for (const x of TOOLS) {
+      expect(Boolean(x.group) !== Boolean(x.textOnly), `${x.id}: needs exactly one of group / textOnly`).toBe(true);
+      if (x.textOnly) expect([x.what, x.docs, x.video, x.label].filter(Boolean), `${x.id}: Sources fields on a text-only tool`).toEqual([]);
+    }
+  });
+
   it("throws on an unknown id", () => {
     expect(tool("paseo").url).toBe("https://paseo.sh/");
     expect(() => tool("nope")).toThrow();

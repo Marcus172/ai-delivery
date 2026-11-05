@@ -22,6 +22,11 @@ export type Tool = {
   docs?: string;
   /** A video where the author shows how the tool is used. */
   video?: string;
+  /**
+   * Linked in the text only and deliberately left off the Sources page: past tools and the
+   * application stack (React, Next.js and the like). Every tool has either this or a `group`.
+   */
+  textOnly?: true;
   /** Name on the Sources page, when it differs from the name used in the text. */
   label?: L10n;
 };
@@ -67,13 +72,14 @@ export const TOOLS: Tool[] = [
     name: "OpenCode",
     url: "https://opencode.ai/",
     match: /\bOpenCode\b/,
-    docs: "https://opencode.ai/docs",
+    textOnly: true,
   },
   {
     id: "pi",
     name: "Pi",
     url: "https://pi.dev/",
     match: /(?<=OpenCode (?:or|nebo) )Pi\b/,
+    textOnly: true,
   },
   {
     id: "oh-my-pi",
@@ -87,7 +93,7 @@ export const TOOLS: Tool[] = [
     ),
     docs: "https://github.com/can1357/oh-my-pi",
   },
-  { id: "cursor", name: "Cursor", url: "https://cursor.com/", match: /\bCursor\b/ },
+  { id: "cursor", name: "Cursor", url: "https://cursor.com/", match: /\bCursor\b/, textOnly: true },
   {
     id: "paseo",
     name: "Paseo",
@@ -379,8 +385,8 @@ export const TOOLS: Tool[] = [
     ),
     docs: "https://playwright.dev/docs/intro",
   },
-  { id: "cypress", name: "Cypress", url: "https://www.cypress.io/", match: /\bCypress\b/ },
-  { id: "jest", name: "Jest", url: "https://jestjs.io/", match: /\bJest\b/ },
+  { id: "cypress", name: "Cypress", url: "https://www.cypress.io/", match: /\bCypress\b/, textOnly: true },
+  { id: "jest", name: "Jest", url: "https://jestjs.io/", match: /\bJest\b/, textOnly: true },
   {
     id: "figma",
     name: "Figma",
@@ -393,32 +399,33 @@ export const TOOLS: Tool[] = [
     ),
     docs: "https://help.figma.com",
   },
-  { id: "eslint", name: "ESLint", url: "https://eslint.org/", match: /\bESLint\b/ },
-  { id: "prettier", name: "Prettier", url: "https://prettier.io/", match: /\bPrettier\b/ },
-  { id: "react-native", name: "React Native", url: "https://reactnative.dev/", match: /\bReact Native\b/ },
-  { id: "react-query", name: "React Query", url: "https://tanstack.com/query", match: /\bReact Query\b/ },
+  { id: "eslint", name: "ESLint", url: "https://eslint.org/", match: /\bESLint\b/, textOnly: true },
+  { id: "prettier", name: "Prettier", url: "https://prettier.io/", match: /\bPrettier\b/, textOnly: true },
+  { id: "react-native", name: "React Native", url: "https://reactnative.dev/", match: /\bReact Native\b/, textOnly: true },
+  { id: "react-query", name: "React Query", url: "https://tanstack.com/query", match: /\bReact Query\b/, textOnly: true },
   {
     id: "testing-library",
     name: "React Testing Library",
     url: "https://testing-library.com/docs/react-testing-library/intro/",
     match: /\bReact Testing Library\b/,
+    textOnly: true,
   },
-  { id: "react", name: "React", url: "https://react.dev/", match: /\bReact(?:u|em)?\b/ },
-  { id: "redux", name: "Redux", url: "https://redux.js.org/", match: /\bRedux\b/ },
-  { id: "nextjs", name: "Next.js", url: "https://nextjs.org/", match: /\bNext\.js\b/ },
-  { id: "nodejs", name: "Node.js", url: "https://nodejs.org/", match: /\bNode\.js\b/ },
-  { id: "spring-boot", name: "Spring Boot", url: "https://spring.io/projects/spring-boot", match: /\bSpring Boot(?:u|em)?\b/ },
-  { id: "graphql", name: "GraphQL", url: "https://graphql.org/", match: /\bGraphQL\b/ },
-  { id: "angularjs", name: "AngularJS", url: "https://docs.angularjs.org/", match: /\bAngularJS\b/ },
-  { id: "yii", name: "Yii2", url: "https://www.yiiframework.com/", match: /\bYii2\b/ },
-  { id: "dotnet", name: ".NET Core", url: "https://dotnet.microsoft.com/", match: /\.NET Core\b/ },
-  { id: "stripe", name: "Stripe", url: "https://stripe.com/", match: /\bStripe\b/ },
-  { id: "polygon", name: "Polygon", url: "https://polygon.technology/", match: /\bPolygon(?:em|u)?\b/ },
-  { id: "gherkin", name: "Gherkin", url: "https://cucumber.io/docs/gherkin/", match: /\bGherkin(?:u|em)?\b/ },
-  { id: "grafana", name: "Grafana", url: "https://grafana.com/", match: /\bGrafan(?:a|ě|u|ou)(?!\p{L})/u },
-  { id: "docker", name: "Docker", url: "https://www.docker.com/", match: /\bDocker\b/ },
-  { id: "kubernetes", name: "Kubernetes", url: "https://kubernetes.io/", match: /\bKubernetes\b/ },
-  { id: "gitlab", name: "GitLab", url: "https://about.gitlab.com/", match: /\bGitLab\b/ },
+  { id: "react", name: "React", url: "https://react.dev/", match: /\bReact(?:u|em)?\b/, textOnly: true },
+  { id: "redux", name: "Redux", url: "https://redux.js.org/", match: /\bRedux\b/, textOnly: true },
+  { id: "nextjs", name: "Next.js", url: "https://nextjs.org/", match: /\bNext\.js\b/, textOnly: true },
+  { id: "nodejs", name: "Node.js", url: "https://nodejs.org/", match: /\bNode\.js\b/, textOnly: true },
+  { id: "spring-boot", name: "Spring Boot", url: "https://spring.io/projects/spring-boot", match: /\bSpring Boot(?:u|em)?\b/, textOnly: true },
+  { id: "graphql", name: "GraphQL", url: "https://graphql.org/", match: /\bGraphQL\b/, textOnly: true },
+  { id: "angularjs", name: "AngularJS", url: "https://docs.angularjs.org/", match: /\bAngularJS\b/, textOnly: true },
+  { id: "yii", name: "Yii2", url: "https://www.yiiframework.com/", match: /\bYii2\b/, textOnly: true },
+  { id: "dotnet", name: ".NET Core", url: "https://dotnet.microsoft.com/", match: /\.NET Core\b/, textOnly: true },
+  { id: "stripe", name: "Stripe", url: "https://stripe.com/", match: /\bStripe\b/, textOnly: true },
+  { id: "polygon", name: "Polygon", url: "https://polygon.technology/", match: /\bPolygon(?:em|u)?\b/, textOnly: true },
+  { id: "gherkin", name: "Gherkin", url: "https://cucumber.io/docs/gherkin/", match: /\bGherkin(?:u|em)?\b/, textOnly: true },
+  { id: "grafana", name: "Grafana", url: "https://grafana.com/", match: /\bGrafan(?:a|ě|u|ou)(?!\p{L})/u, textOnly: true },
+  { id: "docker", name: "Docker", url: "https://www.docker.com/", match: /\bDocker\b/, textOnly: true },
+  { id: "kubernetes", name: "Kubernetes", url: "https://kubernetes.io/", match: /\bKubernetes\b/, textOnly: true },
+  { id: "gitlab", name: "GitLab", url: "https://about.gitlab.com/", match: /\bGitLab\b/, textOnly: true },
   {
     id: "astro",
     name: "Astro",
@@ -443,7 +450,7 @@ export const TOOLS: Tool[] = [
     ),
     docs: "https://docs.github.com/en/pages",
   },
-  { id: "github", name: "GitHub", url: "https://github.com/", match: /\bGitHub\b(?! Pages)/ },
+  { id: "github", name: "GitHub", url: "https://github.com/", match: /\bGitHub\b(?! Pages)/, textOnly: true },
 ];
 
 const byId = new Map(TOOLS.map((tool) => [tool.id, tool]));

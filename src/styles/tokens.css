@@ -1,4 +1,6 @@
 :root {
+  /* Title of a long-read page (AI Delivery, Wins & cases, a case, Journey): above a chapter h2, far below the landing hero. */
+  --page-title-size: clamp(2.5rem, 4.4vw, 4rem);
   color-scheme: light dark;
   --bg: light-dark(#f6f6f3, #131416);
   --ink: light-dark(#17191c, #ededea);

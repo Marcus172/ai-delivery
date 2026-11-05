@@ -7,6 +7,7 @@ import { t } from "../i18n/ui";
 import Rail from "../components/Rail.astro";
 import CtaRow from "../components/CtaRow.astro";
 import Eyebrow from "../components/Eyebrow.astro";
+import Linked from "../components/Linked.astro";
 
 interface Props {
   locale: Locale;
@@ -71,7 +72,7 @@ const year = new Date().getFullYear();
           </div>
           <div class="colophon">
             <span>© {year} {siteName}</span>
-            <span>{t(locale, "footer.built")}</span>
+            <span><Linked text={t(locale, "footer.built")} /></span>
           </div>
         </footer>
       </div>

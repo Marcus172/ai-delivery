@@ -16,6 +16,7 @@ const compact = items.filter((m) => m.weight === "compact");
 const recent = items.filter((m) => m.weight === "expanded" && !m.date.startsWith(`${BAND_YEAR}-`));
 const band = items.filter((m) => m.date.startsWith(`${BAND_YEAR}-`));
 const year = (m: Milestone) => m.date.slice(0, 4);
+import Linked from "../Linked.astro";
 ---
 
 <ol class="tl" aria-label={t(locale, "journey.eyebrow")}>
@@ -27,8 +28,8 @@ const year = (m: Milestone) => m.date.slice(0, 4);
         compact.map((m) => (
           <li class="row" data-milestone data-weight={m.weight} data-date={m.date}>
             <time datetime={m.date}>{year(m)}</time>
-            <span class="row-title">{m.title[locale]}</span>
-            <span class="row-body">{m.body[locale]}</span>
+            <span class="row-title"><Linked text={m.title[locale]} /></span>
+            <span class="row-body"><Linked text={m.body[locale]} /></span>
           </li>
         ))
       }
@@ -46,8 +47,8 @@ const year = (m: Milestone) => m.date.slice(0, 4);
               <span>{formatMonthOnly(locale, m.date)}</span>
             </time>
             <div class="card-text">
-              <h3>{m.title[locale]}</h3>
-              <p>{m.body[locale]}</p>
+              <h3><Linked text={m.title[locale]} /></h3>
+              <p><Linked text={m.body[locale]} /></p>
             </div>
           </li>
         ))
@@ -69,8 +70,8 @@ const year = (m: Milestone) => m.date.slice(0, 4);
           <li class="month" data-milestone data-weight={m.weight} data-date={m.date}>
             <time datetime={m.date}>{formatMonthOnly(locale, m.date)}</time>
             <div class="month-text">
-              <h3>{m.title[locale]}</h3>
-              <p>{m.body[locale]}</p>
+              <h3><Linked text={m.title[locale]} /></h3>
+              <p><Linked text={m.body[locale]} /></p>
             </div>
           </li>
         ))

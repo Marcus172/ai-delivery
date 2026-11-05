@@ -1,22 +1,34 @@
 ---
-/** Long-form body for MDX content (AI Delivery chapters, Results, case pages): text measure, lists, stats, examples, caveats. */
+/**
+ * Long-form body for MDX content (AI Delivery chapters, Results, case pages): text measure, lists, stats, examples, caveats.
+ * Text rules target the body's own children only (`>`), so they never leak into the markup of a diagram.
+ */
+import { linkToolsInHtml } from "../lib/link-tools-html";
+
+interface Props {
+  /** Link the first mention of each external tool (off for a nested body that the outer one covers). */
+  toolLinks?: boolean;
+}
+
+const { toolLinks = true } = Astro.props;
+const html = await Astro.slots.render("default");
 ---
 
-<div class="body"><slot /></div>
+<div class="body" set:html={toolLinks ? linkToolsInHtml(html) : html} />
 
 <style>
   .body {
     margin-top: 1.75rem;
   }
-  .body :global(p),
-  .body :global(ul),
-  .body :global(ol),
-  .body :global(h2),
-  .body :global(h3) {
+  .body > :global(p),
+  .body > :global(ul),
+  .body > :global(ol),
+  .body > :global(h2),
+  .body > :global(h3) {
     max-width: 68ch;
   }
   /* On a case page the body's sections are h2 (the page has no chapter level); they read like h3 in a chapter. */
-  .body :global(h2) {
+  .body > :global(h2) {
     font-size: 1.25rem;
     font-weight: 700;
     font-variation-settings: normal;
@@ -25,25 +37,25 @@
     line-height: inherit;
     margin-top: 2.5rem;
   }
-  .body :global(h2 + p) {
+  .body > :global(h2 + p) {
     margin-top: 0.625rem;
   }
-  .body :global(p + p),
-  .body :global(ul + p),
-  .body :global(p + ul) {
+  .body > :global(p + p),
+  .body > :global(ul + p),
+  .body > :global(p + ul) {
     margin-top: 1rem;
   }
-  .body :global(h3) {
+  .body > :global(h3) {
     margin-top: 2.5rem;
   }
-  .body :global(h3 + p) {
+  .body > :global(h3 + p) {
     margin-top: 0.625rem;
   }
-  .body :global(ul),
-  .body :global(ol) {
+  .body > :global(ul),
+  .body > :global(ol) {
     padding-left: 1.375rem;
   }
-  .body :global(li + li) {
+  .body > :global(:is(ul, ol) > li + li) {
     margin-top: 0.375rem;
   }
   .body :global(strong) {

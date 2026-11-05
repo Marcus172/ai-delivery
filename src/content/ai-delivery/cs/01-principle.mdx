@@ -2,13 +2,14 @@
 id: principle
 order: 1
 title: "Proces zůstává. Mravenčí práci dělá AI."
-summary: "Způsob práce pod delivery flow mého týmu je starší než agenti v něm; kontrakt, který ho zapisuje, je nový. Změnilo se, kdo píše, ne kdo rozhoduje."
+summary: "Způsob práce pod delivery flow je starší než agenti v něm; kontrakt, který ho zapisuje, je nový. Změnilo se, kdo píše, ne kdo rozhoduje."
 ---
 import { FlowBand, Note, Stat } from "../../../components/chapter";
+import { localizedPath } from "../../../i18n/routes";
 
 export const locale = "cs";
 
-V&nbsp;roce 2026 jsem postavil AI-asistované dodávání pro jeden produktový tým: velké produktové monorepo s&nbsp;několika paralelními release liniemi a&nbsp;tým napříč rolemi – vývojáři, analytici i&nbsp;testeři. Většina kroků je těch, ve kterých jsem pracoval dávno předtím, než existovali agenti: tiket se přečte a&nbsp;vyptá, dohodne se spec, proběhne review, odevzdá člověk a&nbsp;změna se přenese na každou novější release linii. Dvě věci jsou nové. Test, který padne před opravou, je dnes součástí každého tiketu, který projde flow, protože AI udělala test-first dostupným; napříč všemi produktovými pull requesty, s&nbsp;flow i&nbsp;bez něj, se podíl těch s&nbsp;testy posunul takto:
+V&nbsp;roce 2026 jsem postavil AI-asistované dodávání, nejdřív pro jeden produktový tým: velké produktové monorepo s&nbsp;několika paralelními release liniemi a&nbsp;tým napříč rolemi – vývojáři, analytici i&nbsp;testeři. Dnes stejný flow běží ve více týmech, na různých projektech a&nbsp;v&nbsp;různých repozitářích, u&nbsp;různých klientů. Většina kroků je těch, ve kterých jsem pracoval dávno předtím, než existovali agenti: tiket se přečte a&nbsp;vyptá, dohodne se spec, proběhne review, odevzdá člověk a&nbsp;změna se přenese na každou novější release linii. Dvě věci jsou nové. Test, který padne před opravou, je dnes součástí každého tiketu, který projde flow, protože AI udělala test-first dostupným; napříč všemi produktovými pull requesty, s&nbsp;flow i&nbsp;bez něj, se podíl těch s&nbsp;testy posunul takto:
 
 <Stat id="prs-with-tests" locale={locale} />
 
@@ -25,5 +26,5 @@ Znalost procesu z&nbsp;doby před AI mi zároveň říká, které kroky zrychlí
 <Stat id="five-to-ten-x" locale={locale} />
 
 <Note>
-  <strong>Co tahle stránka neříká.</strong> Nikde netvrdí, že AI nahradila práci týmu, že každá role denně pracuje v&nbsp;plném flow, ani že nástroj z&nbsp;někoho udělal desetinásobného inženýra. Měřená čísla v&nbsp;kapitole Výsledky uvádějí své období i&nbsp;výhrady; odhad výše zůstává odhadem.
+  <strong>Co tahle stránka neříká.</strong> Nikde netvrdí, že AI nahradila práci týmu, že každá role denně pracuje v&nbsp;plném flow, ani že nástroj z&nbsp;někoho udělal desetinásobného inženýra. Měřená čísla na stránce <a href={localizedPath(locale, "wins", "results")}>Výsledky a&nbsp;případy</a> uvádějí své období i&nbsp;výhrady; odhad výše zůstává odhadem.
 </Note>

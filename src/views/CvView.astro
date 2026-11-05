@@ -15,6 +15,7 @@ const { locale } = Astro.props;
 const name = t(locale, "site.name");
 const linkedinLabel = CV.contact.linkedin.replace(/^https?:\/\/(www\.)?/, "");
 const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
+import Linked from "../components/Linked.astro";
 ---
 
 <article class="cv">
@@ -32,7 +33,7 @@ const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
     <div class="body">
       <section class="profile" aria-labelledby="cv-profile">
         <h2 id="cv-profile" class="label">{t(locale, "cv.profile")}</h2>
-        <p class="bio">{CV.profile[locale]}</p>
+        <p class="bio"><Linked text={CV.profile[locale]} /></p>
       </section>
 
       <section class="xp" aria-labelledby="cv-experience">
@@ -50,7 +51,7 @@ const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
                     {role.client && ` · ${role.client}`}
                   </span>
                 </p>
-                <p class="sum">{role.summary[locale]}</p>
+                <p class="sum"><Linked text={role.summary[locale]} /></p>
               </div>
             </div>
           ))
@@ -64,7 +65,7 @@ const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
             <div class="skills">
               <span class="k">{group.group[locale]}</span>
               {group.items.map((item) => (
-                <span>{item}</span>
+                <span><Linked text={item} /></span>
               ))}
             </div>
           ))

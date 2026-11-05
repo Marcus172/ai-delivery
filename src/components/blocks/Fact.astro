@@ -1,0 +1,36 @@
+---
+interface Props {
+  k: string;
+}
+
+const { k } = Astro.props;
+---
+
+<dt>{k}</dt>
+<dd><slot /></dd>
+
+<style>
+  dt,
+  dd {
+    margin: 0;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.9375rem;
+  }
+  dt {
+    font-weight: 700;
+    padding-right: 1.5rem;
+  }
+  dd {
+    color: var(--mute);
+  }
+  @media (max-width: 559px) {
+    dt {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+    dd {
+      padding-top: 0.25rem;
+    }
+  }
+</style>

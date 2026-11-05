@@ -4,28 +4,74 @@ order: 3
 title: "Swappable tools and a small fleet"
 summary: "The contract names operations, not tools. Each developer implements them in the personal layer with their own tool, so a swap changes only personal files. Two symmetric machines share the state of the work through git."
 ---
-import { Note, ToolMap } from "../../../components/chapter";
+import { Detail, Fact, Facts, Glance, Note, Point, ToolLayers, ToolMap } from "../../../components/chapter";
 
 export const locale = "en";
 
-The contract names **operations**, not tools: where am I, who is online, create a workspace, run a command there, deliver a brief to an agent, what is running, archive. Each developer implements those operations in the personal layer with whatever they prefer. On one repository today, one developer runs Paseo, another runs worktrunk with a direct session, and a third uses nothing at all and works in place. Three tools, one process.
-
-The contract keeps two axes apart: where the working copy is created, and where the brief for the agent lands. Workspace tools cover them in different combinations; a tool that covers both hands itself an opaque handle. That separation is what keeps every tool name out of the generic layer.
+<Glance locale={locale}>
+  <Point locale={locale} title="Operations, not tools">
+    The contract names seven operations. On one repository, three developers implement them with three different tools; the process is the same.
+  </Point>
+  <Point locale={locale} title="A swap touches personal files only">
+    The contract and the team's configuration stay as they are. Twice so far an orchestrator was swapped without a change to the flow.
+  </Point>
+  <Point locale={locale} title="My setup: Paseo on a fleet">
+    Two symmetric machines share the state of the work through git. A personal setup, not a team standard: the team default is worktrunk on one machine.
+  </Point>
+</Glance>
 
 <ToolMap locale={locale} />
 
-### What a swap touches
+<ToolLayers locale={locale} />
 
-Swapping a tool changes only files of the personal layer: the fleet provider, the checkout provider, the workspace UI, the preferences. The contract and the team's configuration in the repository stay as they are. Everything else (the git state replica, the dotfiles profile, ssh, the worktree hooks, the orchestration loop, the plan app, the private network) does not depend on the tool and survives a swap untouched.
-
-My own personal layer runs on Paseo: free, an end-to-end relay, a command line for everything, a daemon as a service, a mobile app.
-
-### The fleet
-
-The delivery flow made it possible to work on many tasks in parallel and to use the token budget to the full (token maxxing). With that, the bottleneck moved from tokens to hardware: RAM and CPU for what the agents actually run, such as end-to-end tests, the monorepo's build and type-check, and long-running research agents. So my personal layer spans a **fleet** that spreads the hardware load: today **two symmetric machines**, a laptop and a desktop running Linux under Windows. Another machine or a VPS joins through the same guided setup, without redesigning anything. Each machine can orchestrate and execute; there is no worker role. Work on a ticket gets its own isolated workspace, a git worktree with its own dev-server port derived from the branch name, so several agents work in parallel on tickets, reviews and ports to other release lines, on whichever machine the developer is sitting at.
-
-The state of the work (ticket metadata, ledgers, memory, knowledge) is a git replica with a custom merge driver that merges the JSON per key. A conflict on the same field with different values is a hard stop, because it means the same work is running twice. The configuration is a chezmoi profile, pull-based, so there is no master machine; the two talk over a private Tailscale network. When memory runs short, a memory governor pauses the youngest batch job: full memory slows the work and never kills it.
+<Facts label="The fleet">
+  <Fact k="Why">Parallel agents moved the bottleneck from tokens to RAM and CPU: end-to-end tests, the monorepo's build and type-check, long-running research agents.</Fact>
+  <Fact k="Machines">Two today, a laptop and a Linux desktop under Windows. Another machine or a VPS joins through the same guided setup.</Fact>
+  <Fact k="Roles">None. Every machine orchestrates and executes; there is no worker role.</Fact>
+  <Fact k="Isolation">A git worktree per ticket, with its own dev-server port derived from the branch name.</Fact>
+  <Fact k="State of the work">A git replica with a merge driver that merges the JSON per key. The same field with two values is a hard stop: the same work is running twice.</Fact>
+  <Fact k="Configuration">A chezmoi profile, pull-based, so there is no master machine.</Fact>
+  <Fact k="Network">A private Tailscale network between the machines.</Fact>
+  <Fact k="Memory">A governor pauses the youngest batch job. Full memory slows the work and never kills it.</Fact>
+</Facts>
 
 <Note>
   <strong>Honestly:</strong> the fleet is my personal setup, verified end-to-end in both directions on real tickets. It is not a team standard. The team default is worktrunk on one machine, and the flow works there without any fleet at all.
 </Note>
+
+<Detail locale={locale}>
+
+The contract names **operations**, not tools: where am I, who is online, create a workspace, run a command there, deliver a brief to an agent, what is running, archive. Each developer implements those operations in the personal layer with whatever they prefer. On one repository today, one developer runs Paseo, another runs worktrunk with a direct session, and a third uses nothing at all and works in place.
+
+The contract keeps two axes apart: where the working copy is created, and where the brief for the agent lands. Workspace tools cover them in different combinations; a tool that covers both hands itself an opaque handle. That separation is what keeps every tool name out of the generic layer.
+
+Swapping a tool changes only files of the personal layer: the fleet provider, the checkout provider, the workspace UI, the preferences. Everything else (the git state replica, the dotfiles profile, ssh, the worktree hooks, the orchestration loop, the plan app, the private network) does not depend on the tool and survives a swap untouched.
+
+My own personal layer runs on Paseo: free, an end-to-end relay, a command line for everything, a daemon as a service, a mobile app. The delivery flow made it possible to work on many tasks in parallel and to use the token budget to the full, which is why it spans the fleet above.
+
+### The fleet in the contract
+
+The fleet came into the contract as two more extension points, not as a tool. The **fleet provider** answers who is online, creates a workspace on a given machine and runs a command there; the **state store** says where the state of the work lives. Every step that starts work takes a target machine, so a ticket can be started from the laptop and run on the desktop. Without the layer the flow behaves exactly as on one machine.
+
+A few rules came from failures, not from design:
+
+- **An offline machine is a stop.** Taking work over to another machine is an explicit choice, never a silent move.
+- **No duplicate work.** Before a workspace is created, three sources are checked in order: the state store, the tool's own registry, and the branch, which is pushed the moment the workspace exists.
+- **A remote shell is an emergency tool, not the transport.** Orchestration (workspaces, starting an agent, delivering the brief) goes through the tool's control plane; copying files and running commands go over ssh, with checksums and exit codes, because the tool's own keystroke delivery turned out to be unreliable.
+
+### State of the work: a git replica and ledgers
+
+Everything the flow knows about the work is plain files in one git repository, replicated to every machine: ticket metadata, the machine-checkable criteria that prove red before green, memory, decision maps and research notes. Two kinds of file keep two machines from fighting:
+
+- **Metadata** is one JSON file per ticket. A custom merge driver merges it key by key, so an orchestrator on one machine and an agent on the other can both write to it. Only the same field with two different values stops the merge, because that means the same work is running twice.
+- **Ledgers** are running records the orchestration loop keeps so it never repeats itself: which pull requests were reviewed at which commit, which fixes have already been checked against every newer release line, which tickets the morning briefing has already shown. Each machine writes only its own ledger file and the loop reads the union, so ledgers never conflict at all.
+
+### Configuration: a chezmoi profile
+
+chezmoi manages dotfiles from a git repository. My profile holds everything a machine needs to join: the shell setup, the personal layer of the flow, the agent settings, hooks and personal skills, the services that keep the daemons running, and the secrets, encrypted with age. It is pull-based: every machine applies the profile from git, and no machine is the one where configuration is written. A new machine joins through a guided setup skill, and a doctor runs about twenty checks per machine (versions, ssh in both directions, ports, keychain, profile, plugins), each failing line with the exact step that fixes it.
+
+### When memory runs short
+
+Under the default service settings, running out of memory once stopped the whole agent daemon with every agent in it. Now the service keeps running on memory pressure, a governor pauses the youngest batch job (a test run, a type-check, never an agent session) until memory frees up, and a retry wrapper repeats a job only when it died of memory, never when a test really failed.
+
+</Detail>

@@ -40,7 +40,7 @@ const RESULTS = Object.fromEntries(
 /** Every MDX body on the site: AI Delivery chapters, case pages and Results. The copy rules hold for all of them. */
 const ALL = LOCALES.flatMap((l) => [...BY_LOCALE[l], ...CASES[l], RESULTS[l]]);
 const DIAGRAM_RE =
-  /<(FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards)\b/g;
+  /<(FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards|ToolLayers|Glance|Point|Facts|Fact|Detail)\b/g;
 const diagrams = (c: Chapter) => [...c.body.matchAll(DIAGRAM_RE)].map((m) => m[1]);
 
 const denylist = loadDenylistText();

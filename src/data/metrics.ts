@@ -316,28 +316,6 @@ export const METRICS: Metric[] = [
     kind: "measured",
     period: l("delivery-flow contract · October 2026", "kontrakt delivery flow · říjen 2026"),
   },
-  // src: research note 02, §1.5 and §5.1 (v1 2026-08-06 → v10 2026-09-24)
-  {
-    id: "contract-versions",
-    value: l("v1 → v10", "v1 → v10"),
-    label: l(
-      "contract versions in seven weeks, each with migration notes; the tool swaps after v7 needed none",
-      "verzí kontraktu za sedm týdnů, každá s migračními poznámkami; výměny nástroje po v7 žádnou nepotřebovaly",
-    ),
-    kind: "measured",
-    period: l("plugin repository · August – September 2026", "repozitář pluginů · srpen – září 2026"),
-  },
-  // src: research note 02, §1.3 (second preset 2026-09-22 → 2026-10-07, written by a colleague)
-  {
-    id: "second-preset",
-    value: l("~2 weeks", "~2 týdny"),
-    label: l(
-      "for a colleague to write the preset for a second client on a different tracker and release model, with the contract unchanged",
-      "než kolega napsal preset pro druhého klienta s jiným trackerem a release modelem, kontrakt beze změny",
-    ),
-    kind: "measured",
-    period: l("plugin repository · September – October 2026", "repozitář pluginů · září – říjen 2026"),
-  },
 
   // ── Enablement ────────────────────────────────────────────────────────
 

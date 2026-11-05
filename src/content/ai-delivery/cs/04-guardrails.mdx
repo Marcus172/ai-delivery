@@ -2,17 +2,17 @@
 id: guardrails
 order: 4
 title: "Brány, které platí i bez AI"
-summary: "Pravidla jsou rozpočet a brány jsou kód. AI setup má vlastní regresní testy, kontext, který načítá, se měří, a co umí zkontrolovat stroj, nikdy nezávisí na promptu."
+summary: "Každé pravidlo pro agenta stojí kontext, proto jsou pravidla krátká a jejich velikost se měří. Co umí zkontrolovat stroj, kontroluje kód, nikdy to nezůstane na promptu, a samotný AI setup má vlastní regresní testy."
 ---
 import { GatesTable, Note, Stat } from "../../../components/chapter";
 
 export const locale = "cs";
 
-### Pravidla: trvale, nebo jen pro cestu
+### Nejdřív skripty, štíhlý kontext
 
-Instrukce pro agenta žijí v&nbsp;jednom souboru nezávislém na vendorovi v&nbsp;kořeni repozitáře, se symlinky, aby dva různé agentní nástroje četly stejný zdroj, a&nbsp;ve vnořených souborech per balík, které nesou jen to, co je tam unikátní. Pravidla jsou dvojího druhu. Hrstka je **vždy načtená** (bezpečnost, release linie, workflow trackeru, automatizace prohlížeče). Zbytek je **vázaný na cestu** přes frontmatter a&nbsp;načte se, jen když agent sáhne na soubor v&nbsp;jeho rozsahu: styling, i18n, přístupnost, testy, TypeScript. Každé pravidlo se má vejít do dvou řádků, říkat „dělej tohle, ne tamto“ a&nbsp;odkazovat do dokumentace místo jejího opakování.
+Tokeny se neutrácejí za to, co zvládne skript. Deterministické kroky flow, třeba určení cílových release linií, příprava pracoviště, běh brány nebo slučování stavu, jsou skripty: agent je zavolá a&nbsp;dostane zpátky krátký výsledek, místo aby četl soubory a&nbsp;dopočítával si to sám. Kontext agenta zůstává pro to, co vyžaduje úsudek.
 
-Kontext je rozpočet, ne odkladiště. Cílený úklid přesunul historii a&nbsp;zdůvodnění do dokumentace a&nbsp;direktivy nechal slovo od slova.
+Co se do kontextu dostane, prošlo dietou kontextu. Skilly, pravidla i&nbsp;instrukce říkají na řádek nebo dva, co dělat, a&nbsp;pro zdůvodnění odkazují do dokumentace; většina pravidel se načte, jen když agent sáhne na soubor, kterého se týkají. Instrukce žijí v&nbsp;jednom souboru nezávislém na vendorovi, který čte každý agentní nástroj.
 
 <Stat id="context-diet" locale={locale} />
 

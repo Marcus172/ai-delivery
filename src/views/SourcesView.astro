@@ -1,0 +1,248 @@
+---
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import Eyebrow from "../components/Eyebrow.astro";
+import Section from "../components/Section.astro";
+import { csTypo } from "../data/l10n";
+import { PEOPLE, TOOL_GROUPS, toolsIn } from "../data/sources";
+import type { Locale } from "../i18n/locales";
+import { t, type UiKey } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const tt = (key: UiKey) => (locale === "cs" ? csTypo(t(locale, key)) : t(locale, key));
+const host = (url: string) => new URL(url).host.replace(/^www\./, "");
+const photos = import.meta.glob<{ default: ImageMetadata }>("../assets/people/*.jpg", { eager: true });
+const photo = (handle: string) => {
+  const file = photos[`../assets/people/${handle.toLowerCase().replace(/^_/, "")}.jpg`];
+  if (!file) throw new Error(`Missing photo for @${handle}`);
+
+  return file.default;
+};
+---
+
+<div class="column">
+  <header class="head">
+    <Eyebrow>{tt("sources.eyebrow")}</Eyebrow>
+    <h1>{tt("sources.title")}</h1>
+    <p class="lead">{tt("sources.lead")}</p>
+    <nav class="jump" aria-label={tt("sources.tools")}>
+      <ul>
+        <li><a href="#people">{tt("sources.people")}</a></li>
+        {TOOL_GROUPS.map((g) => <li><a href={`#${g.id}`}>{g.title[locale]}</a></li>)}
+      </ul>
+    </nav>
+  </header>
+
+  <Section id="people" first>
+    <h2>{tt("sources.people")}</h2>
+    <p class="intro">{tt("sources.peopleLead")}</p>
+    <ul class="people">
+      {
+        PEOPLE.map((p) => (
+          <li class="person" data-person={p.handle}>
+            <a class="profile" href={`https://x.com/${p.handle}`}>
+              <Image class="avatar" src={photo(p.handle)} alt="" width={96} widths={[56, 96]} sizes="3.5rem" loading="lazy" />
+              <span class="who">
+                <span class="name">{p.name}</span>
+                <span class="handle">@{p.handle}</span>
+              </span>
+              <svg class="x" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor" d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.78zm-1.08 16.17h1.7L7.42 4.73H5.6z" />
+              </svg>
+            </a>
+            <p class="what">{p.known[locale]}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
+
+  {
+    TOOL_GROUPS.map((g) => (
+      <Section id={g.id}>
+        <h2>{g.title[locale]}</h2>
+        <ul class="tools" data-tool-group={g.id}>
+          {toolsIn(g.id).map((x) => (
+            <li class="tool" data-tool={x.id}>
+              <h3>{x.label?.[locale] ?? x.name}</h3>
+              <p class="what">{x.what?.[locale]}</p>
+              <p class="links">
+                <a href={x.url}>
+                  <span class="k">{tt("sources.site")}</span> {host(x.url)}
+                </a>
+                {x.docs && (
+                  <a href={x.docs}>
+                    <span class="k">{tt("sources.docs")}</span> {host(x.docs)}
+                  </a>
+                )}
+                {x.video && (
+                  <a href={x.video}>
+                    <span class="k">{tt("sources.video")}</span> {host(x.video)}
+                  </a>
+                )}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+    ))
+  }
+
+</div>
+
+<style>
+  .column {
+    max-width: 54rem;
+    margin-inline: auto;
+  }
+  .head {
+    padding-bottom: 2.5rem;
+  }
+  .head h1 {
+    font-size: var(--page-title-size);
+    max-width: 20ch;
+  }
+  .lead {
+    margin-top: 1.5rem;
+    max-width: 64ch;
+    font-size: 1.125rem;
+  }
+  .jump ul {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .jump a {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    padding: 0.375rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .jump a:hover {
+    border-color: var(--acc);
+  }
+  h2 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  :global(section[id]) {
+    scroll-margin-top: 0.75rem;
+  }
+  .intro {
+    margin-top: 0.75rem;
+    color: var(--mute);
+  }
+  .tools,
+  .people {
+    list-style: none;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
+    gap: 0.75rem;
+  }
+  .tool,
+  .person {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.5rem;
+    padding: 1.125rem 1.25rem;
+    background: var(--tint);
+    border-radius: 0.75rem;
+  }
+  .tool h3,
+  .person h3 {
+    font-size: 1.0625rem;
+    font-weight: 700;
+  }
+  .what {
+    font-size: 0.875rem;
+    color: var(--mute);
+    line-height: 1.5;
+  }
+  .person {
+    position: relative;
+    grid-template-rows: auto 1fr;
+    gap: 0.75rem;
+    transition: background-color 0.15s ease;
+  }
+  /* The whole card is the link: the profile link stretches over it, so there is one link per person. */
+  .profile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .person:hover {
+    background: color-mix(in srgb, var(--tint) 80%, var(--ink) 8%);
+  }
+  .person:focus-within {
+    outline: 2px solid var(--acc);
+    outline-offset: 2px;
+  }
+  .profile:focus-visible {
+    outline: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .person {
+      transition: none;
+    }
+  }
+  .profile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+  }
+  .profile :global(.avatar) {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .who {
+    display: grid;
+    min-width: 0;
+  }
+  .name {
+    font-weight: 700;
+    font-size: 1.0625rem;
+  }
+  .handle {
+    font-size: 0.875rem;
+    color: var(--mute);
+    overflow-wrap: anywhere;
+  }
+  .person:hover .name {
+    text-decoration: underline;
+  }
+  .x {
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--mute);
+    align-self: start;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 1rem;
+    font-size: 0.8125rem;
+  }
+  .links a {
+    font-weight: 600;
+  }
+  .links .k {
+    color: var(--mute);
+    font-weight: 400;
+  }
+</style>

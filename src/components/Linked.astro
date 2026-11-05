@@ -1,0 +1,12 @@
+---
+/** Text from a data file with the first mention of each external tool linked to its official site. */
+import { splitTools } from "../data/tools";
+
+interface Props {
+  text: string;
+}
+
+const pieces = splitTools(Astro.props.text, new Set());
+---
+
+{pieces.map((p) => (typeof p === "string" ? p : <a class="tool-link" href={p.tool.url} data-tool={p.tool.id}>{p.text}</a>))}

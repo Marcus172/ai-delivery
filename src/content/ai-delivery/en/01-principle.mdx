@@ -2,13 +2,14 @@
 id: principle
 order: 1
 title: "The process stays. AI does the grunt work."
-summary: "The way of working underneath my team's delivery flow is older than the agents in it; the contract that encodes it is new. What changed is who does the typing, not who decides."
+summary: "The way of working underneath the delivery flow is older than the agents in it; the contract that encodes it is new. What changed is who does the typing, not who decides."
 ---
 import { FlowBand, Note, Stat } from "../../../components/chapter";
+import { localizedPath } from "../../../i18n/routes";
 
 export const locale = "en";
 
-In 2026 I set up AI-assisted delivery for one product team: a large product monorepo with several parallel release lines and a cross-functional team of developers, analysts and testers. Most of the steps are ones I worked in long before agents existed: a ticket is read and questioned, a spec is agreed, a review happens, a person submits, and the change is ported to every newer release line. Two things are new. A test that fails before the fix is now part of every ticket that runs through the flow, because AI made test-first affordable; across all product pull requests, with or without the flow, the share that adds or changes tests moved like this:
+In 2026 I set up AI-assisted delivery, first for one product team: a large product monorepo with several parallel release lines and a cross-functional team of developers, analysts and testers. Today the same flow runs in several teams, on different projects and repositories, for different clients. Most of the steps are ones I worked in long before agents existed: a ticket is read and questioned, a spec is agreed, a review happens, a person submits, and the change is ported to every newer release line. Two things are new. A test that fails before the fix is now part of every ticket that runs through the flow, because AI made test-first affordable; across all product pull requests, with or without the flow, the share that adds or changes tests moved like this:
 
 <Stat id="prs-with-tests" locale={locale} />
 
@@ -25,5 +26,5 @@ Knowing the process from before AI is also what tells me which steps it speeds u
 <Stat id="five-to-ten-x" locale={locale} />
 
 <Note>
-  <strong>What this page does not say.</strong> It never claims that AI replaced the team's work, that every role works in the full flow daily, or that a tool made anyone a ten-times engineer. The measured figures in the Results chapter name their period and their caveats; the estimate above stays an estimate.
+  <strong>What this page does not say.</strong> It never claims that AI replaced the team's work, that every role works in the full flow daily, or that a tool made anyone a ten-times engineer. The measured figures on <a href={localizedPath(locale, "wins", "results")}>Wins &amp; cases</a> name their period and their caveats; the estimate above stays an estimate.
 </Note>

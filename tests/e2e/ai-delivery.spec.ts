@@ -19,7 +19,6 @@ const denylist = loadDenylistText();
 const cvOnly = denylist ? parseDenylist(denylist).filter((r) => r.scope === "cv-only") : [];
 
 for (const locale of LOCALES) {
-  const measured = t(locale, "badge.measured");
   const estimate = t(locale, "badge.estimate");
 
   test.describe(`ai-delivery (${locale})`, () => {
@@ -74,20 +73,20 @@ for (const locale of LOCALES) {
       await expect(link).toHaveAttribute("href", new RegExp(`${other.replace(/[/#]/g, "\\$&")}$`));
     });
 
-    test("every Stat shows a measured or estimate badge, and 5–10× is the only estimate", async ({ page }) => {
+    test("figures show no measured badge or period here; 5–10× is the one estimate and keeps its badge", async ({ page }) => {
       await page.goto(URL[locale]);
       const stats = page.locator("main .stat");
-      const n = await stats.count();
-      expect(n).toBeGreaterThanOrEqual(6);
-      for (let i = 0; i < n; i++) {
-        const badge = stats.nth(i).locator("small").first();
-        await expect(badge).toBeVisible();
-        const text = (await badge.textContent())?.trim();
-        expect([measured, estimate]).toContain(text);
+      expect(await stats.count()).toBeGreaterThanOrEqual(6);
+      const measured = page.locator("main .stat[data-kind=measured]");
+      for (let i = 0; i < (await measured.count()); i++) {
+        await expect(measured.nth(i).locator("small")).toBeHidden();
+        if (await measured.nth(i).locator(".period").count()) await expect(measured.nth(i).locator(".period")).toBeHidden();
       }
       const estimates = page.locator("main .stat[data-kind=estimate]");
       await expect(estimates).toHaveCount(1);
       await expect(estimates).toContainText("5–10×");
+      await expect(estimates.locator("small")).toBeVisible();
+      await expect(estimates.locator("small")).toHaveText(estimate);
     });
 
     test("diagrams are accessible images with localized titles; wide ones scroll in their own box", async ({ page }) => {
@@ -212,12 +211,13 @@ for (const locale of LOCALES) {
       });
     }
 
-    test("the offer chapter closes into the three offer cards and the calls to action", async ({ page }) => {
+    test("the offer chapter shows the three offer cards; the calls to action live once, in the footer", async ({ page }) => {
       await page.goto(URL[locale]);
       const offer = page.locator("section#offer");
       await expect(offer.locator("[data-offer-card]")).toHaveCount(3);
-      await expect(offer.locator("a[href^='mailto:']")).toHaveCount(1);
-      await expect(offer.locator("a[href*='linkedin.com']")).toHaveCount(1);
+      await expect(offer.locator("a[href^='mailto:']")).toHaveCount(0);
+      await expect(page.locator("footer a[href^='mailto:']")).toHaveCount(1);
+      await expect(page.locator("footer a[href*='linkedin.com']")).toHaveCount(1);
     });
 
     test("every chapter has at least one diagram or visualization", async ({ page }) => {

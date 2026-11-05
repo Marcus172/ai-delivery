@@ -1,0 +1,38 @@
+---
+/** "At a glance": the chapter in three or four claims, each with its proof. Holds `<Point>` children. */
+import type { Locale } from "../../i18n/locales";
+import { t } from "../../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<section class="glance" data-glance aria-label={t(locale, "ai.glance")}>
+  <p class="k" aria-hidden="true">{t(locale, "ai.glance")}</p>
+  <ul>
+    <slot />
+  </ul>
+</section>
+
+<style>
+  .glance {
+    margin-top: 2rem;
+  }
+  .k {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--acc-text);
+    margin: 0 0 0.75rem;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12.5rem), 1fr));
+    gap: 0.75rem;
+  }
+</style>

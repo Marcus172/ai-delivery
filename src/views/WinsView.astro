@@ -5,6 +5,7 @@ import Prose from "../components/Prose.astro";
 import Section from "../components/Section.astro";
 import Stat from "../components/Stat.astro";
 import { caseNumber, loadCases } from "../data/cases";
+import { AREAS, WINS } from "../data/alongTheWay";
 import { csTypo } from "../data/l10n";
 import type { Locale } from "../i18n/locales";
 import { localizedPath, subPagePath } from "../i18n/routes";
@@ -68,6 +69,22 @@ const cases = await loadCases(locale);
         </li>
       ))
     }
+    <li class="card more" id="along-the-way" data-more-wins>
+      <p class="card-n">{tt("wins.moreEyebrow")}</p>
+      <h3>
+        <a href={subPagePath(locale, "wins", "along-the-way")}>{WINS.length} {tt("wins.moreTitle")}</a>
+      </h3>
+      <p class="card-summary">{tt("wins.moreText")}</p>
+      <ul class="more-areas" aria-hidden="true">
+        {AREAS.map((a) => <li>{a.title[locale]}</li>)}
+      </ul>
+      <span class="card-more" aria-hidden="true">
+        {t(locale, "wins.moreLink")}
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M13 6l6 6-6 6" />
+        </svg>
+      </span>
+    </li>
   </ol>
 </Section>
 
@@ -205,6 +222,28 @@ const cases = await loadCases(locale);
   .card:hover .card-more svg {
     transform: translateX(0.25rem);
     color: var(--acc);
+  }
+
+  /* ---------- along the way: the last cell of the case grid, styled like a case card ---------- */
+  .more {
+    border-top-color: var(--acc);
+  }
+  .more-areas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: start;
+    gap: 0.375rem;
+  }
+  .more-areas li {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.125rem 0.5rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--mute);
   }
 
   /* ---------- next ---------- */

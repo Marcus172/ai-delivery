@@ -1,7 +1,7 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-/** All 8 pages, relative to the base URL. */
+/** Every page, relative to the base URL. */
 const PAGES = [
   "",
   "journey/",
@@ -12,6 +12,7 @@ const PAGES = [
   "wins/tailwind/",
   "wins/stack/",
   "wins/security/",
+  "wins/along-the-way/",
   "sources/",
   "cv/",
   "cs/",
@@ -23,6 +24,7 @@ const PAGES = [
   "cs/wins/tailwind/",
   "cs/wins/stack/",
   "cs/wins/security/",
+  "cs/wins/along-the-way/",
   "cs/sources/",
   "cs/cv/",
 ];

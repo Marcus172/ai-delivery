@@ -1,0 +1,11 @@
+---
+import Base from "../../../layouts/Base.astro";
+import AlongTheWayView from "../../../views/AlongTheWayView.astro";
+import { t } from "../../../i18n/ui";
+
+const locale = "cs";
+---
+
+<Base locale={locale} page="wins" sub="along-the-way" title={t(locale, "page.atw.title")} description={t(locale, "page.atw.description")}>
+  <AlongTheWayView locale={locale} />
+</Base>

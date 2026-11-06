@@ -90,8 +90,8 @@ export const JOURNEY: Milestone[] = [
     weight: "expanded",
     title: l("AI setup of a large product monorepo", "AI setup velkého produktového monorepa"),
     body: l(
-      "Joined a fintech vendor as Product Engineering & AI Lead: a large product monorepo with several parallel release lines and a cross-functional team of developers, analysts and testers. The AI setup landed as one team-agreed change, built on two colleagues' proposals: one vendor-neutral instruction file for every agent tool, rules, skills and commands. A shared plugin marketplace followed at the end of the month.",
-      "Nastoupil jsem jako Product Engineering & AI Lead do fintechové softwarové firmy: velké produktové monorepo s několika paralelními release liniemi a smíšený tým vývojářů, analytiků a testerů. AI setup přišel jako jedna změna dohodnutá v týmu, postavená na návrzích dvou kolegů: jeden soubor instrukcí nezávislý na dodavateli pro všechny agentní nástroje, pravidla, skilly a příkazy. Na konci měsíce přibyl sdílený marketplace pluginů.",
+      "Joined a fintech vendor as Product Engineering & AI Lead: a large product monorepo with several parallel release lines and a cross-functional team of developers, analysts and testers. When I joined, nobody on the team used AI in their work. The AI setup landed as one team-agreed change, built on two colleagues' proposals: one vendor-neutral instruction file for every agent tool, rules, skills and commands. A shared plugin marketplace followed at the end of the month.",
+      "Nastoupil jsem jako Product Engineering & AI Lead do fintechové softwarové firmy: velké produktové monorepo s několika paralelními release liniemi a smíšený tým vývojářů, analytiků a testerů. Když jsem přišel, nikdo v týmu AI při práci nepoužíval. AI setup přišel jako jedna změna dohodnutá v týmu, postavená na návrzích dvou kolegů: jeden soubor instrukcí nezávislý na dodavateli pro všechny agentní nástroje, pravidla, skilly a příkazy. Na konci měsíce přibyl sdílený marketplace pluginů.",
     ),
   },
   {

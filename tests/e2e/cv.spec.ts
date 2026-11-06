@@ -106,9 +106,22 @@ for (const locale of LOCALES) {
       expect(box!.y + box!.height).toBeLessThanOrEqual(844);
     });
 
-    test("contact list links to the site", async ({ page }) => {
+    test("header contact line carries email, LinkedIn, GitHub and the site", async ({ page }) => {
       await page.goto(CV_URL[locale]);
-      await expect(page.locator(`main a[href="${CV.contact.site}"]`)).toHaveCount(1);
+      const contact = page.locator("[data-cv-contact]");
+      await expect(contact.locator('a[href^="mailto:"]')).toHaveCount(1);
+      await expect(contact.locator(`a[href="${CV.contact.site}"]`)).toHaveCount(1);
+      await expect(contact.locator(`a[href="${CV.contact.linkedin}"]`)).toHaveCount(1);
+      await expect(contact.locator(`a[href="${CV.contact.github}"]`)).toHaveCount(1);
+    });
+
+    test("email and the current role title are in the first viewport", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      for (const target of [page.locator('[data-cv-contact] a[href^="mailto:"]'), page.locator("[data-role] [data-role-title]").first()]) {
+        await expect(target).toBeVisible();
+        const box = await target.boundingBox();
+        expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+      }
     });
   });
 }

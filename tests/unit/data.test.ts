@@ -208,6 +208,7 @@ describe("cv", () => {
       email: "marek.marcus.rom@gmail.com",
       linkedin: "https://www.linkedin.com/in/marek-rom-a91445b8",
       github: "https://github.com/Marcus172",
+      site: "https://marcus172.github.io/ai-delivery/",
     });
   });
 

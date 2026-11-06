@@ -2,9 +2,9 @@
 id: tooling
 order: 3
 title: "Swappable tools and a small fleet"
-summary: "The contract names operations, not tools. Each developer implements them in the personal layer with their own tool, so a swap changes only personal files. Two symmetric machines share the state of the work through git."
+summary: "The contract names operations, not tools. Each developer implements them in the personal layer with their own orchestration tool, so a swap changes only personal files. Two symmetric machines share the state of the work through git."
 ---
-import { Detail, Fact, Facts, Glance, Note, Point, ToolLayers, ToolMap } from "../../../components/chapter";
+import { Detail, Fact, Facts, FleetMap, Glance, Note, Point, ToolLayers, ToolMap } from "../../../components/chapter";
 
 export const locale = "en";
 
@@ -24,6 +24,8 @@ export const locale = "en";
 
 <ToolLayers locale={locale} />
 
+<FleetMap locale={locale} />
+
 <Facts label="The fleet">
   <Fact k="Why">Parallel agents moved the bottleneck from tokens to RAM and CPU: end-to-end tests, the monorepo's build and type-check, long-running research agents.</Fact>
   <Fact k="Machines">Two today, a laptop and a Linux desktop under Windows. Another machine or a VPS joins through the same guided setup.</Fact>
@@ -41,37 +43,58 @@ export const locale = "en";
 
 <Detail locale={locale}>
 
-The contract names **operations**, not tools: where am I, who is online, create a workspace, run a command there, deliver a brief to an agent, what is running, archive. Each developer implements those operations in the personal layer with whatever they prefer. On one repository today, one developer runs Paseo, another runs worktrunk with a direct session, and a third uses nothing at all and works in place.
+### Operations, not tools
 
-The contract keeps two axes apart: where the working copy is created, and where the brief for the agent lands. Workspace tools cover them in different combinations; a tool that covers both hands itself an opaque handle. That separation is what keeps every tool name out of the generic layer.
-
-Swapping a tool changes only files of the personal layer: the fleet provider, the checkout provider, the workspace UI, the preferences. Everything else (the git state replica, the dotfiles profile, ssh, the worktree hooks, the orchestration loop, the plan app, the private network) does not depend on the tool and survives a swap untouched.
-
-My own personal layer runs on Paseo: free, an end-to-end relay, a command line for everything, a daemon as a service, a mobile app. The delivery flow made it possible to work on many tasks in parallel and to use the token budget to the full, which is why it spans the fleet above.
+<Facts label="Operations, not tools">
+  <Fact k="Seven operations">Where am I, who is online, create a workspace, run a command there, deliver a brief to an agent, what is running, archive.</Fact>
+  <Fact k="Two axes">Where the working copy is created and where the brief lands stay apart. A tool that covers both hands itself an opaque handle, and every tool name stays out of the generic layer.</Fact>
+  <Fact k="A swap changes">Files of the personal layer only: the fleet provider, the checkout provider, the workspace UI, the preferences.</Fact>
+  <Fact k="A swap leaves">The git state replica, the dotfiles profile, ssh, the worktree hooks, the orchestration loop, the plan app, the private network.</Fact>
+  <Fact k="My choice">Paseo: free, an end-to-end relay, a command line for everything, a daemon as a service, a mobile app. Parallel work on many tickets uses the token budget to the full, which is why it spans the fleet.</Fact>
+</Facts>
 
 ### The fleet in the contract
 
-The fleet came into the contract as two more extension points, not as a tool. The **fleet provider** answers who is online, creates a workspace on a given machine and runs a command there; the **state store** says where the state of the work lives. Every step that starts work takes a target machine, so a ticket can be started from the laptop and run on the desktop. Without the layer the flow behaves exactly as on one machine.
+Two more extension points, not a tool. Without them the flow behaves exactly as on one machine.
+
+<Facts label="The fleet in the contract">
+  <Fact k="Fleet provider">Who is online; create a workspace on a given machine; run a command there.</Fact>
+  <Fact k="State store">Where the state of the work lives.</Fact>
+  <Fact k="Target machine">Every step that starts work takes one, so a ticket started on the laptop can run on the desktop.</Fact>
+</Facts>
 
 A few rules came from failures, not from design:
 
-- **An offline machine is a stop.** Taking work over to another machine is an explicit choice, never a silent move.
-- **No duplicate work.** Before a workspace is created, three sources are checked in order: the state store, the tool's own registry, and the branch, which is pushed the moment the workspace exists.
-- **A remote shell is an emergency tool, not the transport.** Orchestration (workspaces, starting an agent, delivering the brief) goes through the tool's control plane; copying files and running commands go over ssh, with checksums and exit codes, because the tool's own keystroke delivery turned out to be unreliable.
+<Facts label="Rules that came from failures">
+  <Fact k="Offline machine">A stop. Taking work over to another machine is an explicit choice, never a silent move.</Fact>
+  <Fact k="No duplicate work">Before a workspace is created, three sources are checked in order: the state store, the tool's own registry, and the branch, pushed the moment the workspace exists.</Fact>
+  <Fact k="Remote shell">An emergency tool, not the transport. Workspaces, agents and briefs go through the tool's control plane; files and commands go over ssh with checksums and exit codes, because the tool's keystroke delivery proved unreliable.</Fact>
+</Facts>
 
 ### State of the work: a git replica and ledgers
 
-Everything the flow knows about the work is plain files in one git repository, replicated to every machine: ticket metadata, the machine-checkable criteria that prove red before green, memory, decision maps and research notes. Two kinds of file keep two machines from fighting:
+One git repository, replicated to every machine, holds everything the flow knows about the work.
 
-- **Metadata** is one JSON file per ticket. A custom merge driver merges it key by key, so an orchestrator on one machine and an agent on the other can both write to it. Only the same field with two different values stops the merge, because that means the same work is running twice.
-- **Ledgers** are running records the orchestration loop keeps so it never repeats itself: which pull requests were reviewed at which commit, which fixes have already been checked against every newer release line, which tickets the morning briefing has already shown. Each machine writes only its own ledger file and the loop reads the union, so ledgers never conflict at all.
+<Facts label="State of the work">
+  <Fact k="Contents">Ticket metadata, the machine-checkable criteria that prove red before green, memory, decision maps, research notes.</Fact>
+  <Fact k="Metadata">One JSON file per ticket. A custom merge driver merges it key by key, so an orchestrator on one machine and an agent on the other can both write. Only the same field with two values stops the merge: the same work is running twice.</Fact>
+  <Fact k="Ledgers">What the orchestration loop has already done, so it never repeats itself: pull requests reviewed at which commit, fixes checked against every newer release line, tickets the morning briefing has shown. Each machine writes only its own file and the loop reads the union, so ledgers never conflict.</Fact>
+</Facts>
 
 ### Configuration: a chezmoi profile
 
-chezmoi manages dotfiles from a git repository. My profile holds everything a machine needs to join: the shell setup, the personal layer of the flow, the agent settings, hooks and personal skills, the services that keep the daemons running, and the secrets, encrypted with age. It is pull-based: every machine applies the profile from git, and no machine is the one where configuration is written. A new machine joins through a guided setup skill, and a doctor runs about twenty checks per machine (versions, ssh in both directions, ports, keychain, profile, plugins), each failing line with the exact step that fixes it.
+<Facts label="Configuration">
+  <Fact k="Contents">The shell setup, the personal layer of the flow, agent settings, hooks and personal skills, the services that keep the daemons running, and the secrets, encrypted with age.</Fact>
+  <Fact k="Pull-based">Every machine applies the profile from git; no machine is the one where configuration is written.</Fact>
+  <Fact k="A new machine">Joins through a guided setup skill. A doctor runs about twenty checks per machine (versions, ssh in both directions, ports, keychain, profile, plugins), each failing line with the exact step that fixes it.</Fact>
+</Facts>
 
 ### When memory runs short
 
-Under the default service settings, running out of memory once stopped the whole agent daemon with every agent in it. Now the service keeps running on memory pressure, a governor pauses the youngest batch job (a test run, a type-check, never an agent session) until memory frees up, and a retry wrapper repeats a job only when it died of memory, never when a test really failed.
+<Facts label="When memory runs short">
+  <Fact k="Before">Under the default service settings, running out of memory once stopped the whole agent daemon with every agent in it.</Fact>
+  <Fact k="Now">The service keeps running under memory pressure. A governor pauses the youngest batch job (a test run, a type-check, never an agent session) until memory frees up.</Fact>
+  <Fact k="Retries">A wrapper repeats a job only when it died of memory, never when a test really failed.</Fact>
+</Facts>
 
 </Detail>

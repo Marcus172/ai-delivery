@@ -257,17 +257,57 @@ for (const locale of LOCALES) {
       }
     });
 
-    for (const width of [1440, 1024]) {
-      test(`row stays on one line at ${width}px`, async ({ page }) => {
+    for (const width of [1440, 1024, 390]) {
+      test(`LinkedIn and GitHub share a row of their own under the main buttons at ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 });
         await page.goto(URL_OF[locale]);
-        const tops = await page
-          .locator(".cta")
-          .first()
-          .locator("a")
-          .evaluateAll((els) => els.map((e) => (e as HTMLElement).offsetTop));
-        expect(new Set(tops).size).toBe(1);
+        for (const [n, row] of (await page.locator(".cta").all()).entries()) {
+          const boxes = await row.locator("a").evaluateAll((els) =>
+            els.map((e) => {
+              const r = e.getBoundingClientRect();
+              return { top: Math.round(r.top), left: Math.round(r.left) };
+            }),
+          );
+          const [email, cv, linkedin, github] = boxes;
+          // The hero row has the room for both main buttons; the contact block's half column may wrap them.
+          if (n === 0 && width > 559) expect(cv.top).toBe(email.top);
+          expect(linkedin.top).toBe(github.top);
+          expect(linkedin.top).toBeGreaterThan(cv.top);
+          expect(linkedin.left).toBe(email.left);
+        }
       });
     }
   });
+}
+
+for (const locale of LOCALES) {
+  for (const vp of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    test.describe(`landing hero reader paths and facts (${locale}, ${vp.width}px)`, () => {
+      test.use({ viewport: vp });
+
+      test("facts line is in the first viewport and names the role", async ({ page }) => {
+        await page.goto(URL_OF[locale]);
+        const facts = page.locator("[data-facts]");
+        await expect(facts).toBeVisible();
+        await expect(facts).toContainText("Product Engineering & AI Lead");
+        const box = await facts.boundingBox();
+        expect(box!.y + box!.height).toBeLessThanOrEqual(vp.height);
+      });
+
+      test("two reader paths link to Wins & cases and the CV, in the first viewport", async ({ page }) => {
+        await page.goto(URL_OF[locale]);
+        const links = page.locator("[data-reader-paths] a");
+        await expect(links).toHaveCount(2);
+        await expect(links.nth(0)).toHaveAttribute("href", PATH_OF[locale].wins);
+        await expect(links.nth(1)).toHaveAttribute("href", PATH_OF[locale].cv);
+        for (const i of [0, 1]) {
+          const box = await links.nth(i).boundingBox();
+          expect(box!.y + box!.height).toBeLessThanOrEqual(vp.height);
+        }
+      });
+    });
+  }
 }

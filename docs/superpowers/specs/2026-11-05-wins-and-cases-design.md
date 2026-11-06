@@ -73,8 +73,8 @@ subpage. Shape *(builder's call on details)*:
 
 1. **Header**: eyebrow, title, a lead of two or three sentences (what this section is, who it is
    for), the site-wide "as of" line.
-2. **Results** — the current chapter 10 content moves here **whole**: the caveats block first, then
-   the measured before/after set, then the 5–10× estimate kept visibly apart. Its anchor stays
+2. **Results** — the current chapter 10 content moves here **whole**: the measured before/after set first, then the
+   caveats block (author decision 2026-11-06), then the 5–10× estimate kept visibly apart. Its anchor stays
    `#results`. The estimate block's link "in the first chapter" becomes a cross-page link to
    AI Delivery `#principle` in the same locale.
 3. **Cases** — one summary card per case, in the current order (brand voice, accessibility,
@@ -162,7 +162,7 @@ alt text are per locale.
 - Routes and the page-id list cover the new pages (unit).
 - The chapter collection: AI Delivery has the seven chapters; cases are their own collection or
   are otherwise kept out of AI Delivery *(builder's call on the content model)*.
-- E2E: Wins landing renders results with caveats before figures, three case cards linking to the
+- E2E: Wins landing renders results with figures before caveats (author decision 2026-11-06), three case cards linking to the
   subpages; each subpage renders in EN and CS with prev/next; language switch round-trips on a
   case; AI Delivery no longer contains case chapters and links to Wins; old anchors forward.
 - Media components *(builder's call)*: no media ship in this change and no demo page is deployed,

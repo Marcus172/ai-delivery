@@ -78,7 +78,7 @@ Shared on every page: rail/top nav (Landing · Journey · AI Delivery · CV), EN
 ### 5.1 Landing — "one minute"
 
 For the reader who gives it a minute. Content:
-- Hero: name, "Senior Product Engineer", one-sentence claim (team-wide AI-enabled delivery), orbit diagram, three measured stats with a "measured" label — **decided by the author**: **In-Progress → PR −70 %**, **PRs with tests 1 % → 56 %**, **2,423 accessibility findings → 18 systemic patterns** (period and baseline on AI Delivery). Lead time and returns-from-test figures appear only in the Results chapter, with their reliability caveats.
+- Hero: name, "Senior Product Engineer", one-sentence claim (team-wide AI-enabled delivery), orbit diagram, three measured stats with a "measured" label — **decided by the author**: **In-Progress → PR −70 %**, **PRs with tests 1 % → 56 %**, **2,423 accessibility findings / 18 systemic patterns** (period and baseline on AI Delivery). Lead time and returns-from-test figures appear only in the Results chapter, with their reliability caveats.
 - **What I can set up for you** (consulting offer), three cards — builder's call on wording:
   1. AI-SDLC assessment of an existing team and codebase;
   2. setting up a shared delivery flow with guardrails (agent context, gates, behavioral tests, personal tooling layer);
@@ -123,7 +123,7 @@ Chapters:
 
 ### 5.4 CV
 
-Factual, print-friendly, source of the PDF. From the author's PDF CV, with these changes: headline "Senior Product Engineer"; current role **"Product Engineering & AI Lead · Finshape · J&T Bank internet banking & investments · Apr 2026 – now"** — the **only** place on the site where those names may appear; no phone. Sections: profile, experience (all roles), skills/toolkit, languages, contact.
+Factual, print-friendly, source of the PDF. From the author's PDF CV, with these changes: headline "Senior Product Engineer"; current role **"Product Engineering & AI Lead · <employer> · <client and product> · Apr 2026 – now"** (the real names live in `src/data/cv.ts`) — the **only** place on the site where those names may appear; no phone. Sections: profile, experience (all roles), skills/toolkit, languages, contact.
 
 ## 6. NDA gate
 

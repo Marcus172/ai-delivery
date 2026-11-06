@@ -2,7 +2,7 @@
 id: stack
 order: 4
 highlights: ["stack-one-pr", "stack-java"]
-title: "Retiring a prehistoric tech stack"
+title: "Six years of upgrade debt, paid down as a procedure"
 summary: "A product with several release lines in parallel had fallen two generations behind. Upgrades became a procedure instead of an event: find the drift, upgrade in waves, carry each wave to the lines that need it, prove behaviour with parity runs and gate what actually resolves. The backend developers ran the same rules on Java, Spring Boot and the rest of their stack."
 teaser: "Upgrades as a procedure, not an event: drift found by a script, waves carried to every release line that needs them, behaviour proven by parity runs. The web apps and the backend under the same rules."
 ---
@@ -28,6 +28,8 @@ A product team that ships several release lines at once rarely has a week for up
     Every upgrade and every fix has to reach each release line that needs it, without breaking the ones that must not move.
   </Point>
 </Glance>
+
+<Stat id="stack-drift" locale={locale} />
 
 ## The procedure: a wave, not a one-off
 
@@ -132,7 +134,7 @@ After that the same procedure kept going: Hazelcast 3 → 5, five upgrades of th
   </Point>
 </Glance>
 
-## Why this was not possible without AI
+## What AI made affordable
 
 1. **Migration work at volume.** Hundreds of files per wave, source migrations for every major, and a backend move of two Java and two Spring Boot generations in days instead of the weeks it had been estimated at.
 2. **The same edit, everywhere it belongs.** Carrying a wave to each receiving line by hand is error-prone; agents repeat it and scripts prove that every edit landed exactly once.

@@ -63,6 +63,17 @@ for (const locale of LOCALES) {
       await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await expect(page.locator("[data-role]").first()).toBeVisible();
     });
+
+    test("print at A4 width keeps the portrait photo, not the phone's ringed circle", async ({ page }) => {
+      // A4 at 96 dpi is ~794 px wide, under the 899 px phone breakpoint: the phone rules must stay on screen.
+      await page.setViewportSize({ width: 794, height: 1123 });
+      await page.goto(CV_URL[locale]);
+      await page.emulateMedia({ media: "print" });
+      const photo = page.locator("figure.photo");
+      await expect(photo).toHaveCSS("box-shadow", "none");
+      const box = (await photo.boundingBox())!;
+      expect(box.height, "portrait, taller than wide").toBeGreaterThan(box.width * 1.3);
+    });
   });
 }
 
@@ -80,3 +91,48 @@ test.describe("employer name is confined to the cv pages", () => {
     });
   }
 });
+
+for (const locale of LOCALES) {
+  test.describe(`cv facts line (${locale})`, () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+    test("facts line is in the first viewport and names the role", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      const facts = page.locator("[data-facts]");
+      await expect(facts).toBeVisible();
+      await expect(facts).toContainText("Product Engineering & AI Lead");
+      const box = await facts.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+    });
+  });
+}
+
+for (const locale of LOCALES) {
+  test.describe(`cv header (${locale}, phone)`, () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+    test("PDF button is in the first viewport", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      const button = page.locator('a[download][href$=".pdf"]').first();
+      await expect(button).toBeVisible();
+      const box = await button.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+    });
+
+    test("header contact line carries email, LinkedIn, GitHub and the site", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      const contact = page.locator("[data-cv-contact]");
+      await expect(contact.locator('a[href^="mailto:"]')).toHaveCount(1);
+      await expect(contact.locator(`a[href="${CV.contact.site}"]`)).toHaveCount(1);
+      await expect(contact.locator(`a[href="${CV.contact.linkedin}"]`)).toHaveCount(1);
+      await expect(contact.locator(`a[href="${CV.contact.github}"]`)).toHaveCount(1);
+    });
+
+    test("email and the current role title are in the first viewport", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      for (const target of [page.locator('[data-cv-contact] a[href^="mailto:"]'), page.locator("[data-role] [data-role-title]").first()]) {
+        await expect(target).toBeVisible();
+        const box = await target.boundingBox();
+        expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+      }
+    });
+  });
+}

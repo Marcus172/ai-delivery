@@ -14,8 +14,8 @@ const TITLE = l(
   "Čtyři vrstvy delivery flow: generický kontrakt, klientský preset, procedury repozitáře, osobní vrstva",
 );
 const DESC = l(
-  "Values are read top-down and merge per key, the lower layer wins. Procedures are looked up bottom-up and the first file found is used whole. Tools appear only in the personal layer, through seven closed extension points.",
-  "Hodnoty se čtou shora dolů a slučují se po klíčích, vyhrává nižší vrstva. Procedury se hledají zdola nahoru a první nalezený soubor platí celý. Nástroje se objevují jen v osobní vrstvě, přes sedm uzavřených bodů rozšíření.",
+  "Values are read top-down and merge per key, the lower layer wins. Procedures are looked up bottom-up and the first file found is used whole. Orchestration tools are named only in the personal layer, through seven closed extension points; the shared agent setup is a team default in the repository.",
+  "Hodnoty se čtou shora dolů a slučují se po klíčích, vyhrává nižší vrstva. Procedury se hledají zdola nahoru a první nalezený soubor platí celý. Orchestrační nástroje se jmenují jen v osobní vrstvě, přes sedm uzavřených bodů rozšíření; sdílený setup agentů je týmový default v repozitáři.",
 );
 
 /** `lines`: muted description lines; `tag`: the emphasised last line. Keep every line under ~62 characters so it fits the box. */
@@ -25,13 +25,13 @@ const LAYERS: Record<Locale, Layer[]> = {
     { name: "Generic contract", owner: "owner: the author", lines: ["choreography of steps, seven invariants, resolution rules,", "a version number with migration notes"], tag: "names no tracker, hosting, CI, client or tool" },
     { name: "Client preset", owner: "owner: the client team", lines: ["about twenty capabilities under names the contract defines:", "resolve work item, quality gate, open PR, land change…"] },
     { name: "Repository procedures", owner: "owner: the repository team", lines: ["five procedures, cap six: quality gate, provision workspace,", "propagate, read spec, verify change"] },
-    { name: "Personal layer", owner: "owner: each developer, not committed", lines: ["seven extension points: session, queues, checkout,", "workspace UI, fleet, state store"], tag: "the only place a tool is named" },
+    { name: "Personal layer", owner: "owner: each developer, not committed", lines: ["seven extension points: session, queues, checkout,", "workspace UI, fleet, state store"], tag: "the only place an orchestration tool is named" },
   ],
   cs: [
     { name: "Generický kontrakt", owner: "vlastník: autor", lines: ["choreografie kroků, sedm invariantů, pravidla rozlišení,", "číslo verze s migračními poznámkami"], tag: "nejmenuje tracker, hosting, CI, klienta ani nástroj" },
     { name: "Klientský preset", owner: "vlastník: tým klienta", lines: ["zhruba dvacet capabilities pod jmény z kontraktu:", "najdi položku, quality gate, otevři PR, zamerguj změnu…"] },
     { name: "Procedury repozitáře", owner: "vlastník: tým repozitáře", lines: ["pět procedur, strop šest: quality gate, založení pracoviště,", "propagace, čtení specifikace, ověření změny"] },
-    { name: "Osobní vrstva", owner: "vlastník: každý vývojář, mimo git", lines: ["sedm bodů rozšíření: session, fronty, checkout,", "UI pracoviště, flotila, úložiště stavu"], tag: "jediné místo, kde se jmenuje nástroj" },
+    { name: "Osobní vrstva", owner: "vlastník: každý vývojář, mimo git", lines: ["sedm bodů rozšíření: session, fronty, checkout,", "UI pracoviště, flotila, úložiště stavu"], tag: "jediné místo, kde se jmenuje orchestrační nástroj" },
   ],
 };
 const VALUES = l("values", "hodnoty");

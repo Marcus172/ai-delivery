@@ -1,11 +1,19 @@
 ---
-title: "Results, with the caveats first"
+title: "Results, and what else changed"
 summary: "Six months before the flow against the five months after it, from the tracker and the pull requests of the same product, with the transition month left out."
 ---
 import { Caveat, ResultsGrid, Stat } from "../../components/chapter";
 import { localizedPath } from "../../i18n/routes";
 
 export const locale = "en";
+
+### Measured, before and after
+
+<ResultsGrid locale={locale} />
+
+### Who works in the flow
+
+<Stat id="marketplace-contributors" locale={locale} />
 
 ### Context for the figures
 
@@ -18,10 +26,6 @@ What changed between the two periods besides the flow, and how far the figures h
   <Caveat term="Lead time" locale={locale}><strong>Partly status discipline.</strong> After a merge the flow sets the ready-for-test state itself; before, a developer did it by hand, sometimes late. The In Progress to pull request figure is sturdier, because that state was always set by hand.</Caveat>
   <Caveat term="Project mix" locale={locale}><strong>Lead time and returns from test are medium reliability.</strong> The project mix changed between the periods; the direction holds when the comparison is restricted to the one project present in both, but the after sample there is small.</Caveat>
 </ul>
-
-### Measured, before and after
-
-<ResultsGrid locale={locale} />
 
 ### And the number I cannot measure
 

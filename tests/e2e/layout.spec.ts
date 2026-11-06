@@ -274,6 +274,8 @@ test.describe("rail labels", () => {
     for (const [w, h] of [
       [1440, 900],
       [390, 844],
+      [360, 740],
+      [320, 640],
     ]) {
       test(`rail shows a text label for every page (${path || "en"}, ${w}px)`, async ({ page }) => {
         await page.setViewportSize({ width: w, height: h });
@@ -285,14 +287,70 @@ test.describe("rail labels", () => {
           await expect(label).toBeVisible();
           await expect(label).toHaveText(labels[i]);
         }
-        if (w === 390) {
+        if (w < 900) {
           const fits = await page.locator("nav.rail").evaluate((el) => el.scrollWidth <= el.clientWidth);
           expect(fits, "rail needs no horizontal scroll").toBe(true);
           const box = await links.first().boundingBox();
           expect(box!.height).toBeGreaterThanOrEqual(44);
+          // Labels sit side by side on a phone: each one ends before the next one starts, with air between.
+          const boxes = await links.locator(".label").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().toJSON()));
+          for (let i = 1; i < boxes.length; i++)
+            expect(boxes[i].left - boxes[i - 1].right, `gap between "${labels[i - 1]}" and "${labels[i]}"`).toBeGreaterThanOrEqual(2);
         }
       });
     }
+  }
+
+  for (const path of Object.keys(SHORT)) {
+    test(`every rail link's accessible name contains its visible label (${path || "en"})`, async ({ page }) => {
+      await page.goto(`${BASE}${path}`);
+      const links = page.locator("nav.rail a[href]:has(.label)");
+      expect(await links.count()).toBe(SHORT[path].length);
+      for (const link of await links.all()) {
+        const visible = (await link.locator(".label").textContent())!.trim().toLowerCase();
+        const name = (await link.getAttribute("aria-label"))!.toLowerCase();
+        expect(name, `aria-label of "${visible}"`).toContain(visible);
+      }
+    });
+  }
+});
+
+test.describe("anchors clear the sticky mobile rail", () => {
+  /** [page, selector of the in-page links to follow] */
+  const JUMPS: Array<[string, string]> = [
+    ["wins/stack/", "nav[data-case-index] a"],
+    ["cs/wins/stack/", "nav[data-case-index] a"],
+    ["wins/", "nav.jump a"],
+    ["cs/wins/", "nav.jump a"],
+  ];
+  for (const [path, selector] of JUMPS) {
+    test(`${path}: following ${selector} leaves the target below the rail (390px)`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      // Instant jumps: a smooth scroll in flight would pass the check before it settles under the rail.
+      await page.emulateMedia({ reducedMotion: "reduce" });
+      await page.goto(`${BASE}${path}`);
+      const links = page.locator(selector);
+      const n = await links.count();
+      expect(n).toBeGreaterThan(0);
+      for (let i = 0; i < n; i++) {
+        await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+        const href = (await links.nth(i).getAttribute("href"))!;
+        await links.nth(i).click();
+        await expect.poll(() => page.evaluate(() => decodeURIComponent(location.hash))).toBe(href);
+        const id = `[id="${href.slice(1)}"]`;
+        const target = page.locator(id);
+        const heading = page.locator(`${id}:is(h2, h3), ${id} :is(h2, h3)`).first();
+        await expect
+          .poll(async () => {
+            const rail = await page.locator("nav.rail").boundingBox();
+            const t = await target.boundingBox();
+            const h = await heading.boundingBox();
+            const bottom = rail!.y + rail!.height - 1;
+            return t!.y >= bottom && h!.y >= bottom && h!.y < 844;
+          }, `${href} lands below the rail and in view`)
+          .toBe(true);
+      }
+    });
   }
 });
 

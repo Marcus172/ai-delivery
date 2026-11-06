@@ -17,6 +17,21 @@ for (const locale of LOCALES) {
   const caseUrl = (id: string) => `${WINS[locale]}${id}/`;
 
   test.describe(`wins & cases (${locale})`, () => {
+    for (const id of CASES) {
+      test(`case ${id}: section index links every h2`, async ({ page }) => {
+        await page.goto(caseUrl(id));
+        const links = page.locator("nav[data-case-index] a");
+        const ids = await page.locator("article h2").evaluateAll((els) => els.map((el) => el.id));
+        expect(ids.length).toBeGreaterThan(0);
+        await expect(links).toHaveCount(ids.length);
+        const hrefs = await links.evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+        expect(hrefs).toEqual(ids.map((x) => `#${x}`));
+        const texts = await links.allTextContents();
+        for (const txt of texts) expect(txt).not.toMatch(/&\w+;/);
+        await expect(page.locator("nav[data-case-index]")).toHaveAttribute("aria-label", t(locale, "case.onThisPage"));
+      });
+    }
+
     test("has one h1, results before the cases, and the rail marks Wins as the current page", async ({ page }) => {
       await page.goto(WINS[locale]);
       await expect(page.locator("main h1")).toHaveCount(1);
@@ -25,7 +40,7 @@ for (const locale of LOCALES) {
       await expect(page.locator(`nav.rail a[href="${PREFIX[locale]}wins/"]`)).toHaveAttribute("aria-current", "page");
     });
 
-    test("results: caveats come before the measured set, every measured figure has a period, the estimate stays apart", async ({ page }) => {
+    test("results: figures come before their context, every measured figure has a period, the estimate stays apart", async ({ page }) => {
       await page.goto(WINS[locale]);
       const results = page.locator("section#results");
       const caveats = results.locator("[data-caveats]");
@@ -33,11 +48,19 @@ for (const locale of LOCALES) {
       expect(await caveats.locator("li").count()).toBeGreaterThanOrEqual(4);
       const grid = results.locator("[data-diagram=results-grid]");
       await expect(grid).toHaveCount(1);
-      const caveatsFirst = await caveats.evaluate(
-        (c, g) => !!g && !!(c.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_FOLLOWING),
-        await grid.elementHandle(),
-      );
-      expect(caveatsFirst).toBe(true);
+      const follows = (a: string, b: string) =>
+        page.evaluate(
+          ([x, y]) => {
+            const ea = document.querySelector(x);
+            const eb = document.querySelector(y);
+            return !!ea && !!eb && !!(ea.compareDocumentPosition(eb) & Node.DOCUMENT_POSITION_FOLLOWING);
+          },
+          [a, b],
+        );
+      expect(await follows("[data-diagram=results-grid]", "[data-caveats]")).toBe(true);
+      expect(await follows("[data-diagram=results-grid]", "[data-metric=marketplace-contributors]")).toBe(true);
+      expect(await follows("[data-metric=marketplace-contributors]", "[data-caveats]")).toBe(true);
+      for (const id of ["results", "cases", "along-the-way"]) await expect(page.locator(`header.head a[href="#${id}"]`)).toHaveCount(1);
       const measured = results.locator(".stat[data-kind=measured]");
       expect(await measured.count()).toBeGreaterThanOrEqual(8);
       for (let i = 0; i < (await measured.count()); i++) await expect(measured.nth(i).locator(".period")).toBeVisible();
@@ -88,6 +111,13 @@ for (const locale of LOCALES) {
       for (const stat of await page.locator("[data-win] .stat[data-kind=measured]").all()) await expect(stat.locator(".period")).toBeVisible();
     });
 
+    test("smaller wins come after the last case and lead on to the offer", async ({ page }) => {
+      await page.goto(`${PREFIX[locale]}wins/along-the-way/`);
+      const prev = page.locator('nav.pager a[rel="prev"]');
+      await expect(prev).toHaveAttribute("href", `${PREFIX[locale]}wins/${CASES[CASES.length - 1]}/`);
+      await expect(page.locator(`nav.pager a[href="${PREFIX[locale]}ai-delivery/#offer"]`)).toHaveCount(1);
+    });
+
     test("a click anywhere on a case card opens the case", async ({ page }) => {
       await page.goto(WINS[locale]);
       // A real mouse click on the stats: the title link's overlay covers them, so it takes the click.
@@ -117,7 +147,7 @@ for (const locale of LOCALES) {
         await expect(next).toHaveCount(i < CASES.length - 1 ? 1 : 0);
         if (i > 0) await expect(prev).toHaveAttribute("href", `${PREFIX[locale]}wins/${CASES[i - 1]}/`);
         if (i < CASES.length - 1) await expect(next).toHaveAttribute("href", `${PREFIX[locale]}wins/${CASES[i + 1]}/`);
-        else await expect(page.locator(`nav.pager a[href="${PREFIX[locale]}ai-delivery/#offer"]`)).toHaveCount(1);
+        else await expect(page.locator(`nav.pager a[href="${PREFIX[locale]}wins/along-the-way/"]`)).toHaveCount(1);
       });
     }
 

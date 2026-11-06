@@ -49,12 +49,19 @@ describe("metrics", () => {
   it("landing ids resolve to measured metrics with the decided values", () => {
     const m = LANDING_METRIC_IDS.map((id) => metric(id));
     expect(m.map((x) => x.kind)).toEqual(["measured", "measured", "measured"]);
-    expect(m.map((x) => x.value.en)).toEqual(["−70 %", "1 % → 56 %", "2,423 → 18"]);
+    expect(m.map((x) => x.value.en)).toEqual(["−70 %", "1 % → 56 %", "2,423 / 18"]);
     expect(m.map((x) => x.value.cs)).toEqual([
       `−70${NBSP}%`,
       `1${NBSP}% → 56${NBSP}%`,
-      `2${NBSP}423 → 18`,
+      `2${NBSP}423 / 18`,
     ]);
+  });
+
+  it("count figures never read as a drop", () => {
+    for (const id of ["a11y-patterns", "a11y-fix-reach"]) {
+      expect(metric(id).value.en, id).not.toContain("→");
+      expect(metric(id).value.cs, id).not.toContain("→");
+    }
   });
 
   it("five-to-ten-x is an estimate and never part of a measured set", () => {
@@ -69,6 +76,13 @@ describe("metrics", () => {
   it("every metric has a non-empty period in both locales and ids are unique", () => {
     for (const m of METRICS) for (const l of LOCALES) expect(m.period[l].trim(), m.id).not.toBe("");
     expect(new Set(METRICS.map((m) => m.id)).size).toBe(METRICS.length);
+  });
+
+  it("the stack-drift period starts where its 6 years count from (the package manager's successor, January 2020)", () => {
+    const m = metric("stack-drift");
+    expect(m.value.en).toBe("6 years");
+    expect(m.period.en).toBe("repository history · January 2020 → May 2026");
+    expect(m.period.cs).toBe("historie repozitáře · leden 2020 → květen 2026");
   });
 
   it("metric() throws on an unknown id", () => {
@@ -163,8 +177,9 @@ describe("offer", () => {
 describe("cv", () => {
   it("leads with the current role", () => {
     const r = CV.roles[0];
-    expect(r.company).toBe("Finshape");
-    expect(r.client).toBe("J&T Bank — internet banking & investments");
+    // The real names live only in cv.ts and render only on the CV page; the NDA gate checks the build.
+    expect(r.company.trim()).not.toBe("");
+    expect(r.client?.trim()).toBeTruthy();
     expect(r.title.en).toBe("Product Engineering & AI Lead");
     expect(r.from).toBe("2026-04");
     expect(r.to).toBeNull();
@@ -201,6 +216,7 @@ describe("cv", () => {
       email: "marek.marcus.rom@gmail.com",
       linkedin: "https://www.linkedin.com/in/marek-rom-a91445b8",
       github: "https://github.com/Marcus172",
+      site: "https://marcus172.github.io/ai-delivery/",
     });
   });
 

@@ -1,4 +1,5 @@
 import type { Locale } from "./locales";
+import type { PluralForms } from "./plural";
 
 const en = {
   "site.name": "Marek Rom",
@@ -52,7 +53,6 @@ const en = {
   "cv.experience": "Experience",
   "cv.skills": "Skills and toolkit",
   "cv.languages": "Languages",
-  "cv.contact": "Contact",
   "cv.photoAlt": "Marek Rom, portrait",
   "journey.eyebrow": "Journey",
   "journey.title": "Where the work came from",
@@ -81,6 +81,10 @@ const en = {
   "wins.eyebrow": "Wins & cases",
   "wins.title": "What the flow delivered",
   "wins.lead": "The measured results of one product team, before and after the delivery flow, and cases that show how the work is actually done. Each case has its own page with the detail.",
+  "wins.jumpLabel": "On this page",
+  "wins.jump.results": "Results",
+  "wins.jump.cases": "Cases",
+  "wins.jump.more": "Smaller wins",
   "wins.resultsEyebrow": "Results",
   "wins.casesEyebrow": "Cases",
   "wins.casesTitle": "From a one-off fix to a system that holds",
@@ -88,6 +92,7 @@ const en = {
   "wins.case": "Case",
   "wins.readCase": "Read the case",
   "wins.back": "All wins & cases",
+  "case.onThisPage": "On this page",
   "wins.prev": "Previous case",
   "wins.next": "Next case",
   "wins.howEyebrow": "How it works",
@@ -103,10 +108,7 @@ const en = {
   "atw.eyebrow": "Along the way",
   "atw.title": "Smaller wins along the way",
   "atw.lead": "Everything here was measured on one project, from April 2026, when I joined a product team that did not use AI at all. Beyond the cases, the same way of working kept paying off in smaller pieces: pipelines, a service brought into the monorepo, handovers to testing, everyday tooling. Each card says what changed, what proves it, and who did the work: an agent, a deterministic script or a person.",
-  "atw.countWins": "smaller wins",
-  "atw.countAreas": "areas",
   "atw.countPeriod": "May – November 2026",
-  "atw.toCases": "Back to the cases",
   "toolkit.eyebrow": "Toolkit",
   "toolkit.title": "What I use, and who I learn from",
   "toolkit.lead": "Every tool named on this site, grouped by what it does in the flow: a sentence on how I use it and links to its website and documentation. The flow does not depend on any one of them; they are today's choices.",
@@ -178,7 +180,6 @@ const cs: Record<UiKey, string> = {
   "cv.experience": "Praxe",
   "cv.skills": "Dovednosti a nástroje",
   "cv.languages": "Jazyky",
-  "cv.contact": "Kontakt",
   "cv.photoAlt": "Marek Rom, portrét",
   "journey.eyebrow": "Cesta",
   "journey.title": "Odkud práce přišla",
@@ -207,6 +208,10 @@ const cs: Record<UiKey, string> = {
   "wins.eyebrow": "Výsledky a případy",
   "wins.title": "Co flow přinesl",
   "wins.lead": "Měřené výsledky jednoho produktového týmu před delivery flow a po něm a případy, na kterých je vidět, jak se práce opravdu dělá. Každý případ má vlastní stránku s detailem.",
+  "wins.jumpLabel": "Na této stránce",
+  "wins.jump.results": "Výsledky",
+  "wins.jump.cases": "Případy",
+  "wins.jump.more": "Menší výhry",
   "wins.resultsEyebrow": "Výsledky",
   "wins.casesEyebrow": "Případy",
   "wins.casesTitle": "Od jednorázové opravy k systému, který drží",
@@ -214,6 +219,7 @@ const cs: Record<UiKey, string> = {
   "wins.case": "Případ",
   "wins.readCase": "Číst případ",
   "wins.back": "Všechny výsledky a případy",
+  "case.onThisPage": "Na této stránce",
   "wins.prev": "Předchozí případ",
   "wins.next": "Další případ",
   "wins.howEyebrow": "Jak to funguje",
@@ -229,10 +235,7 @@ const cs: Record<UiKey, string> = {
   "atw.eyebrow": "Po cestě",
   "atw.title": "Menší výhry po cestě",
   "atw.lead": "Všechno tady je naměřené na jednom projektu od dubna 2026, kdy jsem přišel do produktového týmu, který AI vůbec nepoužíval. Mimo případy se stejný způsob práce vyplácel i po menších kouscích: pipeliny, služba přestěhovaná do monorepa, předávky testingu, nástroje na každý den. Každá karta říká, co se změnilo, co to dokládá a kdo práci udělal: agent, deterministický skript, nebo člověk.",
-  "atw.countWins": "menších výher",
-  "atw.countAreas": "oblastí",
   "atw.countPeriod": "květen – listopad 2026",
-  "atw.toCases": "Zpět na případy",
   "toolkit.eyebrow": "Nástroje",
   "toolkit.title": "Co používám a od koho se učím",
   "toolkit.lead": "Každý nástroj zmíněný na tomhle webu, seskupený podle toho, co ve flow dělá: věta o tom, jak ho používám, a odkazy na web a dokumentaci. Flow na žádném z nich nezávisí; jsou to dnešní volby.",
@@ -255,3 +258,15 @@ const dictionaries: Record<Locale, Record<UiKey, string>> = { en, cs };
 export function t(locale: Locale, key: UiKey): string {
   return dictionaries[locale][key];
 }
+
+/** Plural noun forms for counts, kept apart from the flat string table. */
+export const PLURALS: Record<Locale, Record<"atw.countWins" | "atw.countAreas", PluralForms>> = {
+  en: {
+    "atw.countWins": { one: "smaller win", other: "smaller wins" },
+    "atw.countAreas": { one: "area", other: "areas" },
+  },
+  cs: {
+    "atw.countWins": { one: "menší výhra", few: "menší výhry", other: "menších výher" },
+    "atw.countAreas": { one: "oblast", few: "oblasti", other: "oblastí" },
+  },
+};

@@ -131,7 +131,7 @@ README.md
 - `JOURNEY: Milestone[]`, `Milestone = { date: string; weight: "compact" | "expanded"; title: L10n; body: L10n }`.
 - `OFFER: { id: string; title: L10n; body: L10n }[]` — 3 cards per spec §5.1.
 
-- [ ] **Step 1: Write failing tests:** landing ids resolve and their `kind === "measured"`; values equal `"−70 %"`, `"1 % → 56 %"`, `"2,423 → 18"` (EN); a metric `five-to-ten-x` exists with `kind === "estimate"`; every metric has non-empty `period` in both locales; every `L10n` in all modules has both locales non-empty; `CV.roles[0]` = company "Finshape", title.en "Product Engineering & AI Lead", `to === null`; no string anywhere in `CV` matches the phone regex from Task 3; journey entries before `2024-01` are `compact`, from `2024-01` `expanded`; journey 2026 entries contain no `cv-only` denylist term (load via `parseDenylist`, skip if file absent).
+- [ ] **Step 1: Write failing tests:** landing ids resolve and their `kind === "measured"`; values equal `"−70 %"`, `"1 % → 56 %"`, `"2,423 → 18"` (EN); a metric `five-to-ten-x` exists with `kind === "estimate"`; every metric has non-empty `period` in both locales; every `L10n` in all modules has both locales non-empty; `CV.roles[0]` = company = the current employer, title.en "Product Engineering & AI Lead", `to === null`; no string anywhere in `CV` matches the phone regex from Task 3; journey entries before `2024-01` are `compact`, from `2024-01` `expanded`; journey 2026 entries contain no `cv-only` denylist term (load via `parseDenylist`, skip if file absent).
 - [ ] **Step 2:** Run → FAIL. **Step 3:** Fill data from the private research + CV PDF following spec §5 and the "Number rules" in §5.3 (as-of October 2026, rounding, separate context-layer measurements, PR-metrics baseline 2026-03-31). **Step 4:** Run → PASS.
 - [ ] **Step 5: Commit** `feat: bilingual data for metrics, cv, journey and offer`.
 
@@ -141,7 +141,7 @@ README.md
 
 **Interfaces — Consumes:** `CV`, `Base`, `CtaRow`. **Produces:** `generatePdfs(baseUrl: string, outDir = "dist"): Promise<string[]>` writing `dist/cv/marek-rom-cv-en.pdf` and `dist/cs/cv/marek-rom-cv-cs.pdf` (A4, `printBackground: true`, rendered from the CV route with `emulateMedia({ media: "print" })`); `npm run pdf` starts `astro preview`, calls it, stops the server.
 
-- [ ] **Step 1: Write failing e2e:** CV page lists all roles in order (newest first) with photo, skills, languages, contact; the only page containing "Finshape" is the CV page (check the other 3 EN pages); print media hides rail and footer.
+- [ ] **Step 1: Write failing e2e:** CV page lists all roles in order (newest first) with photo, skills, languages, contact; the only page containing the employer name is the CV page (check the other 3 EN pages); print media hides rail and footer.
 - [ ] **Step 2: Write failing unit test** (runs after `npm run pdf`): both PDFs exist, `unpdf` text contains "Senior Product Engineer" and "Product Engineering & AI Lead", contains no phone match, ≤ 2 pages.
 - [ ] **Step 3:** Run → FAIL. **Step 4:** Implement view (Orbit `.xrow` style rows, current role accent-bordered) + print CSS + script. **Step 5:** Run → PASS.
 - [ ] **Step 6: Commit** `feat: cv page and build-time pdf`.

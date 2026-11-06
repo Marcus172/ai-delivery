@@ -2,7 +2,7 @@
 id: stack
 order: 4
 highlights: ["stack-one-pr", "stack-java"]
-title: "Pryč s prehistorickým tech stackem"
+title: "Šest let odkládaných upgradů, dohnaných postupem"
 summary: "Produkt s několika release liniemi souběžně zaostal o dvě generace. Z upgradů se stal postup místo události: najít drift, upgradovat ve vlnách, přenést každou vlnu na linie, které ji potřebují, doložit chování během shody a hlídat, co se skutečně vyřeší. Backendoví vývojáři jeli podle stejných pravidel na Javě, Spring Bootu a zbytku svého stacku."
 teaser: "Upgrady jako postup, ne událost: drift najde skript, vlny dojdou na každou release linii, která je potřebuje, a chování doloží běh shody. Webové aplikace i backend podle stejných pravidel."
 ---
@@ -28,6 +28,8 @@ Produktový tým, který vydává několik release linií najednou, má na upgra
     Každý upgrade i&nbsp;každá oprava musí dojít na každou release linii, která ji potřebuje, a&nbsp;nerozbít ty, které se hýbat nesmějí.
   </Point>
 </Glance>
+
+<Stat id="stack-drift" locale={locale} />
 
 ## Postup: vlna, ne jednorázovka
 
@@ -132,7 +134,7 @@ Potom stejný postup pokračoval: Hazelcast 3 → 5, pět upgradů platformních
   </Point>
 </Glance>
 
-## Proč to bez AI nešlo
+## Co AI umožnila zvládnout v&nbsp;tomto rozsahu
 
 1. **Migrační práce ve velkém.** Stovky souborů na vlnu, migrace zdrojáků pro každý major a&nbsp;přechod backendu o&nbsp;dvě generace Javy a&nbsp;dvě Spring Bootu za dny místo týdnů, na které byl odhadnutý.
 2. **Stejná úprava všude, kam patří.** Přenášet vlnu na každou přijímající linii ručně je náchylné k&nbsp;chybám; agenti ji zopakují a&nbsp;skripty dokážou, že každá úprava přistála právě jednou.

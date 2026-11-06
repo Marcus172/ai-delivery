@@ -1,0 +1,26 @@
+---
+import { CV } from "../data/cv";
+import type { Locale } from "../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<p class="facts" data-facts>{CV.facts.map((f) => f[locale]).join(" · ")}</p>
+
+<style>
+  .facts {
+    margin: 0.75rem 0 0;
+    font-size: 0.9375rem;
+    color: var(--mute);
+  }
+  @media print {
+    .facts {
+      margin-top: 1.5mm;
+      font-size: 10pt;
+    }
+  }
+</style>

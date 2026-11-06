@@ -54,7 +54,7 @@ for (const locale of LOCALES) {
 
     test("the case cards in order, each linking to its case page, with labelled highlights", async ({ page }) => {
       await page.goto(WINS[locale]);
-      const cards = page.locator("[data-case-cards] > li");
+      const cards = page.locator("[data-case-cards] > li[data-case]");
       await expect(cards).toHaveCount(CASES.length);
       for (const [i, id] of CASES.entries()) {
         const card = cards.nth(i);

@@ -101,6 +101,29 @@ for (const locale of LOCALES) {
       });
     }
 
+    test("a case screenshot zooms in a dialog that fits the viewport and closes by Esc and by its button", async ({ page }) => {
+      await page.setViewportSize({ width: 1280, height: 800 });
+      await page.goto(caseUrl("brand-voice"));
+      const figure = page.locator("figure[data-media=figure]").first();
+      const dialog = figure.locator("dialog[data-zoom]");
+      await figure.locator("a.frame").click();
+      await expect(dialog).toBeVisible();
+      const img = dialog.locator("img");
+      await expect(img).toBeVisible();
+      await expect.poll(() => img.evaluate((el) => (el as HTMLImageElement).complete && (el as HTMLImageElement).naturalWidth > 0)).toBe(true);
+      const box = await img.boundingBox();
+      expect(box && box.y + box.height).toBeLessThanOrEqual(800);
+      expect(box && box.x + box.width).toBeLessThanOrEqual(1280);
+      const a11y = await new AxeBuilder({ page }).include("dialog[data-zoom][open]").analyze();
+      expect(a11y.violations.map((v) => v.id)).toEqual([]);
+      await page.keyboard.press("Escape");
+      await expect(dialog).toBeHidden();
+      await figure.locator("a.frame").click();
+      await dialog.locator("[data-close]").click();
+      await expect(dialog).toBeHidden();
+      await expect(page).toHaveURL(new RegExp(`${caseUrl("brand-voice")}$`));
+    });
+
     test("persona and accessibility examples use the fictional brand only", async ({ page }) => {
       for (const id of ["brand-voice", "accessibility"]) {
         await page.goto(caseUrl(id));

@@ -131,7 +131,8 @@ Components to build now (usable from MDX, localized captions via the existing pa
 - **Figure** — a still image (screenshot, photo of a whiteboard, exported diagram). Required `alt`
   and visible caption; optimized through Astro's image pipeline from a per-case asset folder;
   legible in both themes (a framed surface behind light screenshots in dark mode); zoomable to full
-  size without a lightbox dependency (a plain link to the full image is enough).
+  size without a lightbox dependency: a plain link to the full image, which with JS opens a native
+  `<dialog>` that fits the image to the viewport (a readable width with scrolling on a phone).
 - **Clip** — short animated captures. Prefer muted `mp4`/`webm` over GIF (size, and it can be
   paused). No autoplay under `prefers-reduced-motion`; always a visible pause/play control (WCAG
   2.2.2 for anything moving longer than 5 s); a poster frame; a caption. If the author supplies a

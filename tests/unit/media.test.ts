@@ -22,6 +22,18 @@ describe("media components", () => {
     expect(html).toMatch(/<a[^>]+aria-label="Open full size: A local visual plan"/);
   });
 
+  it("Figure carries a closed zoom dialog with a named close button and the full-size image", async () => {
+    const html = await container.renderToString(Figure, {
+      props: { locale: "cs", src: photo, alt: "Lokální vizuální plán", caption: "Plán, jak ho vidí recenzent." },
+    });
+    expect(html).toMatch(/<dialog[^>]+aria-label="Lokální vizuální plán"[^>]*data-zoom/);
+    expect(html).not.toMatch(/<dialog[^>]*\sopen/);
+    expect(html).toMatch(/<button[^>]+aria-label="Zavřít"/);
+    const link = /<a class="frame"[^>]*href="([^"]+)"/.exec(html)?.[1];
+    expect(link).toBeTruthy();
+    expect(html).toContain(`<img src="${link}"`);
+  });
+
   it("Clip is muted, looping, has controls and a poster, and never autoplays from markup", async () => {
     const html = await container.renderToString(Clip, {
       props: { src: "/clip.mp4", poster: photo, label: "An agent filling a form", caption: "Recorded on a demo app." },

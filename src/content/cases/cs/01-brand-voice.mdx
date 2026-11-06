@@ -44,11 +44,7 @@ Opakovatelný běh vezme texty z&nbsp;jednoho pevného commitu a&nbsp;vyrobí je
 
 <PersonaPipeline locale={locale} />
 
-<div class="stats">
-  <Stat id="persona-strings" locale={locale} />
-  <Stat id="persona-findings" locale={locale} />
-  <Stat id="persona-proposals" locale={locale} />
-</div>
+<Stat id="persona-findings" locale={locale} />
 
 Ověření není ozdoba: zhruba pětina surových nálezů jím neprošla a&nbsp;u&nbsp;další části návrh přepsalo. Druhý běh dostane ten předchozí jako vstup a&nbsp;převezme všechno, co se nezměnilo, takže se klient znovu ptá jen na nálezy označené jako nové nebo změněné. Zhruba polovina návrhů pochází z&nbsp;mechanických pravidel, polovina z&nbsp;úsudku.
 

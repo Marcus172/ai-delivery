@@ -1,0 +1,184 @@
+---
+/** The shape of the accessibility audit: what failed nearly everywhere (fix the shared component) vs. on a few pages (a targeted journey test). */
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+// src: research note 01, §2.1 (27 criteria tested on 131 pages; 18 fail on 130/131; page-specific counts)
+const PAGES = 131;
+const LABEL = l(
+  "The shape of the audit: systemic criteria against page-specific ones",
+  "Tvar auditu: systémová kritéria proti stránkově specifickým",
+);
+const SYSTEMIC = {
+  title: l("Systemic", "Systémová"),
+  value: l("18 of 27 criteria", "18 z 27 kritérií"),
+  what: l("each failing on 99 % of the audited pages", "každé padá na 99 % auditovaných stránek"),
+  fix: l("one fix in the shared component", "jedna oprava ve sdílené komponentě"),
+  where: l("where the fixes live", "kde opravy žijí"),
+  // src: triage manifest, owning libraries across the systemic criteria
+  places: [
+    l("shared UI primitives", "sdílená UI primitiva"),
+    l("the app shell: layout, navigation, page titles", "kostra aplikace: layout, navigace, titulky stránek"),
+    l("theme tokens: colour, contrast, focus", "tokeny motivu: barva, kontrast, fokus"),
+  ],
+};
+const SPECIFIC = {
+  title: l("Page-specific", "Stránkově specifická"),
+  what: l("pages out of about 130 where the criterion failed", "stránek ze zhruba 130, kde kritérium padalo"),
+  fix: l("one targeted journey test per finding", "jeden cílený průchodový test na nález"),
+};
+const ROWS = [
+  { name: l("keyboard", "klávesnice"), pages: 32 },
+  { name: l("focus order", "pořadí fokusu"), pages: 24 },
+  { name: l("content on hover or focus", "obsah při najetí či fokusu"), pages: 16 },
+  { name: l("reading order", "pořadí čtení"), pages: 4 },
+];
+---
+
+<figure class="shape" data-diagram="audit-shape">
+  <figcaption class="sr">{LABEL[locale]}</figcaption>
+  <div class="col systemic">
+    <p class="k">{SYSTEMIC.title[locale]}</p>
+    <p class="v">{SYSTEMIC.value[locale]}</p>
+    <p class="what">{SYSTEMIC.what[locale]}</p>
+    <span class="bar" aria-hidden="true"><i style="--p: 99%"></i></span>
+    <p class="k where">{SYSTEMIC.where[locale]}</p>
+    <ul class="places">
+      {SYSTEMIC.places.map((p) => <li>{p[locale]}</li>)}
+    </ul>
+    <p class="fix">→ {SYSTEMIC.fix[locale]}</p>
+  </div>
+  <div class="col">
+    <p class="k">{SPECIFIC.title[locale]}</p>
+    <ul>
+      {
+        ROWS.map((r) => (
+          <li>
+            <span class="name">{r.name[locale]}</span>
+            <span class="n">{r.pages}</span>
+            <span class="bar" aria-hidden="true">
+              <i style={`--p: ${((r.pages / PAGES) * 100).toFixed(1)}%`} />
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="what">{SPECIFIC.what[locale]}</p>
+    <p class="fix">→ {SPECIFIC.fix[locale]}</p>
+  </div>
+</figure>
+
+<style>
+  .shape {
+    margin: 2rem 0 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .col {
+    border: 1px solid var(--line);
+    border-radius: 0.875rem;
+    padding: 1.25rem 1.375rem 1.25rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .systemic {
+    border-color: var(--acc);
+    background: var(--tint);
+  }
+  p {
+    margin: 0;
+  }
+  .k {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--acc-text);
+  }
+  .v {
+    font-variation-settings: "wdth" 80;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+  .what {
+    font-size: 0.875rem;
+    color: var(--mute);
+  }
+  .fix {
+    margin-top: auto;
+    padding-top: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .bar {
+    display: block;
+    height: 0.5rem;
+    border-radius: 999px;
+    background: var(--line);
+    overflow: hidden;
+  }
+  .bar i {
+    display: block;
+    height: 100%;
+    width: var(--p);
+    background: var(--acc);
+    border-radius: inherit;
+  }
+  ul {
+    list-style: none;
+    margin: 0.25rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.625rem;
+  }
+  li {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  li .bar {
+    grid-column: 1 / -1;
+    height: 0.375rem;
+  }
+  .n {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .where {
+    margin-top: 0.75rem;
+  }
+  .places {
+    margin: 0;
+    gap: 0.375rem;
+  }
+  .places li {
+    display: block;
+    padding-left: 0.875rem;
+    position: relative;
+  }
+  .places li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--acc);
+  }
+  @media (max-width: 699px) {
+    .shape {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

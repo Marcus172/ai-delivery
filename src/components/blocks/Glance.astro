@@ -5,13 +5,15 @@ import { t } from "../../i18n/ui";
 
 interface Props {
   locale: Locale;
+  /** Heading of the block; defaults to "At a glance". */
+  label?: string;
 }
 
-const { locale } = Astro.props;
+const { locale, label = t(locale, "ai.glance") } = Astro.props;
 ---
 
-<section class="glance" data-glance aria-label={t(locale, "ai.glance")}>
-  <p class="k" aria-hidden="true">{t(locale, "ai.glance")}</p>
+<section class="glance" data-glance aria-label={label}>
+  <p class="k" aria-hidden="true">{label}</p>
   <ul>
     <slot />
   </ul>

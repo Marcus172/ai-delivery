@@ -1,32 +1,81 @@
 ---
 id: accessibility
 order: 2
-highlights: ["a11y-patterns", "a11y-criteria"]
+highlights: ["a11y-patterns", "a11y-fix-reach"]
 title: "Accessibility at scale"
 summary: "An external audit delivered thousands of marks in a page-by-criterion matrix and no selectors. Read as patterns, they were eighteen defects in shared components. The fix became a test system with six layers, and the top layer stays human."
 teaser: "Thousands of audit marks turned out to be eighteen defects in shared components. The fix became a six-layer test system whose top layer stays human."
 ---
-import { Note, Stat, TestPyramid } from "../../../components/chapter";
+import { A11yAgents, A11yLifecycle, AuditShape, Detail, Fact, Facts, Glance, Note, Point, Stat, TestPyramid } from "../../../components/chapter";
 
 export const locale = "en";
 
 ## Thousands of marks, eighteen defects
 
-The audit matrix covered every page in two languages and two themes, and marked a criterion as failing per page. Nothing pointed at an element. Before fixing anything I had the matrix analysed as data: most failing criteria failed on almost every page, which means the defect was in a shared component, not on the page. The strategy followed from that: fix the component, and the test that proves it fixed, instead of working through the marks one by one.
+The audit matrix covered every page in two languages and two themes, and marked a criterion as failing per page. Nothing pointed at an element. Read as data, the matrix had a clear shape: most failing criteria failed on almost every page, so the defect sat in a shared component, not on the page. The strategy followed from that: fix the component, and the test that proves it fixed, instead of working through the marks one by one.
 
-<div class="stats">
-  <Stat id="a11y-patterns" locale={locale} />
-  <Stat id="a11y-fix-reach" locale={locale} />
-</div>
+<AuditShape locale={locale} />
+
+<Detail locale={locale} label="Where the systemic fixes landed">
+
+<Facts label="Where the systemic fixes landed, a selection">
+  <Fact k="1.1.1 Non-text content">The icon and image primitives: an icon-only button gets a label, a decorative icon is hidden from assistive technology.</Fact>
+  <Fact k="1.3.1 Info and relationships">Form fields, description lists and tables in the shared library; every page gets a visually hidden level-one heading from its title.</Fact>
+  <Fact k="1.4.4 Resize text">Typography in rem, pinned by a test that fails as soon as a size in pixels comes back.</Fact>
+  <Fact k="1.4.10 Reflow">The root layout that every page shares.</Fact>
+  <Fact k="2.4.1 Bypass blocks">A skip link in the app shell, and a link that skips past a table in the shared table.</Fact>
+  <Fact k="2.4.2 Page titled">One page-title hook in the document head, adopted by every route.</Fact>
+  <Fact k="2.4.3 Focus order">A focus trap with focus return in the shared modal and drawer; every dialog of the product inherits it.</Fact>
+  <Fact k="2.4.5 Multiple ways">The main menu and the breadcrumbs as named navigation landmarks.</Fact>
+</Facts>
+
+</Detail>
 
 ## A manifest with a state machine
 
-Each systemic criterion and each remaining page-level finding lives in a machine-readable manifest with a schema and a lifecycle: pending, in progress, test written, passing, done, with blocked and won't-fix carrying a reason. The states are not decoration: *passing* means an automated test is green, *done* means a person confirmed it with a screen reader. Three agents work on the manifest, one that turns a new audit matrix into findings, one that writes the regression test for a finding next to the code, one that runs the vision audit, and a handful of commands print status, propose the next item, export the state for management and absorb a re-scoped audit without a reset. When the client's analyst widened the scope in September, the manifest took the new rows in without starting over.
+Each systemic criterion and each page-level finding lives in a machine-readable manifest with a schema and a lifecycle. The states are not decoration: *passing* means an automated test is green, *done* means a person confirmed it with a screen reader.
 
-<div class="stats">
-  <Stat id="a11y-criteria" locale={locale} />
-  <Stat id="a11y-page-findings" locale={locale} />
-</div>
+<A11yLifecycle locale={locale} />
+
+<Glance locale={locale} label="How the evidence is kept">
+  <Point locale={locale} title="Our own baseline, not the vendor's list">
+    An axe scan of our own test environment stores an element-level baseline. It may only shrink, and every entry names the criterion it is there for.
+  </Point>
+  <Point locale={locale} title="Two levels, one audit trail">
+    One entry per systemic criterion, one per page and criterion. A running note records every retest: what was found, how it was verified, which test holds it.
+  </Point>
+  <Point locale={locale} title="Progress per criterion">
+    Not thousands of marks falling to zero. One ticket per audit and one per fix, never one per finding.
+  </Point>
+  <Point locale={locale} title="New scope without a reset">
+    When the client's analyst widened the scope in September, the manifest took the new rows in without starting over.
+  </Point>
+</Glance>
+
+<Detail locale={locale} label="The manifest in detail">
+
+The criteria file holds, per systemic criterion, its level, the smallest set of libraries that own the fix, the pull request that fixed it, the regression tests that pin it, the next action and the running note. The findings file holds one entry per page and criterion. Both have a JSON schema.
+
+The vendor's report decides priorities and stays as the audit trail; the tests are built from our own baseline, because only the baseline points at an element. A baseline is not an allowlist: it is committed, any new violation fails, and nothing sits in it unexplained.
+
+<Facts label="Commands on the manifest">
+  <Fact k="Status">The state per criterion and per ticket, with the owning libraries and the fixing pull request.</Fact>
+  <Fact k="Next">Proposes the next item from the next action recorded on each entry.</Fact>
+  <Fact k="Export">Publishes the state as a page for management and stakeholders, idempotently.</Fact>
+  <Fact k="New audit">Bootstraps a new audit, and absorbs a re-scoped one without a reset.</Fact>
+</Facts>
+
+</Detail>
+
+## Three agents, each with a narrow role
+
+<A11yAgents locale={locale} />
+
+One merged regression suite serves every audit: the tests live next to the code, and the audit is only metadata in their first line. When a future audit flags the same problem, an existing test is already red.
+
+<Note>
+  <strong>Deliberately not built:</strong> an agent that fixes accessibility defects on its own. A fix depends on context; the leverage is in triage and in tests, and automatic fixes invite regressions.
+</Note>
 
 ## Six layers, one of them human
 
@@ -34,13 +83,43 @@ Each systemic criterion and each remaining page-level finding lives in a machine
 
 <Stat id="a11y-specs" locale={locale} />
 
-Automated checks catch perhaps a third of real barriers, and the documentation says so. Six of the systemic criteria are purely visual, focus rings, contrast in context, reflow, which is why the fifth layer exists: a browser agent walks the screens and a vision model reads the screenshots against those criteria, with calibrated examples, and a person reviews what it flags. The sixth layer is the only path to *done*: a person with a screen reader. No agent moves a finding there.
+Automated checks catch perhaps a third of real barriers, and the documentation says so. Six of the systemic criteria are purely visual, focus rings, contrast in context, reflow, which is why the fifth layer exists: the vision audit, with calibrated examples, and a person reviews what it flags. The sixth layer is the only path to *done*: a person with a screen reader. No agent moves a finding there.
 
 <div class="example">
   <span class="k">Example finding, fictional brand (Ferrylane)</span>
   <p>Criterion 2.4.7, focus visible. The primary button on the Ferrylane crossing picker lost its focus ring after a style change: the outline was set on a wrapper the keyboard never reaches. The fix landed in the shared button, the component spec asserts a visible outline on focus, the journey test tabs to the button for real, and a person confirmed it with a screen reader before the finding moved to done.</p>
 </div>
 
-<Note>
-  <strong>The honest part.</strong> Three systemic criteria are blocked by decisions outside this codebase and are listed as such, with the reason, in a document that separates what we fix from what another supplier owns or the client has yet to decide. The Storybook accessibility runner is not a gate, because it crashes on one CPU architecture; the documentation records that rather than hiding it.
-</Note>
+<Detail locale={locale} label="The rules, for people and agents alike">
+
+- No skipped test and no axe exclusion without the WCAG id and a reason next to it.
+- No suppressed accessibility lint rule without the WCAG id, inline, never for a whole file.
+- Never hide a focusable element from assistive technology: it hides the defect and creates a worse one.
+- Axe-clean is not accessible: the visual criteria go to the vision audit, critical flows to a person.
+- No per-page workaround for a systemic criterion: the fix belongs in the shared component.
+- A chart whose data appears only on hover gets a text alternative, a data table that a screen reader reads.
+
+</Detail>
+
+## The tests are tested too
+
+<Glance locale={locale} label="A test that cannot fail proves nothing">
+  <Point locale={locale} title="Checked against a broken copy">
+    The focus-trap specs run with the real library, not a mock. With the trap switched off, seven of eight tests turned red; with focus return removed, all three return tests did.
+  </Point>
+  <Point locale={locale} title="The layers check each other">
+    A text search and the vision audit both passed reflow. A live sweep at 320 px found the root layout of every page wider than the screen; the fix went into the root, and a test pins it.
+  </Point>
+</Glance>
+
+<div class="example">
+  <span class="k">Example: one finding becomes a systemic fix, fictional brand (Ferrylane)</span>
+  <p>A retest flagged one locked field in the Ferrylane booking-limits dialog: its "Not set" hint was visible, but a screen reader never read it. The fix for that field was one line, a description the field points to. The follow-up was the real fix. The shared form wrapper renders every hint under a predictable id and promises, in its own comment, that the input points to it, but only one field type had ever wired it. Ten other field types and the select had the same gap. All of them were wired in one pull request, one spec now checks the hint against every field type, and a person confirmed the original field with a screen reader.</p>
+</div>
+
+## Why this was not possible without AI
+
+1. **Reading the matrix as data.** Thousands of marks across about 130 pages in four variants, mapped to the libraries that own each fix in one triage run, as a diff a person reviews, instead of days of spreadsheet work.
+2. **Tests at volume, by the conventions.** Close to two hundred specs, each next to its code and each tied back to its manifest entry, written by an agent that knows the conventions and may not touch production code.
+3. **Eyes on every critical screen.** The visual criteria are checked on the critical routes at two sizes whenever needed, and progress is validated in-house instead of waiting for an external retest.
+4. **People decide.** Every change of state, every verdict on a screenshot and every screen-reader pass stays with a person.

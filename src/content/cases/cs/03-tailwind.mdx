@@ -16,17 +16,11 @@ Přepsat styly celého produktu je práce, kterou AI zlevní a&nbsp;které se t�
 
 <MigrationBand locale={locale} />
 
-<div class="stats">
-  <Stat id="tailwind-components" locale={locale} />
-  <Stat id="story-coverage" locale={locale} />
-  <Stat id="bundle-size" locale={locale} />
-</div>
+<Stat id="bundle-size" locale={locale} />
 
 ## Brány byly zelené, pravda byla v&nbsp;pixelech
 
 Harness měl slepou skvrnu a&nbsp;ta přinesla nejužitečnější lekci migrace. Každá story knihovny grafů byla snímek prázdného grafu, pořízený v&nbsp;prvním snímku animace, a&nbsp;každá brána byla zelená, protože základ i&nbsp;změna byly stejně prázdné. Přišel na to člověk, který snímky četl. Odpovědí nebyla další brána: značka u&nbsp;každé story, na kterou se člověk opravdu podíval, a&nbsp;kontrola, která dovolí počtu nepřečtených stories jen klesat. Stejnou poctivost dostal i&nbsp;měřicí přístroj: když se ukázalo, že sčítání zbývajících míst počítá i&nbsp;prózu v&nbsp;komentářích, opravilo se a&nbsp;dokumentace varuje, aby se tabulky přes tu opravu nesrovnávaly.
-
-<Stat id="vrt-unread-stories" locale={locale} />
 
 Další vady prošly každou automatickou bránou a&nbsp;chytilo je review nebo oko: libovolná varianta, která potichu odstranila focus-visible ring, ztracený selektor potomka, ohraničení neviditelné v&nbsp;tmavém motivu, nevalidní CSS převedené na nic. Z&nbsp;každé se stalo pravidlo nebo test.
 

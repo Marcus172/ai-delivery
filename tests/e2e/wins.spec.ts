@@ -87,6 +87,8 @@ for (const locale of LOCALES) {
         await expect(page.locator("main h1")).toHaveCount(1);
         await expect(page.locator("[data-case-number]")).toContainText(String(i + 1).padStart(2, "0"));
         expect(await page.locator("[data-case-glance] .stat").count()).toBeGreaterThan(0);
+        for (const stat of await page.locator("[data-case-glance] .stat[data-kind=measured]").all())
+          await expect(stat.locator(".period")).toBeVisible();
         expect(await page.locator("main [data-diagram]").count()).toBeGreaterThan(0);
         await expect(page.locator(`main a[href="${PREFIX[locale]}wins/#cases"]`)).toHaveCount(1);
         // The section stays marked in the rail, but this page is not the section page itself.

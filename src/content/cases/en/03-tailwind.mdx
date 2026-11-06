@@ -16,17 +16,11 @@ Rewriting the styling of a whole product is the kind of work that AI makes cheap
 
 <MigrationBand locale={locale} />
 
-<div class="stats">
-  <Stat id="tailwind-components" locale={locale} />
-  <Stat id="story-coverage" locale={locale} />
-  <Stat id="bundle-size" locale={locale} />
-</div>
+<Stat id="bundle-size" locale={locale} />
 
 ## The gates were green, the truth was in the pixels
 
 The harness had a blind spot, and it taught the most useful lesson of the migration. Every story of the charting library was a screenshot of an empty chart, taken at the first frame of its animation, and every gate was green, because the base and the change were equally empty. It was found by a person reading the screenshots. The response was not another gate: a marker on each story that a person has actually looked at, and a check that lets the number of unread stories only fall. The measuring instrument got the same honesty: when the census of remaining call sites turned out to count prose in doc comments, it was fixed and the documentation warns not to compare tables across the fix.
-
-<Stat id="vrt-unread-stories" locale={locale} />
 
 Other defects passed every automated gate and were caught by review or by eye: an arbitrary variant that silently removed the focus-visible ring, a lost descendant selector, a border invisible in the dark theme, invalid CSS converted into nothing. Each one became a rule or a test.
 

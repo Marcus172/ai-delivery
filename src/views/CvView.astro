@@ -2,6 +2,8 @@
 import { Image } from "astro:assets";
 import photo from "../assets/photo.jpg";
 import Eyebrow from "../components/Eyebrow.astro";
+import FactsLine from "../components/FactsLine.astro";
+import Linked from "../components/Linked.astro";
 import { CV } from "../data/cv";
 import { formatRange } from "../i18n/dates";
 import type { Locale } from "../i18n/locales";
@@ -18,8 +20,6 @@ const linkedinLabel = CV.contact.linkedin.replace(/^https?:\/\/(www\.)?/, "");
 const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
 const siteLabel = CV.contact.site.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
 const pdf = `${localizedPath(locale, "cv")}marek-rom-cv-${locale}.pdf`;
-import FactsLine from "../components/FactsLine.astro";
-import Linked from "../components/Linked.astro";
 ---
 
 <article class="cv">
@@ -253,15 +253,9 @@ import Linked from "../components/Linked.astro";
   .plain li + li {
     margin-top: 0.25rem;
   }
-  .plain a {
-    text-decoration-color: var(--line);
-    text-underline-offset: 0.1875rem;
-  }
-  .plain a:hover {
-    text-decoration-color: var(--acc);
-  }
 
-  @media (max-width: 899px) {
+  /* Screen only: A4 print is ~794 px wide and would pick these up (a round, ringed photo in the PDF). */
+  @media screen and (max-width: 899px) {
     .head {
       margin-bottom: 1.75rem;
     }
@@ -457,10 +451,6 @@ import Linked from "../components/Linked.astro";
     }
     .plain {
       font-size: 9.5pt;
-    }
-    .plain a {
-      text-decoration: none;
-      color: var(--ink);
     }
   }
 </style>

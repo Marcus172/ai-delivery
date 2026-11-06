@@ -8,6 +8,10 @@ export const LANDING = {
     "I have shipped software for twelve years. In 2026 I built AI-assisted delivery for a whole product team: a large product monorepo with several parallel release lines and a cross-functional team of developers, analysts and testers. The process that worked stays. AI takes over the grunt work, the gates hold with or without it, and people decide.",
     "Software dodávám dvanáct let. V roce 2026 jsem postavil AI-asistované dodávání pro celý produktový tým: velké produktové monorepo s několika paralelními release liniemi a tým napříč rolemi – vývojáři, analytici i testeři. Proces, který fungoval, zůstává. Mravenčí práci přebírá AI, brány platí s ní i bez ní a rozhodují lidé.",
   ),
+  paths: [
+    { label: l("For your team", "Pro váš tým"), text: l("Wins & cases", "Výsledky a případy"), page: "wins" as const },
+    { label: l("About me", "O mně"), text: l("Journey & CV", "Cesta a životopis"), page: "cv" as const },
+  ],
   statsPeriodBefore: l(
     "Measured on one team; periods, baselines and caveats are in the ",
     "Měřeno na jednom týmu; období, výchozí stavy a výhrady jsou ve ",

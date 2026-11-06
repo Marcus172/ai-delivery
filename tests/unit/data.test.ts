@@ -49,12 +49,19 @@ describe("metrics", () => {
   it("landing ids resolve to measured metrics with the decided values", () => {
     const m = LANDING_METRIC_IDS.map((id) => metric(id));
     expect(m.map((x) => x.kind)).toEqual(["measured", "measured", "measured"]);
-    expect(m.map((x) => x.value.en)).toEqual(["−70 %", "1 % → 56 %", "2,423 → 18"]);
+    expect(m.map((x) => x.value.en)).toEqual(["−70 %", "1 % → 56 %", "2,423 / 18"]);
     expect(m.map((x) => x.value.cs)).toEqual([
       `−70${NBSP}%`,
       `1${NBSP}% → 56${NBSP}%`,
-      `2${NBSP}423 → 18`,
+      `2${NBSP}423 / 18`,
     ]);
+  });
+
+  it("count figures never read as a drop", () => {
+    for (const id of ["a11y-patterns", "a11y-fix-reach"]) {
+      expect(metric(id).value.en, id).not.toContain("→");
+      expect(metric(id).value.cs, id).not.toContain("→");
+    }
   });
 
   it("five-to-ten-x is an estimate and never part of a measured set", () => {

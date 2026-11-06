@@ -29,8 +29,10 @@ const ICONS: Record<PageId, string> = {
   <a class="mark" href={localizedPath(locale, "landing")}>MR<span class="sr"> – {t(locale, "site.name")}</span></a>
   {
     PAGE_IDS.map((id) => {
-      const label = t(locale, `nav.${id}` as UiKey);
       const short = t(locale, `nav.short.${id}` as UiKey);
+      const full = t(locale, `nav.${id}` as UiKey);
+      // WCAG 2.5.3 Label in Name: the accessible name must contain the visible short label (CS "CV" vs "Životopis").
+      const label = full.toLowerCase().includes(short.toLowerCase()) ? full : `${full} (${short})`;
       const current = id === page;
 
       return (
@@ -45,6 +47,19 @@ const ICONS: Record<PageId, string> = {
   <LangSwitch locale={locale} page={page} sub={sub} />
   <ThemeToggle locale={locale} />
 </nav>
+
+<script>
+  // On narrow screens the rail is sticky on top; its height feeds `scroll-padding-top` (global.css), so
+  // jumping to an anchor never leaves the target under the rail.
+  const root = document.documentElement;
+  const measureRail = () => {
+    const rail = document.querySelector<HTMLElement>(".rail");
+    const narrow = matchMedia("(max-width: 899px)").matches;
+    root.style.setProperty("--rail-h", `${narrow && rail ? rail.offsetHeight : 0}px`);
+  };
+  measureRail();
+  addEventListener("resize", measureRail);
+</script>
 
 <style>
   .rail {
@@ -160,6 +175,18 @@ const ICONS: Record<PageId, string> = {
       bottom: 0.25rem;
       width: auto;
       height: 2px;
+    }
+  }
+  /* Under ~380 px equal cells get narrower than the Czech "Výsledky" and "Nástroje", and the labels touch.
+     Cells sized by their content share the spare width evenly instead, so every pair of labels keeps a gap. */
+  @media (max-width: 379px) {
+    a:not(.mark) {
+      flex: 1 1 auto;
+      min-width: 1.5rem;
+    }
+    a[aria-current]::before {
+      left: 0.25rem;
+      right: 0.25rem;
     }
   }
   @media print {

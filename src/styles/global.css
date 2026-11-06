@@ -15,6 +15,12 @@ html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
+/* The rail sticks to the top on narrow screens: anchors land below it (Rail.astro measures --rail-h). */
+@media screen and (max-width: 899px) {
+  html {
+    scroll-padding-top: var(--rail-h, 3.5rem);
+  }
+}
 body {
   margin: 0;
   background: var(--bg);
@@ -136,7 +142,7 @@ h3 {
   font-size: 0.8125rem;
   color: var(--mute);
 }
-@media (max-width: 56.25rem) {
+@media (max-width: 899px) {
   .hscroll-hint[data-overflow] {
     display: block;
   }

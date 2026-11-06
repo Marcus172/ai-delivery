@@ -147,11 +147,10 @@ const moved: Record<string, string> = {
   const bar = document.querySelector<HTMLDetailsElement>("[data-toc-bar]");
   const current = bar?.querySelector<HTMLElement>("[data-toc-current]");
   const root = document.documentElement;
-  // The mobile rail and the chapter bar are sticky; their heights keep anchors from landing under them.
+  // The chapter bar is sticky under the mobile rail; its height keeps anchors from landing under it. The rail's
+  // own height (--rail-h) is measured by Rail.astro and already reserved by the page-wide scroll-padding-top.
   const measure = () => {
-    const rail = document.querySelector<HTMLElement>(".rail");
     const narrow = matchMedia("(max-width: 899px)").matches;
-    root.style.setProperty("--rail-h", `${narrow && rail ? rail.offsetHeight : 0}px`);
     root.style.setProperty("--bar-h", `${narrow && bar ? bar.querySelector("summary")!.offsetHeight : 0}px`);
   };
   measure();
@@ -313,7 +312,7 @@ const moved: Record<string, string> = {
   .chapter {
     padding-block: 4rem;
     border-top: 1px solid var(--line);
-    scroll-margin-top: calc(var(--rail-h, 0px) + var(--bar-h, 0px) + 1rem);
+    scroll-margin-top: calc(var(--bar-h, 0px) + 1rem);
   }
   .chapter:first-child {
     border-top: 0;

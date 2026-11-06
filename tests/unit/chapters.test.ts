@@ -40,7 +40,7 @@ const RESULTS = Object.fromEntries(
 /** Every MDX body on the site: AI Delivery chapters, case pages and Results. The copy rules hold for all of them. */
 const ALL = LOCALES.flatMap((l) => [...BY_LOCALE[l], ...CASES[l], RESULTS[l]]);
 const DIAGRAM_RE =
-  /<(FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards|ToolLayers|Glance|Point|Facts|Fact|Detail)\b/g;
+  /<(AuditShape|A11yLifecycle|A11yAgents|FlowBand|FlowLayers|ToolMap|GatesTable|RoleMatrix|DecisionTrail|PersonaPipeline|TestPyramid|MigrationBand|ResultsGrid|OfferCards|ToolLayers|Glance|Point|Facts|Fact|Detail)\b/g;
 const diagrams = (c: Chapter) => [...c.body.matchAll(DIAGRAM_RE)].map((m) => m[1]);
 
 const denylist = loadDenylistText();
@@ -171,6 +171,15 @@ describe("wins & cases content", () => {
       for (const id of ids) expect(() => metric(id), `${c.id}: ${id}`).not.toThrow();
       expect(highlights(CASES.cs[i]), c.id).toEqual(ids);
     }
+  });
+
+  it("does not repeat an at-a-glance figure in the case body", () => {
+    for (const l of LOCALES)
+      for (const c of CASES[l]) {
+        const src = readFileSync(join(CONTENT, "cases", c.file), "utf8");
+        const ids = [...(/^highlights:\s*\[(.*)\]\s*$/m.exec(src)?.[1] ?? "").matchAll(/"([^"]+)"/g)].map((x) => x[1]);
+        for (const id of ids) expect(src, `${l}/${c.id}: ${id}`).not.toContain(`<Stat id="${id}"`);
+      }
   });
 
   it("keeps Results whole: caveats, the measured grid and the estimate pointer to AI Delivery", () => {

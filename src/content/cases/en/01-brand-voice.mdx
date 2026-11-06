@@ -44,11 +44,7 @@ A repeatable run takes the strings from one fixed commit and produces one file o
 
 <PersonaPipeline locale={locale} />
 
-<div class="stats">
-  <Stat id="persona-strings" locale={locale} />
-  <Stat id="persona-findings" locale={locale} />
-  <Stat id="persona-proposals" locale={locale} />
-</div>
+<Stat id="persona-findings" locale={locale} />
 
 The verification step is not decoration: about a fifth of the raw findings did not survive it, and a further share had its proposal rewritten. A second run gets the previous one as input and carries over everything that did not change, so the client is asked again only about findings marked new or changed. Roughly half of the proposals come from mechanical rules, half from judgment.
 

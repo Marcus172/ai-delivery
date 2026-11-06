@@ -70,6 +70,9 @@ git-tracked files: `git add -N <file>` a new file before running `npm run nda` o
   Exception (author's call): AI Delivery hides the measured badge and the period; the estimate keeps
   its badge there. Wins & cases and the landing page keep the full labels.
 - The site reads as the current state. History belongs to Journey.
+- The site presents the solution, not how far it has got on the current project: no "X of Y done",
+  remaining or unread counts, items blocked or waiting, coverage gaps, or known-limits notes. A figure
+  shows what the system found, does or achieved.
 - EN and CS stay structurally in sync: same chapters, same order, same components. Change both in the
   same commit. CS copy uses Czech typography (the `l()` helper handles it in data files).
 - Never hard-code the base path; use the i18n route helpers.

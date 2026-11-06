@@ -1,0 +1,159 @@
+---
+/** The three accessibility agents side by side: what each reads, does, writes, and never does. */
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+type L = ReturnType<typeof l>;
+const LABEL = l(
+  "Three accessibility agents, each with a narrow role",
+  "Tři agenti pro přístupnost, každý s úzkou rolí",
+);
+const ROWS: { id: "reads" | "does" | "writes" | "never"; k: L }[] = [
+  { id: "reads", k: l("Reads", "Čte") },
+  { id: "does", k: l("Does", "Dělá") },
+  { id: "writes", k: l("Writes", "Zapisuje") },
+  { id: "never", k: l("Never", "Nikdy") },
+];
+const AGENTS: { id: string; name: L; when: L; cells: Record<(typeof ROWS)[number]["id"], L> }[] = [
+  {
+    id: "triage",
+    name: l("Triage", "Triáž"),
+    when: l("once per audit", "jednou za audit"),
+    cells: {
+      reads: l("the audit matrix and the repository", "auditní matici a repozitář"),
+      does: l(
+        "a criterion failing on 80 % of pages or more is systemic and gets the smallest set of libraries that own the fix; the rest become page findings",
+        "kritérium, které padá aspoň na 80 % stránek, je systémové a dostane nejmenší množinu knihoven, které vlastní opravu; zbytek jsou stránkové nálezy",
+      ),
+      writes: l("the two manifest files, as a diff a person reviews", "dva soubory manifestu, jako diff ke kontrole člověkem"),
+      never: l(
+        "guesses: an unclear mapping is recorded with a reason; never moves a state",
+        "nehádá: nejasné přiřazení zapíše s důvodem; stav nikdy neposouvá",
+      ),
+    },
+  },
+  {
+    id: "test-author",
+    name: l("Test author", "Autor testů"),
+    when: l("one manifest entry at a time", "po jednom záznamu manifestu"),
+    cells: {
+      reads: l("one manifest entry and the code it concerns", "jeden záznam manifestu a kód, kterého se týká"),
+      does: l(
+        "one regression test next to the code: a component spec with axe, or a journey with axe scoped to the screen and real key presses",
+        "jeden regresní test vedle kódu: test komponenty s axe, nebo průchod s axe omezeným na obrazovku a skutečnými klávesami",
+      ),
+      writes: l(
+        "tests only, each opening with the criterion and the audit it covers",
+        "jen testy, každý s kritériem a auditem, které pokrývá, hned v prvním řádku",
+      ),
+      never: l(
+        "touches production code: a broken component is named in the test",
+        "nesahá na produkční kód: rozbitou komponentu pojmenuje v testu",
+      ),
+    },
+  },
+  {
+    id: "vision-audit",
+    name: l("Vision audit", "Vizuální audit"),
+    when: l("on demand, before a criterion closes", "na vyžádání, před uzavřením kritéria"),
+    cells: {
+      reads: l(
+        "screenshots of the critical routes, full-page, 320 px wide and at 400 % zoom",
+        "snímky kritických rout na celou stránku, 320 px na šířku a při 400% zoomu",
+      ),
+      does: l(
+        "checks them against a fixed checklist: focus, colour, contrast, reflow, content on hover, motion",
+        "kontroluje je proti pevnému checklistu: fokus, barva, kontrast, přeskupení obsahu, obsah při najetí, pohyb",
+      ),
+      writes: l(
+        "a committed report; the screenshots stay on the machine, personal identifiers are hashed",
+        "commitnutý report; snímky zůstávají na stroji, osobní identifikátory se hashují",
+      ),
+      never: l("gives the verdict or changes a state: that is a person's call", "nedává verdikt ani nemění stav: to rozhoduje člověk"),
+    },
+  },
+];
+---
+
+<div class="agents" data-diagram="a11y-agents" role="group" aria-label={LABEL[locale]}>
+  <ol class="cards">
+    {
+      AGENTS.map((a) => (
+        <li class="card" data-agent={a.id}>
+          <h3>{a.name[locale]}</h3>
+          <p class="when">{a.when[locale]}</p>
+          <dl>
+            {ROWS.map((r) => (
+              <div class:list={["row", r.id]}>
+                <dt>{r.k[locale]}</dt>
+                <dd>{a.cells[r.id][locale]}</dd>
+              </div>
+            ))}
+          </dl>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .agents {
+    margin-top: 2rem;
+  }
+  .cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+  .card {
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--acc);
+    border-radius: 0 0 0.875rem 0.875rem;
+    background: var(--tint);
+    padding: 1.125rem 1.25rem 1.25rem;
+    min-width: 0;
+  }
+  h3 {
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+  .when {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--mute);
+  }
+  dl {
+    margin: 0.875rem 0 0;
+  }
+  .row {
+    padding: 0.625rem 0;
+    border-top: 1px solid var(--line);
+  }
+  dt {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--acc-text);
+  }
+  .never dt {
+    color: var(--ink);
+  }
+  dd {
+    margin: 0.125rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.45;
+  }
+  @media (max-width: 899px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

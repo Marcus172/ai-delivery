@@ -361,8 +361,8 @@ export const METRICS: Metric[] = [
     id: "product-map-nodes",
     value: l("~720", "~720"),
     label: l(
-      "nodes in the product map testers plan from, generated from code; 51 % covered by end-to-end tests",
-      "uzlů produktové mapy, ze které testeři plánují, generované z kódu; 51 % pokrývají end-to-end testy",
+      "nodes in the product map testers plan from, generated from code, each showing its end-to-end coverage",
+      "uzlů produktové mapy, ze které testeři plánují, generované z kódu, každý s vlastním pokrytím end-to-end testy",
     ),
     kind: "measured",
     period: l("repository · early November 2026", "repozitář · začátek listopadu 2026"),
@@ -458,25 +458,6 @@ export const METRICS: Metric[] = [
 
   // src: research note 01, §2.1
   {
-    id: "a11y-criteria",
-    value: l("18 / 21", "18 / 21"),
-    label: l(
-      "systemic accessibility criteria done; the other 3 wait on decisions outside this codebase",
-      "systémových kritérií přístupnosti hotovo; zbylá 3 čekají na rozhodnutí mimo tento kód",
-    ),
-    kind: "measured",
-    period: A11Y,
-  },
-  // src: research note 01, §2.1
-  {
-    id: "a11y-page-findings",
-    value: l("182 / 212", "182 / 212"),
-    label: l("page-level findings passing or done", "stránkových nálezů hotových nebo s procházejícím testem"),
-    kind: "measured",
-    period: A11Y,
-  },
-  // src: research note 01, §2.1
-  {
     id: "a11y-specs",
     value: l("134 + 49", "134 + 49"),
     label: l(
@@ -524,17 +505,6 @@ export const METRICS: Metric[] = [
     period: l("build output · after the migration, October 2026", "výstup buildu · po migraci, říjen 2026"),
   },
 
-  // src: research note 01, §2.2 (VRT-audited marker gate, 445 → 217)
-  {
-    id: "vrt-unread-stories",
-    value: l("445 → 217", "445 → 217"),
-    label: l(
-      "story screenshots not yet read by a person; the gate lets this number only fall",
-      "snímků stories, které ještě nečetl člověk; brána dovolí tomuto číslu jen klesat",
-    ),
-    kind: "measured",
-    period: l("repository · August – October 2026", "repozitář · srpen – říjen 2026"),
-  },
 
   // ── Estimate ──────────────────────────────────────────────────────────
 

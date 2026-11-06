@@ -1,32 +1,81 @@
 ---
 id: accessibility
 order: 2
-highlights: ["a11y-patterns", "a11y-criteria"]
+highlights: ["a11y-patterns", "a11y-fix-reach"]
 title: "Přístupnost ve velkém"
 summary: "Externí audit dodal tisíce značek v matici stránka × kritérium a žádné selektory. Čteno jako vzorce to bylo osmnáct vad ve sdílených komponentách. Z opravy se stal testovací systém o šesti vrstvách a ta nejvyšší zůstává lidská."
 teaser: "Z tisíců značek auditu se vyklubalo osmnáct vad ve sdílených komponentách. Z opravy se stal testovací systém o šesti vrstvách a ta nejvyšší zůstává lidská."
 ---
-import { Note, Stat, TestPyramid } from "../../../components/chapter";
+import { A11yAgents, A11yLifecycle, AuditShape, Detail, Fact, Facts, Glance, Note, Point, Stat, TestPyramid } from "../../../components/chapter";
 
 export const locale = "cs";
 
 ## Tisíce značek, osmnáct vad
 
-Auditní matice pokrývala každou stránku ve dvou jazycích a&nbsp;dvou motivech a&nbsp;kritérium označila jako padající po stránkách. Nic neukazovalo na element. Než jsem cokoli opravil, nechal jsem matici rozebrat jako data: většina padajících kritérií padala téměř na každé stránce, což znamená, že vada seděla ve sdílené komponentě, ne na stránce. Z&nbsp;toho plynula strategie: opravit komponentu a&nbsp;test, který opravu dokazuje, místo procházení značek jedné po druhé.
+Auditní matice pokrývala každou stránku ve dvou jazycích a&nbsp;dvou motivech a&nbsp;kritérium označila jako padající po stránkách. Nic neukazovalo na element. Čtená jako data měla matice jasný tvar: většina padajících kritérií padala téměř na každé stránce, takže vada seděla ve sdílené komponentě, ne na stránce. Z&nbsp;toho plynula strategie: opravit komponentu a&nbsp;test, který opravu dokazuje, místo procházení značek jedné po druhé.
 
-<div class="stats">
-  <Stat id="a11y-patterns" locale={locale} />
-  <Stat id="a11y-fix-reach" locale={locale} />
-</div>
+<AuditShape locale={locale} />
+
+<Detail locale={locale} label="Kam systémové opravy přistály">
+
+<Facts label="Kam systémové opravy přistály, výběr">
+  <Fact k="1.1.1 Netextový obsah">Primitiva pro ikony a&nbsp;obrázky: tlačítko jen s&nbsp;ikonou dostane popisek, dekorativní ikona je pro asistivní technologie skrytá.</Fact>
+  <Fact k="1.3.1 Informace a vztahy">Formulářová pole, popisné seznamy a&nbsp;tabulky ve sdílené knihovně; každá stránka dostane vizuálně skrytý nadpis první úrovně ze svého titulku.</Fact>
+  <Fact k="1.4.4 Změna velikosti textu">Typografie v&nbsp;rem, připnutá testem, který spadne, jakmile se vrátí velikost v&nbsp;pixelech.</Fact>
+  <Fact k="1.4.10 Přeskupení obsahu">Kořenový layout, který sdílí každá stránka.</Fact>
+  <Fact k="2.4.1 Přeskočení bloků">Skip link v&nbsp;kostře aplikace a&nbsp;odkaz, který přeskočí tabulku, ve sdílené tabulce.</Fact>
+  <Fact k="2.4.2 Název stránky">Jeden hook pro titulek stránky v&nbsp;hlavičce dokumentu, převzatý všemi routami.</Fact>
+  <Fact k="2.4.3 Pořadí fokusu">Past na fokus s&nbsp;návratem fokusu ve sdíleném modalu a&nbsp;draweru; zdědí ji každý dialog produktu.</Fact>
+  <Fact k="2.4.5 Více způsobů">Hlavní menu a&nbsp;drobečková navigace jako pojmenované navigační oblasti.</Fact>
+</Facts>
+
+</Detail>
 
 ## Manifest se stavovým automatem
 
-Každé systémové kritérium a&nbsp;každý zbývající stránkový nález žije ve strojově čitelném manifestu se schématem a&nbsp;životním cyklem: čeká, rozpracováno, test napsán, prochází, hotovo, přičemž blokováno a&nbsp;neřešíme nesou důvod. Stavy nejsou ozdoba: *prochází* znamená zelený automatický test, *hotovo* znamená, že to člověk potvrdil se čtečkou obrazovky. Nad manifestem pracují tři agenti, jeden převede novou auditní matici na nálezy, jeden napíše k&nbsp;nálezu regresní test vedle kódu, jeden spustí vizuální audit, a&nbsp;hrstka příkazů vypíše stav, navrhne další položku, vyexportuje stav pro management a&nbsp;vstřebá rozšířený audit bez resetu. Když analytik klienta v&nbsp;září rozšířil rozsah, manifest nové řádky pojal, aniž by se začínalo znovu.
+Každé systémové kritérium a&nbsp;každý stránkový nález žije ve strojově čitelném manifestu se schématem a&nbsp;životním cyklem. Stavy nejsou ozdoba: *prochází* znamená zelený automatický test, *hotovo* znamená, že to člověk potvrdil se čtečkou obrazovky.
 
-<div class="stats">
-  <Stat id="a11y-criteria" locale={locale} />
-  <Stat id="a11y-page-findings" locale={locale} />
-</div>
+<A11yLifecycle locale={locale} />
+
+<Glance locale={locale} label="Jak se vede evidence">
+  <Point locale={locale} title="Vlastní baseline, ne seznam dodavatele">
+    Axe scan našeho vlastního testovacího prostředí ukládá baseline na úrovni elementů. Smí se jen zmenšovat a&nbsp;každá položka uvádí kritérium, kvůli kterému tam je.
+  </Point>
+  <Point locale={locale} title="Dvě úrovně, jedna auditní stopa">
+    Jeden záznam na systémové kritérium, jeden na stránku a&nbsp;kritérium. Průběžná poznámka zaznamená každý retest: co se našlo, jak se ověřilo, který test to drží.
+  </Point>
+  <Point locale={locale} title="Pokrok po kritériích">
+    Ne tisíce značek klesající k&nbsp;nule. Jeden tiket na audit a&nbsp;jeden na opravu, nikdy jeden na nález.
+  </Point>
+  <Point locale={locale} title="Nový rozsah bez resetu">
+    Když analytik klienta v&nbsp;září rozšířil rozsah, manifest nové řádky pojal, aniž by se začínalo znovu.
+  </Point>
+</Glance>
+
+<Detail locale={locale} label="Manifest do detailu">
+
+Soubor kritérií drží u&nbsp;každého systémového kritéria úroveň, nejmenší množinu knihoven, které opravu vlastní, pull request s&nbsp;opravou, regresní testy, které ji drží, další krok a&nbsp;průběžnou poznámku. Soubor nálezů drží jeden záznam na stránku a&nbsp;kritérium. Oba mají JSON schéma.
+
+Report dodavatele určuje priority a&nbsp;zůstává jako auditní stopa; testy se staví z&nbsp;naší vlastní baseline, protože jen ta ukazuje na element. Baseline není allowlist: je commitnutá, každé nové porušení padá a&nbsp;nic v&nbsp;ní nesedí bez vysvětlení.
+
+<Facts label="Příkazy nad manifestem">
+  <Fact k="Stav">Stav po kritériích a&nbsp;po tiketech, s&nbsp;vlastnícími knihovnami a&nbsp;pull requestem s&nbsp;opravou.</Fact>
+  <Fact k="Další">Navrhne další položku podle dalšího kroku zapsaného u&nbsp;každého záznamu.</Fact>
+  <Fact k="Export">Idempotentně publikuje stav jako stránku pro management a&nbsp;stakeholdery.</Fact>
+  <Fact k="Nový audit">Založí nový audit a&nbsp;vstřebá rozšířený bez resetu.</Fact>
+</Facts>
+
+</Detail>
+
+## Tři agenti, každý s&nbsp;úzkou rolí
+
+<A11yAgents locale={locale} />
+
+Jedna sloučená regresní sada slouží všem auditům: testy žijí vedle kódu a&nbsp;audit je jen metadata v&nbsp;jejich prvním řádku. Když budoucí audit označí stejný problém, existující test už je červený.
+
+<Note>
+  <strong>Záměrně nevzniklo:</strong> agent, který vady přístupnosti opravuje sám. Oprava závisí na kontextu; páka je v&nbsp;triáži a&nbsp;v&nbsp;testech a&nbsp;automatické opravy zvou regrese.
+</Note>
 
 ## Šest vrstev, jedna z&nbsp;nich lidská
 
@@ -34,13 +83,43 @@ Každé systémové kritérium a&nbsp;každý zbývající stránkový nález ž
 
 <Stat id="a11y-specs" locale={locale} />
 
-Automatické kontroly chytí snad třetinu skutečných bariér a&nbsp;dokumentace to říká. Šest systémových kritérií je čistě vizuálních, focus ring, kontrast v&nbsp;kontextu, reflow, a&nbsp;proto existuje pátá vrstva: agent v&nbsp;prohlížeči projde obrazovky a&nbsp;vision model přečte snímky proti těmto kritériím, s&nbsp;kalibrovanými příklady, a&nbsp;člověk zkontroluje, co označil. Šestá vrstva je jediná cesta do stavu *hotovo*: člověk se čtečkou obrazovky. Žádný agent tam nález nepřesune.
+Automatické kontroly chytí snad třetinu skutečných bariér a&nbsp;dokumentace to říká. Šest systémových kritérií je čistě vizuálních, focus ring, kontrast v&nbsp;kontextu, reflow, a&nbsp;proto existuje pátá vrstva: vizuální audit, s&nbsp;kalibrovanými příklady, a&nbsp;člověk zkontroluje, co označil. Šestá vrstva je jediná cesta do stavu *hotovo*: člověk se čtečkou obrazovky. Žádný agent tam nález nepřesune.
 
 <div class="example">
   <span class="k">Příklad nálezu, smyšlená značka (Ferrylane)</span>
   <p>Kritérium 2.4.7, viditelný fokus. Hlavní tlačítko ve výběru plavby v&nbsp;aplikaci Ferrylane přišlo po změně stylu o&nbsp;focus ring: obrys byl nastavený na obalu, na který se klávesnice nikdy nedostane. Oprava šla do sdíleného tlačítka, test komponenty ověřuje viditelný obrys při fokusu, průchodový test se na tlačítko doopravdy protabuje a&nbsp;člověk to potvrdil se čtečkou, než nález přešel do hotovo.</p>
 </div>
 
-<Note>
-  <strong>Ta poctivá část.</strong> Tři systémová kritéria blokují rozhodnutí mimo tento kód a&nbsp;jsou tak vedená, s&nbsp;důvodem, v&nbsp;dokumentu, který odděluje, co opravujeme my, od toho, co vlastní jiný dodavatel nebo o&nbsp;čem klient teprve rozhodne. Runner přístupnosti ve Storybooku není brána, protože na jedné architektuře procesoru padá; dokumentace to zaznamenává, místo aby to skrývala.
-</Note>
+<Detail locale={locale} label="Pravidla, pro lidi i agenty stejně">
+
+- Žádný přeskočený test a&nbsp;žádná výjimka z&nbsp;axe bez ID kritéria WCAG a&nbsp;důvodu hned vedle.
+- Žádné vypnuté lintové pravidlo přístupnosti bez ID kritéria WCAG, vždy na řádku, nikdy pro celý soubor.
+- Fokusovatelný prvek se nikdy neskrývá před asistivními technologiemi: vadu to schová a&nbsp;vyrobí horší.
+- Čistý axe neznamená přístupné: vizuální kritéria jdou do vizuálního auditu, kritické průchody k&nbsp;člověku.
+- Žádné obcházení systémového kritéria na jedné stránce: oprava patří do sdílené komponenty.
+- Graf, jehož data se ukážou jen při najetí myší, dostane textovou alternativu, tabulku dat, kterou přečte čtečka.
+
+</Detail>
+
+## Testují se i&nbsp;testy
+
+<Glance locale={locale} label="Test, který nemůže spadnout, nic nedokazuje">
+  <Point locale={locale} title="Ověřené proti rozbité kopii">
+    Testy pasti na fokus běží se skutečnou knihovnou, ne s&nbsp;mockem. S&nbsp;vypnutou pastí zčervenalo sedm z&nbsp;osmi testů, s&nbsp;odebraným návratem fokusu všechny tři testy návratu.
+  </Point>
+  <Point locale={locale} title="Vrstvy se hlídají navzájem">
+    Textové hledání i&nbsp;vizuální audit přeskupení obsahu pustily. Živý průchod na 320 px ukázal, že kořenový layout každé stránky je širší než obrazovka; oprava šla do kořene a&nbsp;drží ji test.
+  </Point>
+</Glance>
+
+<div class="example">
+  <span class="k">Příklad: z&nbsp;jednoho nálezu systémová oprava, smyšlená značka (Ferrylane)</span>
+  <p>Retest označil jedno zamčené pole v&nbsp;dialogu limitů rezervace v&nbsp;aplikaci Ferrylane: jeho nápověda „Nenastaveno“ byla vidět, ale čtečka ji nikdy nepřečetla. Oprava toho pole byla jeden řádek, popis, na který pole ukazuje. Skutečná oprava přišla potom. Sdílený obal formulářového pole vykresluje každou nápovědu pod předvídatelným id a&nbsp;ve vlastním komentáři slibuje, že na ni vstup ukazuje, jenže napojený to měl jen jeden typ pole. Stejnou mezeru mělo deset dalších typů polí a&nbsp;výběr ze seznamu. Všechny se napojily v&nbsp;jednom pull requestu, jeden test teď kontroluje nápovědu u&nbsp;každého typu pole a&nbsp;původní pole potvrdil člověk se čtečkou.</p>
+</div>
+
+## Proč to bez AI nešlo
+
+1. **Matice čtená jako data.** Tisíce značek na zhruba 130 stránkách ve čtyřech variantách, přiřazené knihovnám, které vlastní opravu, v&nbsp;jednom běhu triáže jako diff ke kontrole člověkem, místo dnů práce v&nbsp;tabulce.
+2. **Testy ve velkém, podle konvencí.** Skoro dvě stě testů, každý vedle svého kódu a&nbsp;každý svázaný se svým záznamem v&nbsp;manifestu, napsaných agentem, který konvence zná a&nbsp;na produkční kód sahat nesmí.
+3. **Oči na každé kritické obrazovce.** Vizuální kritéria se kontrolují na kritických routách ve dvou velikostech, kdykoli je potřeba, a&nbsp;pokrok se ověřuje interně, místo čekání na externí retest.
+4. **Rozhodují lidé.** Každá změna stavu, každý verdikt nad snímkem a&nbsp;každý průchod se čtečkou zůstávají člověku.

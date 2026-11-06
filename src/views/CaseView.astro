@@ -42,7 +42,7 @@ const winsHref = localizedPath(locale, "wins");
   <h1>{c.title}</h1>
   <p class="lead">{c.summary}</p>
   <div class="glance" data-case-glance>
-    {c.highlights.map((m) => <Stat id={m} locale={locale} detail={false} />)}
+    {c.highlights.map((m) => <Stat id={m} locale={locale} />)}
   </div>
 </header>
 

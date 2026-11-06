@@ -1,0 +1,181 @@
+---
+/** The lifecycle of an entry in the accessibility manifest: who may move it, and what each state proves. */
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const LABEL = l(
+  "Lifecycle of a manifest entry, from pending to done, with the two terminal states that carry a reason",
+  "Životní cyklus záznamu v manifestu, od stavu čeká po hotovo, se dvěma koncovými stavy, které nesou důvod",
+);
+const HUMAN = l("human only", "jen člověk");
+type State = { name: ReturnType<typeof l>; means: ReturnType<typeof l>; human?: boolean; key?: boolean };
+const STATES: State[] = [
+  { name: l("pending", "čeká"), means: l("the triage agent created it", "založil ho agent triáže") },
+  { name: l("in progress", "rozpracováno"), means: l("a developer took it", "vzal si ho vývojář") },
+  { name: l("test written", "test napsán"), means: l("the regression test exists", "regresní test existuje") },
+  { name: l("passing", "prochází"), means: l("the automated test is green", "automatický test je zelený"), key: true },
+  {
+    name: l("done", "hotovo"),
+    means: l("a person confirmed it with a screen reader", "člověk to potvrdil se čtečkou"),
+    human: true,
+  },
+];
+const SIDE = {
+  title: l("Terminal, with a reason", "Koncové, s důvodem"),
+  states: [l("blocked", "blokováno"), l("won't fix", "neřešíme")],
+  note: l(
+    "What another supplier owns or the client has yet to decide is kept apart, so the team's list holds only what it can fix.",
+    "Co vlastní jiný dodavatel nebo o čem klient teprve rozhodne, je vedené zvlášť, takže v seznamu týmu zůstává jen to, co opravit může.",
+  ),
+};
+const WHO = l("Only a person moves an entry to the next state.", "Do dalšího stavu záznam posouvá jen člověk.");
+---
+
+<figure class="life" data-diagram="a11y-lifecycle">
+  <figcaption class="sr">{LABEL[locale]}</figcaption>
+  <ol class="states">
+    {
+      STATES.map((s) => (
+        <li class:list={["state", { key: s.key, human: s.human }]}>
+          <span class="name">
+            {s.name[locale]}
+            {s.human && <b class="chip">{HUMAN[locale]}</b>}
+          </span>
+          <span class="means">{s.means[locale]}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <div class="side">
+    <p class="k">{SIDE.title[locale]}</p>
+    <p class="terms">
+      {SIDE.states.map((s) => <span class="term">{s[locale]}</span>)}
+    </p>
+    <p class="note">{SIDE.note[locale]}</p>
+  </div>
+  <p class="who">{WHO[locale]}</p>
+</figure>
+
+<style>
+  .life {
+    margin: 2rem 0 0;
+  }
+  p {
+    margin: 0;
+  }
+  .states {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+  .state {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0.875rem 0.875rem;
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    background: var(--tint);
+    min-width: 0;
+  }
+  .state:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -0.625rem;
+    top: 50%;
+    translate: 50% -50%;
+    color: var(--mute);
+    font-size: 0.875rem;
+  }
+  .state.key {
+    border-color: var(--acc);
+  }
+  .state.human {
+    background: transparent;
+    border: 0.0938rem dashed var(--ink);
+  }
+  .name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    align-items: baseline;
+  }
+  .means {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+  .chip {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 0.5rem;
+    border: 1px solid var(--ink);
+  }
+  .side {
+    margin-top: 0.75rem;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    padding: 0.75rem 0.875rem;
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+  }
+  .k {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--acc-text);
+  }
+  .terms {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .term {
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+  .term + .term::before {
+    content: "·";
+    margin-right: 0.5rem;
+    color: var(--mute);
+  }
+  .note {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+  .who {
+    margin-top: 0.625rem;
+    font-size: 0.8125rem;
+    color: var(--mute);
+  }
+  @media (max-width: 799px) {
+    .states {
+      grid-template-columns: 1fr;
+    }
+    .state:not(:last-child)::after {
+      content: "↓";
+      right: 1rem;
+      top: auto;
+      bottom: -0.625rem;
+      translate: 0 50%;
+      z-index: 1;
+    }
+    .side {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -10,7 +10,7 @@ export const LANDING = {
   ),
   statsPeriodBefore: l(
     "Measured on one team; periods, baselines and caveats are in the ",
-    "Měřeno na jednom týmu; období, výchozí stavy a výhrady jsou v ",
+    "Měřeno na jednom týmu; období, výchozí stavy a výhrady jsou ve ",
   ),
   statsPeriodLink: l("Wins & cases", "Výsledcích a případech"),
 

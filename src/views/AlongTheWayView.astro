@@ -8,7 +8,8 @@ import { AREAS, WINS, winPeriod, winsIn, type Role } from "../data/alongTheWay";
 import { csTypo, l } from "../data/l10n";
 import type { Locale } from "../i18n/locales";
 import { localizedPath } from "../i18n/routes";
-import { t, type UiKey } from "../i18n/ui";
+import { plural } from "../i18n/plural";
+import { PLURALS, t, type UiKey } from "../i18n/ui";
 
 interface Props {
   locale: Locale;
@@ -16,6 +17,8 @@ interface Props {
 
 const { locale } = Astro.props;
 const tt = (key: UiKey) => (locale === "cs" ? csTypo(t(locale, key)) : t(locale, key));
+
+const csFix = (s: string) => (locale === "cs" ? csTypo(s) : s);
 
 // Cards are numbered in reading order: area by area, in time order within an area.
 const ordered = AREAS.flatMap((a) => winsIn(a.id));
@@ -42,7 +45,7 @@ const winsHref = localizedPath(locale, "wins");
   <h1>{tt("atw.title")}</h1>
   <p class="lead">{tt("atw.lead")}</p>
   <p class="count" data-atw-count>
-    <b>{WINS.length}</b> {tt("atw.countWins")} · <b>{AREAS.length}</b> {tt("atw.countAreas")} · {tt("atw.countPeriod")}
+    <b>{WINS.length}</b> {csFix(plural(locale, WINS.length, PLURALS[locale]["atw.countWins"]))} · <b>{AREAS.length}</b> {csFix(plural(locale, AREAS.length, PLURALS[locale]["atw.countAreas"]))} · {tt("atw.countPeriod")}
   </p>
   <WinsMap locale={locale} numbers={numbers} />
 </header>

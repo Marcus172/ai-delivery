@@ -1,6 +1,8 @@
 # AI Delivery site
 
-Static Astro site (4 pages, EN/CS, light/dark) deployed to GitHub Pages under `/ai-delivery/`.
+**Live: [marcus172.github.io/ai-delivery](https://marcus172.github.io/ai-delivery/)**
+
+Static Astro site (Landing, Journey, AI Delivery, Wins & cases, CV, Sources; EN/CS, light/dark) deployed to GitHub Pages under `/ai-delivery/`.
 
 - `npm run dev` - local dev server
 - `npm run check` - build, CV PDFs, NDA gate, unit, post-build and e2e tests (the full gate)
@@ -10,7 +12,7 @@ Static Astro site (4 pages, EN/CS, light/dark) deployed to GitHub Pages under `/
 
 ## Publishing
 
-The site is `noindex` and lives at `https://marcus172.github.io/ai-delivery/`. Deploys run from `.github/workflows/deploy.yml` on every push to `main`.
+The site is `noindex` and lives at <https://marcus172.github.io/ai-delivery/>. Deploys run from `.github/workflows/deploy.yml` on every push to `main`.
 
 One-time setup:
 

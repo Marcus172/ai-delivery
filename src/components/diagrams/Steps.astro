@@ -1,0 +1,109 @@
+---
+/** A process as numbered cards in one row (a column on narrow screens), each a short title and one sentence. Copy comes from the MDX; Czech gets Czech typography here. */
+import { csTypo } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+
+interface Props {
+  locale: Locale;
+  /** Accessible name of the whole process. */
+  label: string;
+  steps: { title: string; text: string }[];
+  /** A short line under the steps. */
+  note?: string;
+  /** Diagram id for tests and the layout audit. */
+  id: string;
+}
+
+const { locale, label, steps, note, id } = Astro.props;
+const typo = (s: string) => (locale === "cs" ? csTypo(s) : s);
+/** More than five steps wrap into rows of three, so each card keeps a readable measure. */
+const cols = steps.length > 5 ? 3 : steps.length;
+---
+
+<figure class="steps" data-diagram={id} style={`--n: ${cols}`} data-wrap={cols < steps.length ? "" : undefined}>
+  <figcaption class="sr">{typo(label)}</figcaption>
+  <ol>
+    {
+      steps.map((s) => (
+        <li>
+          <span class="t">{typo(s.title)}</span>
+          <span class="x">{typo(s.text)}</span>
+        </li>
+      ))
+    }
+  </ol>
+  {note && <p class="note">{typo(note)}</p>}
+</figure>
+
+<style>
+  .steps {
+    margin: 2rem 0 0;
+  }
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    gap: 1.25rem;
+    counter-reset: step;
+  }
+  li {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem 0.875rem 0.875rem;
+    border: 1px solid var(--line);
+    border-radius: 0.625rem;
+    background: var(--tint);
+    min-width: 0;
+  }
+  li:not(:last-child)::after {
+    content: "→";
+    position: absolute;
+    right: -0.625rem;
+    top: 50%;
+    translate: 50% -50%;
+    color: var(--mute);
+    font-size: 0.875rem;
+  }
+  .t {
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+  .t::before {
+    counter-increment: step;
+    content: counter(step) " ";
+    color: var(--acc-text);
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8125rem;
+  }
+  .x {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--mute);
+  }
+  .steps[data-wrap] li:nth-child(3n)::after {
+    content: none;
+  }
+  .note {
+    margin: 0.625rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--mute);
+  }
+  @media (max-width: 899px) {
+    ol {
+      grid-template-columns: 1fr;
+    }
+    li:not(:last-child)::after,
+    .steps[data-wrap] li:nth-child(3n):not(:last-child)::after {
+      content: "↓";
+      right: 1rem;
+      top: auto;
+      bottom: -0.625rem;
+      translate: 0 50%;
+      z-index: 1;
+    }
+  }
+</style>

@@ -483,26 +483,66 @@ export const METRICS: Metric[] = [
   },
   // src: research note 01, §2.2
   {
-    id: "story-coverage",
-    value: l("44.5 % → 100 %", "44,5 % → 100 %"),
-    label: l(
-      "components covered by stories; the visual-regression harness was built before the migration started",
-      "komponent pokrytých stories; harness pro vizuální regrese vznikl ještě před začátkem migrace",
-    ),
-    kind: "measured",
-    period: l("repository · late July – early October 2026", "repozitář · konec července – začátek října 2026"),
-    caveat: l(
-      "Counted by adjacency (a story sits next to every component), not as a screenshot of each one.",
-      "Počítáno podle sousedství (u každé komponenty leží story), ne jako snímek každé z nich.",
-    ),
-  },
-  // src: research note 01, §2.2
-  {
     id: "bundle-size",
     value: l("−10 KB", "−10 kB"),
     label: l("gzipped bundle size in each of three apps", "velikosti bundlu po gzipu v každé ze tří aplikací"),
     kind: "measured",
     period: l("build output · after the migration, October 2026", "výstup buildu · po migraci, říjen 2026"),
+  },
+  // src: migration docs, phase 1 (jsdom, 100 distinct prop combinations)
+  {
+    id: "runtime-style-rules",
+    value: l("101 → 0", "101 → 0"),
+    label: l(
+      "style rules injected at runtime for 100 prop combinations of one layout primitive (24.6 KB of generated CSS); Tailwind injects none",
+      "stylových pravidel vložených za běhu pro 100 kombinací props jednoho layoutového primitiva (24,6 kB generovaného CSS); Tailwind nevkládá žádné",
+    ),
+    kind: "measured",
+    period: l("jsdom measurement · August 2026", "měření v jsdom · srpen 2026"),
+  },
+  // src: migration docs, phase 4 (dependency removal)
+  {
+    id: "packages-removed",
+    value: l("27", "27"),
+    label: l(
+      "packages gone from the install with the old styling libraries (3.68 MiB)",
+      "balíčků, které s původními stylovacími knihovnami zmizely z instalace (3,68 MiB)",
+    ),
+    kind: "measured",
+    period: l("dependency manifest · October 2026", "manifest závislostí · říjen 2026"),
+  },
+  // src: migration docs, phase 4 (React types bump, the migration's done gate)
+  {
+    id: "react-types",
+    value: l("18 → 19", "18 → 19"),
+    label: l(
+      "React type definitions, held back by the old library; all 74 packages typecheck clean on 19",
+      "typové definice Reactu, které držela původní knihovna; všech 74 balíčků projde typovou kontrolou na verzi 19",
+    ),
+    kind: "measured",
+    period: l("repository · October 2026", "repozitář · říjen 2026"),
+  },
+  // src: migration docs, phase 0.5 (determinism)
+  {
+    id: "vrt-flake",
+    value: l("16 / 287 → 0 / 500", "16 / 287 → 0 / 500"),
+    label: l(
+      "flaky screenshot comparisons per run, before and after the determinism work",
+      "nestabilních porovnání snímků na běh, před prací na determinismu a po ní",
+    ),
+    kind: "measured",
+    period: l("VRT harness · July – August 2026", "VRT harness · červenec – srpen 2026"),
+  },
+  // src: migration docs, phase 1 (layout ~2,682 + typography 3,278 call sites)
+  {
+    id: "primitive-call-sites",
+    value: l("~6,000", "~6 000"),
+    label: l(
+      "call sites of the layout and text primitives left untouched: the primitives kept their props and emit classes underneath",
+      "míst volání layoutových a textových primitiv, na která se nesáhlo: primitiva si nechala props a pod nimi generují třídy",
+    ),
+    kind: "measured",
+    period: l("repository · August 2026", "repozitář · srpen 2026"),
   },
 
 

@@ -1,29 +1,180 @@
 ---
 id: tailwind
 order: 3
-highlights: ["tailwind-components", "story-coverage"]
+highlights: ["tailwind-components", "bundle-size"]
 title: "From CSS-in-JS to Tailwind in ten weeks"
-summary: "Every component of three apps moved from CSS-in-JS to Tailwind with token-only scales. The visual-regression harness came first, the migration second, and the biggest finding came from reading screenshots, not from a green gate."
-teaser: "Three apps moved from CSS-in-JS to Tailwind. The visual-regression harness came first, and the biggest finding came from reading screenshots, not from a green gate."
+summary: "The styling library was end of life: no fixes, not even for security, and every style paid for at runtime. Every component of three apps moved to zero-runtime Tailwind on the design tokens, guarded by a visual-regression harness built before the first component. The biggest finding came from reading screenshots, not from a green gate."
+teaser: "An end-of-life styling library with no security fixes and a runtime cost. Three apps moved to zero-runtime Tailwind, guarded by a visual-regression harness built before the first component."
 ---
-import { MigrationBand, Note, Stat } from "../../../components/chapter";
+import { Detail, Fact, Facts, Figure, Glance, MigrationBand, Note, Point, Stat, Steps } from "../../../components/chapter";
+
+import storybookVisualTests from "../../../assets/wins/tailwind/storybook-visual-tests.png";
 
 export const locale = "en";
 
+## Why: the styling library was end of life
+
+The whole product was styled with a CSS-in-JS library whose version had reached end of life, while the rest of the stack had moved on to React 19 and the current Next.js. It worked, but by accident rather than by support, and every month on it added risk. Instead of keeping it alive, the team invested straight into the target.
+
+<Glance locale={locale} label="Four reasons to move">
+  <Point locale={locale} title="End of life">
+    The version in use gets no fixes at all, and it runs outside the supported matrix of the framework it renders in.
+  </Point>
+  <Point locale={locale} title="Security">
+    No security patches. The day a vulnerability or a framework update breaks it, there is no fix to take, only an emergency migration.
+  </Point>
+  <Point locale={locale} title="Performance">
+    Styles are generated and injected at runtime for every new prop combination, with a style registry on every server render. Tailwind compiles them ahead of time.
+  </Point>
+  <Point locale={locale} title="A blocked stack">
+    Its type package held the React types at 18 while the runtime was on 19: bumping the types alone produced 21,656 errors across 52 packages.
+  </Point>
+</Glance>
+
+<div class="stats">
+  <Stat id="runtime-style-rules" locale={locale} />
+  <Stat id="packages-removed" locale={locale} />
+  <Stat id="react-types" locale={locale} />
+</div>
+
+<Detail locale={locale} label="The options weighed">
+
+<Facts label="Options for the styling layer">
+  <Fact k="Stay">Postpones the problem and deepens the debt: the library stays end of life and outside the supported matrix.</Fact>
+  <Fact k="Emotion">Almost a drop-in, but the same category, runtime CSS-in-JS: the cost of a migration without leaving the problem.</Fact>
+  <Fact k="Tailwind v4">The chosen target: zero runtime, the largest ecosystem and talent pool, long-term certainty.</Fact>
+  <Fact k="PandaCSS">The closest heir to the old prop API, but the youngest project: it brings back the maintenance risk the move was meant to remove.</Fact>
+  <Fact k="shadcn/ui">Not a styling library but Tailwind plus copied components; for a mature design system the biggest scope, not a shortcut.</Fact>
+</Facts>
+
+The migration counts as done by a machine check, not by a feeling: the React 19 types with a clean typecheck, which can only pass once the old library is really gone. The gate was set before the first stage.
+
+</Detail>
+
 ## The harness before the first component
 
-Rewriting the styling of a whole product is the kind of work that AI makes cheap and that a team rightly fears, because a hundred small visual regressions are invisible to every existing test. So the first phase converted nothing. It built a visual-regression harness that renders every story of the base and of the change in one run, light and dark, and compares them pixel by pixel, with a self-test of the comparator and a CI job per pull request. Only then did the conversion start: layout and text primitives that resolve spacing and layout props to classes, then shared UI, then the domains, then removal of the old libraries. One stage, one pull request; the plan's state changes in the same commit.
+Rewriting the styling of a whole product is the kind of work that AI makes cheap and that a team rightly fears, because a hundred small visual regressions are invisible to every existing test. So the first phase converted nothing. It built a harness for [**VRT, Visual Regression Testing**](https://storybook.js.org/docs/writing-tests/visual-testing): every story rendered before and after a change and compared pixel by pixel. It closed the story coverage so that every component had a story next to it, and only then did the conversion start: primitives, shared UI, the domains, removal of the old libraries.
+
+<Figure
+  src={storybookVisualTests}
+  locale={locale}
+  alt="Storybook with its Visual tests panel open on a range slider story with a price histogram. The panel reports changes found and overlays the new screenshot on the previous one, with the changed bars highlighted, next to an Accept button."
+  caption="How visual testing looks in Storybook: a changed story is flagged and the difference is highlighted on its screenshot for a person to accept. Illustration from the Storybook documentation; the harness in this case works on the same principle, on its own infrastructure."
+/>
 
 <MigrationBand locale={locale} />
 
-<Stat id="bundle-size" locale={locale} />
+<Steps
+  locale={locale}
+  id="vrt-pipeline"
+  label="How one visual-regression run works, from the fork point to the report"
+  steps={[
+    { title: "Fork point", text: "A worktree at the fork point of the release line is the base; no baseline images are committed." },
+    { title: "Two builds", text: "Base and change are built as static Storybooks and served one after the other on the same port." },
+    { title: "Render", text: "Every story in a Linux container, light and dark, with a frozen clock and random, and animations off." },
+    { title: "Settle", text: "Frames, timers, DOM mutations and React commits must go quiet before the shot." },
+    { title: "Compare", text: "Per pixel with a calibrated tolerance; a lost or broken story fails the run." },
+    { title: "Report", text: "Base, change and diff mask, worst first, pasted into every pull request." },
+  ]}
+  note="The same harness runs locally and as a job on every pull request, on every release line."
+/>
+
+<Stat id="vrt-flake" locale={locale} />
+
+<Detail locale={locale} label="The harness in detail">
+
+The design tokens are the single source of truth. The Tailwind theme is generated from the token constants, about 250 custom properties with dark-theme overrides, and a drift check fails when the generated file and the generator disagree. A verify step compiles probe classes through Tailwind itself and checks every token in both themes; negative probes prove that stock Tailwind colours, sizes and breakpoints do not resolve, so no call site can bypass the tokens. Tailwind's spacing scale was replaced, not extended, by the design system's own steps, so a spacing class means exactly what the old prop meant; without that, every diff would have been one pixel off everywhere.
+
+Base and change may differ only in component and story code: the harness copies its own configuration onto the base, because a config difference once produced 250 false diffs. The run accounts for every expected screenshot against the build's own story index, so a story lost on the base side fails the run instead of showing up as a silent "added". The comparator has its own self-test, thirteen checks on synthesised images in about a second, inside the lint gate.
+
+<Facts label="Markers that keep the harness honest">
+  <Fact k="Expected diff">A commit trailer declares an intended visual change and its reason; a declaration that matches nothing fails the run, and it travels with the commit to other release lines.</Fact>
+  <Fact k="Audited story">A marker in the story records that a person has actually read its screenshot.</Fact>
+  <Fact k="Allowlist">Reserved for stories that are non-deterministic by nature, each with a reason.</Fact>
+  <Fact k="Exit codes">Clean, visual change, harness failure, cells lost on the base, invalid trailer: the job fails or warns accordingly.</Fact>
+</Facts>
+
+</Detail>
+
+## Primitives: the same props, classes underneath
+
+The biggest surface was never rewritten by hand. The layout and text primitives kept their public prop API byte for byte, but now resolve those props to Tailwind classes: enumerable values to real utilities from a generated safelist, open-ended values through a CSS custom property. The quirks of the old prop library were reproduced on purpose, from responsive arrays to "the last prop wins", because the goal was the same pixels, not a nicer API.
+
+<Stat id="primitive-call-sites" locale={locale} />
+
+<Detail locale={locale} label="Running both systems side by side">
+
+Tailwind and the old library ran in the same codebase for the whole migration, and the app was shippable after every merge. Tailwind's reset stayed off, so it could not rewrite the existing global styles. The utilities sit in a cascade layer and the old rules did not, so the old rule always won: converting a component meant deleting its old definition, never stacking classes on top of it. Tailwind's automatic source detection resolved differently in the two build pipelines and computed spacing as zero in one of them, so the sources are declared explicitly.
+
+</Detail>
+
+## Stage by stage: agents convert, people read screenshots
+
+<Steps
+  locale={locale}
+  id="stage-recipe"
+  label="The recipe of one migration stage"
+  steps={[
+    { title: "Scope", text: "At most about ten definitions, on a clean visual baseline." },
+    { title: "Read first", text: "A person reads the screenshot of any story nobody has looked at yet, before converting it." },
+    { title: "Convert", text: "Static styles to utilities, variants to lookups of complete class strings, theme values to token classes." },
+    { title: "Gate", text: "Filtered runs while iterating; sign-off only on a full, unfiltered run." },
+    { title: "Pull request", text: "The plan's status changes in the same commit; the report goes into the pull request." },
+  ]}
+  note="Forty stages in total. Any non-zero diff needs a design sign-off and is listed in the pull request."
+/>
+
+<Glance locale={locale} label="Who does what">
+  <Point locale={locale} title="Agents">
+    Convert the stages, several in parallel on disjoint directories; write the missing stories; chase root causes in the harness.
+  </Point>
+  <Point locale={locale} title="Scripts">
+    Generate and verify the theme and the safelist, count the old call sites per stage, account for every screenshot, run the codemods.
+  </Point>
+  <Point locale={locale} title="People">
+    Review screenshots rather than diffs, sign off intended changes, and decide: which variants matter, what stays out of scope, when the harness outranks the next component.
+  </Point>
+</Glance>
+
+The plan itself was written for agents: one folder with the status table, the recipe of a stage and the list of known traps, read by every agent next to its instructions. When an agent proposed auditing every screenshot in bulk before merging, a person replaced it with a cheaper rule that holds: read a story before you convert it.
 
 ## The gates were green, the truth was in the pixels
 
-The harness had a blind spot, and it taught the most useful lesson of the migration. Every story of the charting library was a screenshot of an empty chart, taken at the first frame of its animation, and every gate was green, because the base and the change were equally empty. It was found by a person reading the screenshots. The response was not another gate: a marker on each story that a person has actually looked at, and a check that lets the number of unread stories only fall. The measuring instrument got the same honesty: when the census of remaining call sites turned out to count prose in doc comments, it was fixed and the documentation warns not to compare tables across the fix.
+The harness had a blind spot, and it taught the most useful lesson of the migration. Every story of the charting library was a screenshot of an empty chart, taken at the first frame of its animation, and every gate was green, because the base and the change were equally empty. It was found by a person reading the screenshots. A fix to the harness is invisible to the harness, because both sides change together; only eyes see it.
 
-Other defects passed every automated gate and were caught by review or by eye: an arbitrary variant that silently removed the focus-visible ring, a lost descendant selector, a border invisible in the dark theme, invalid CSS converted into nothing. Each one became a rule or a test.
+Other defects passed every automated gate as well. Each one became a rule or a test:
+
+<Facts label="Defects that passed the gates, and the rule each became">
+  <Fact k="Empty charts">A canvas paint changes neither layout nor DOM, so the settle rule fired at the first frame. Chart animations are now off in the harness.</Fact>
+  <Fact k="Lost focus ring">An arbitrary variant was emitted after the focus-visible ring and removed it. Rule: measure the order against the compiler for each variant.</Fact>
+  <Fact k="Lost hover">Deleting a wrapper handed its hover rule to a converted child that emits its own. Rule: re-check specificity for every descendant selector.</Fact>
+  <Fact k="Dark theme only">Seven dialogs lost their focused fill in dark mode, a header border disappeared. Rule: every state needs its dark twin.</Fact>
+  <Fact k="Invalid CSS">Old styles such as a cursor set to false had never applied; a valid equivalent would have widened controls. Rule: check every branch of a conditional style.</Fact>
+  <Fact k="Erased labels">An old global reset outside any layer wiped every utility on labels, 1,248 changed screenshots with all other gates green. It moved into the base layer.</Fact>
+  <Fact k="Finished or not started">A table filled its rows after first paint and was shot empty on whichever side the race landed. Timer and mutation probes now decide, and a fixture story holds it.</Fact>
+</Facts>
 
 <Note>
-  <strong>Harness over conversion.</strong> When the harness's settle rule turned out not to distinguish "stable because finished" from "stable because not started", fixing the lane outranked converting the next component. The re-estimate after the pilot moved the cost from the component to its consumers, and the plan was rewritten around that instead of defended.
+  <strong>Harness over conversion.</strong> When the settle rule turned out not to distinguish "stable because finished" from "stable because not started", fixing the harness outranked converting the next component. The re-estimate after the pilot moved the cost from the component to its consumers, and the plan was rewritten around that instead of defended.
 </Note>
+
+## What stays after the migration
+
+<Glance locale={locale} label="The end state">
+  <Point locale={locale} title="The old libraries are gone">
+    Both libraries, their types, the server-side style registry and the build plugin across 54 configuration files.
+  </Point>
+  <Point locale={locale} title="The harness stays">
+    It runs on every pull request on every release line, and an intended visual change has to be declared.
+  </Point>
+  <Point locale={locale} title="A rule for what comes next">
+    Tokens only, complete class strings, no raw colours or pixels, and no CSS-in-JS coming back, written into the rules every agent reads.
+  </Point>
+</Glance>
+
+## Why this was not possible without AI
+
+1. **Volume with fidelity.** About 1,300 components in forty stages, converted to the same pixels, while the call sites of the primitives did not change at all.
+2. **Coverage before conversion.** The missing stories were written by parallel agents over disjoint parts of the product, so every component had a screenshot before anyone touched it.
+3. **A harness worth trusting.** Root causes of flakes and false diffs were chased down one by one until five hundred comparisons in a row came out stable.
+4. **People decide.** Reading screenshots, signing off intended changes and setting the scope stayed with people; the agents did the rewriting.

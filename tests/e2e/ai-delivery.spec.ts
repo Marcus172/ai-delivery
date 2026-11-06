@@ -195,6 +195,7 @@ for (const locale of LOCALES) {
         `${prefix}wins/accessibility/`,
         `${prefix}wins/tailwind/`,
         `${prefix}wins/stack/`,
+        `${prefix}wins/security/`,
         `${prefix}wins/`,
       ]);
     });

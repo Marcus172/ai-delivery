@@ -7,7 +7,7 @@ import { t } from "../../src/i18n/ui";
 
 const PREFIX: Record<Locale, string> = { en: "/ai-delivery/", cs: "/ai-delivery/cs/" };
 const WINS: Record<Locale, string> = { en: "wins/", cs: "cs/wins/" };
-const CASES = ["brand-voice", "accessibility", "tailwind", "stack"] as const;
+const CASES = ["brand-voice", "accessibility", "tailwind", "stack", "security"] as const;
 /** The fictional brand used for every persona and accessibility example. */
 const FICTIONAL_BRAND = "Ferrylane";
 const denylist = loadDenylistText();

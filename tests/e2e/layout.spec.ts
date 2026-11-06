@@ -12,7 +12,7 @@ const PAGES: Array<[string, string]> = [
   ["wins/stack/", `${BASE}cs/wins/stack/`],
   ["cs/wins/security/", `${BASE}wins/security/`],
   ["wins/along-the-way/", `${BASE}cs/wins/along-the-way/`],
-  ["sources/", `${BASE}cs/sources/`],
+  ["toolkit/", `${BASE}cs/toolkit/`],
   ["cv/", `${BASE}cs/cv/`],
   ["cs/", BASE],
   ["cs/journey/", `${BASE}journey/`],
@@ -20,7 +20,7 @@ const PAGES: Array<[string, string]> = [
   ["cs/wins/", `${BASE}wins/`],
   ["cs/wins/brand-voice/", `${BASE}wins/brand-voice/`],
   ["cs/wins/along-the-way/", `${BASE}wins/along-the-way/`],
-  ["cs/sources/", `${BASE}sources/`],
+  ["cs/toolkit/", `${BASE}toolkit/`],
   ["cs/cv/", `${BASE}cv/`],
 ];
 
@@ -184,7 +184,7 @@ const SCALE: Array<[number, number]> = [
 for (const [width, rootPx] of SCALE) {
   test(`root font size is ${rootPx}px at ${width}px and nothing overflows sideways`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    for (const url of ["", "journey/", "ai-delivery/", "wins/", "wins/brand-voice/", "sources/", "cv/"]) {
+    for (const url of ["", "journey/", "ai-delivery/", "wins/", "wins/brand-voice/", "toolkit/", "cv/"]) {
       await page.goto(`${BASE}${url}`);
       const { root, overflow } = await page.evaluate(() => ({
         root: parseFloat(getComputedStyle(document.documentElement).fontSize),

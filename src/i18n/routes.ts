@@ -1,15 +1,15 @@
 import { DEFAULT_LOCALE, LOCALES, type Locale } from "./locales";
 
-export type PageId = "landing" | "journey" | "ai-delivery" | "wins" | "sources" | "cv";
+export type PageId = "landing" | "journey" | "ai-delivery" | "wins" | "toolkit" | "cv";
 
-export const PAGE_IDS: readonly PageId[] = ["landing", "journey", "ai-delivery", "wins", "sources", "cv"];
+export const PAGE_IDS: readonly PageId[] = ["landing", "journey", "ai-delivery", "wins", "toolkit", "cv"];
 
 const PAGE_SEGMENT: Record<PageId, string> = {
   landing: "",
   journey: "journey/",
   "ai-delivery": "ai-delivery/",
   wins: "wins/",
-  sources: "sources/",
+  toolkit: "toolkit/",
   cv: "cv/",
 };
 

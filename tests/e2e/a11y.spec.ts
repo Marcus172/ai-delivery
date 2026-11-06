@@ -13,7 +13,7 @@ const PAGES = [
   "wins/stack/",
   "wins/security/",
   "wins/along-the-way/",
-  "sources/",
+  "toolkit/",
   "cv/",
   "cs/",
   "cs/journey/",
@@ -25,7 +25,7 @@ const PAGES = [
   "cs/wins/stack/",
   "cs/wins/security/",
   "cs/wins/along-the-way/",
-  "cs/sources/",
+  "cs/toolkit/",
   "cs/cv/",
 ];
 const THEMES = ["light", "dark"] as const;

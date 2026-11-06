@@ -37,7 +37,7 @@ describe("tools registry", () => {
     expect(linked("GitHub Pages and GitHub")).toEqual(["github-pages:GitHub Pages", "github:GitHub"]);
   });
 
-  it("describes every tool on the Sources page in both locales, with https links", () => {
+  it("describes every tool on the Toolkit page in both locales, with https links", () => {
     const listed = TOOLS.filter((x) => x.group);
     expect(listed.length).toBeGreaterThan(25);
     for (const x of listed) {
@@ -47,10 +47,10 @@ describe("tools registry", () => {
     }
   });
 
-  it("puts every tool either on the Sources page or explicitly in the text only", () => {
+  it("puts every tool either on the Toolkit page or explicitly in the text only", () => {
     for (const x of TOOLS) {
       expect(Boolean(x.group) !== Boolean(x.textOnly), `${x.id}: needs exactly one of group / textOnly`).toBe(true);
-      if (x.textOnly) expect([x.what, x.docs, x.video, x.label].filter(Boolean), `${x.id}: Sources fields on a text-only tool`).toEqual([]);
+      if (x.textOnly) expect([x.what, x.docs, x.video, x.label].filter(Boolean), `${x.id}: Toolkit fields on a text-only tool`).toEqual([]);
     }
   });
 

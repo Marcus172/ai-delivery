@@ -6,6 +6,10 @@ export default defineConfig({
   site: "https://marcus172.github.io",
   base: "/ai-delivery",
   trailingSlash: "always",
+  redirects: {
+    "/sources/": "/ai-delivery/toolkit/",
+    "/cs/sources/": "/ai-delivery/cs/toolkit/",
+  },
   integrations: [mdx()],
   i18n: {
     locales: ["en", "cs"],

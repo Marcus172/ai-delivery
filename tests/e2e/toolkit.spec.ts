@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
-import { PEOPLE, TOOL_GROUPS, toolsIn } from "../../src/data/sources";
+import { PEOPLE, TOOL_GROUPS, toolsIn } from "../../src/data/toolkit";
 import { LOCALES, type Locale } from "../../src/i18n/locales";
 
-const URL: Record<Locale, string> = { en: "sources/", cs: "cs/sources/" };
+const URL: Record<Locale, string> = { en: "toolkit/", cs: "cs/toolkit/" };
 
 for (const locale of LOCALES) {
-  test.describe(`sources (${locale})`, () => {
+  test.describe(`toolkit (${locale})`, () => {
     test("lists every grouped tool with what it is for and a link to its site", async ({ page }) => {
       await page.goto(URL[locale]);
       await expect(page.locator("main h1")).toHaveCount(1);
@@ -32,9 +32,22 @@ for (const locale of LOCALES) {
     test("is reachable from the rail and from the tool map on AI Delivery", async ({ page }) => {
       const prefix = locale === "cs" ? "/ai-delivery/cs/" : "/ai-delivery/";
       await page.goto(URL[locale]);
-      await expect(page.locator(`nav.rail a[href="${prefix}sources/"]`)).toHaveAttribute("aria-current", "page");
+      await expect(page.locator(`nav.rail a[href="${prefix}toolkit/"]`)).toHaveAttribute("aria-current", "page");
       await page.goto(locale === "cs" ? "cs/ai-delivery/" : "ai-delivery/");
-      await expect(page.locator(`[data-diagram="tool-layers"] a[href="${prefix}sources/"]`)).toHaveCount(1);
+      await expect(page.locator(`[data-diagram="tool-layers"] a[href="${prefix}toolkit/"]`)).toHaveCount(1);
     });
   });
 }
+
+test.describe("toolkit: old URLs", () => {
+  test("/toolkit/ redirects to /toolkit/", async ({ page }) => {
+    await page.goto("toolkit/");
+    await expect(page).toHaveURL(/\/ai-delivery\/toolkit\/$/);
+    await expect(page.locator("main h1")).toHaveCount(1);
+  });
+
+  test("/cs/toolkit/ redirects to /cs/toolkit/", async ({ page }) => {
+    await page.goto("cs/toolkit/");
+    await expect(page).toHaveURL(/\/ai-delivery\/cs\/toolkit\/$/);
+  });
+});

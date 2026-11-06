@@ -79,8 +79,8 @@ git-tracked files: `git add -N <file>` a new file before running `npm run nda` o
 - Third-party tools: every mention links to the tool's official site. Add the tool to
   `src/data/tools.ts` and prose, CV and Journey link it automatically, once per paragraph. A tool of
   the delivery tooling in use today also gets `group`, `what` (EN + CS) and `docs` so it shows on the
-  Sources page; past tools and the application stack (React, Next.js and the like) get
-  `textOnly: true` and stay off Sources. A unit test enforces one or the other. Not linked:
+  Toolkit page; past tools and the application stack (React, Next.js and the like) get
+  `textOnly: true` and stay off Toolkit. A unit test enforces one or the other. Not linked:
   programming languages, operating systems, employers and clients, historical job titles, page and
   chapter titles, SVG diagrams.
 - Accessibility is a showcased result: WCAG 2.2 AA, axe-clean, diagrams legible in both themes,

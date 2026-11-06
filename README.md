@@ -2,7 +2,7 @@
 
 **Live: [marcus172.github.io/ai-delivery](https://marcus172.github.io/ai-delivery/)**
 
-Static Astro site (Landing, Journey, AI Delivery, Wins & cases, CV, Sources; EN/CS, light/dark) deployed to GitHub Pages under `/ai-delivery/`.
+Static Astro site (Landing, Journey, AI Delivery, Wins & cases, CV, Toolkit; EN/CS, light/dark) deployed to GitHub Pages under `/ai-delivery/`.
 
 - `npm run dev` - local dev server
 - `npm run check` - build, CV PDFs, NDA gate, unit, post-build and e2e tests (the full gate)

@@ -460,7 +460,10 @@ export const METRICS: Metric[] = [
   {
     id: "a11y-criteria",
     value: l("18 / 21", "18 / 21"),
-    label: l("systemic accessibility criteria done; the other 3 are blocked", "systémových kritérií přístupnosti hotovo; zbylá 3 jsou blokovaná"),
+    label: l(
+      "systemic accessibility criteria done; the other 3 wait on decisions outside this codebase",
+      "systémových kritérií přístupnosti hotovo; zbylá 3 čekají na rozhodnutí mimo tento kód",
+    ),
     kind: "measured",
     period: A11Y,
   },
@@ -552,16 +555,40 @@ export const METRICS: Metric[] = [
 export const LANDING_METRIC_IDS = ["in-progress-to-pr", "prs-with-tests", "a11y-patterns"] as const;
 
 /** Before/after set for the Results chapter, in display order. */
-export const RESULTS_METRIC_IDS = [
-  "lead-time",
-  "in-progress-to-pr",
-  "returns-from-test",
-  "prs-with-tests",
-  "unit-spec-files",
-  "stories",
-  "structured-test-notes",
-  "multi-line-delivery",
-] as const;
+export type ResultsGroup = { id: string; title: L10n; note: L10n; metrics: readonly string[] };
+
+/** The measured before/after set on Wins & cases, grouped and ordered from the sturdiest figure down. */
+export const RESULTS_GROUPS: readonly ResultsGroup[] = [
+  {
+    id: "speed",
+    title: l("Speed", "Rychlost"),
+    note: l(
+      "The time from In Progress to pull request is the sturdiest figure here; lead time is partly status discipline.",
+      "Doba od rozpracování po pull request je tu nejodolnější; lead time je zčásti disciplína ve stavech.",
+    ),
+    metrics: ["in-progress-to-pr", "lead-time"],
+  },
+  {
+    id: "quality",
+    title: l("Quality and tests", "Kvalita a testy"),
+    note: l(
+      "The share of tickets returned from testing is the quality signal; the other three count the tests that came with the work.",
+      "Signál o kvalitě je podíl tiketů vrácených z testu; zbylá tři čísla počítají testy, které s prací přibyly.",
+    ),
+    metrics: ["returns-from-test", "prs-with-tests", "unit-spec-files", "stories"],
+  },
+  {
+    id: "process",
+    title: l("Process", "Proces"),
+    note: l(
+      "Process measures, not quality measures: structured test notes show that the handover format is used, and multi-line delivery rose partly because more release lines ran in parallel.",
+      "Čísla o procesu, ne o kvalitě: strukturované poznámky pro testery ukazují, že se formát předání používá, a doručení na víc linií vzrostlo zčásti proto, že paralelně běželo víc release linií.",
+    ),
+    metrics: ["structured-test-notes", "multi-line-delivery"],
+  },
+];
+
+export const RESULTS_METRIC_IDS: readonly string[] = RESULTS_GROUPS.flatMap((g) => g.metrics);
 
 /** The open caveats block of the Results chapter. */
 export const RESULTS_CAVEAT_IDS = ["team-size", "author-pr-share", "tracker-scope"] as const;

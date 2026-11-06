@@ -17,6 +17,7 @@ export async function loadCases(locale: Locale) {
     id: entry.data.id as CaseId,
     title: typo(entry.data.title),
     summary: typo(entry.data.summary),
+    teaser: typo(entry.data.teaser),
     entry,
   }));
 }

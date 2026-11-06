@@ -1,33 +1,31 @@
 ---
 title: "Results, with the caveats first"
-summary: "Six months before the flow against five months after, from the tracker and the pull requests of the same product. The caveats come before the figures, because they are what a skeptic asks first."
+summary: "Six months before the flow against the five months after it, from the tracker and the pull requests of the same product, with the transition month left out."
 ---
-import { ResultsGrid, Stat } from "../../components/chapter";
+import { Caveat, ResultsGrid, Stat } from "../../components/chapter";
 import { localizedPath } from "../../i18n/routes";
 
 export const locale = "en";
 
-### Read this first
+### Context for the figures
 
-Two cohorts: the six months before the change and the five months after it, with the transition month left out. Same product, same repository, same tracker. Before reading the figures:
+What changed between the two periods besides the flow, and how far the figures hold:
 
 <ul class="caveats" data-caveats>
-  <li><Stat id="team-size" locale={locale} /></li>
-  <li><Stat id="author-pr-share" locale={locale} /></li>
-  <li><Stat id="tracker-scope" locale={locale} /></li>
-  <li><strong>Lead time is partly status discipline.</strong> After a merge the flow sets the ready-for-test state itself; before, a developer did it by hand, sometimes late. The In Progress to pull request figure is sturdier, because that state was always set by hand.</li>
-  <li><strong>Lead time and returns from test are medium reliability.</strong> The project mix changed between the cohorts; the direction holds when the comparison is restricted to the one project present in both, but the after sample there is small.</li>
-  <li><strong>The context diet regrew.</strong> The always-loaded instructions went from 57.6 KB to 7 KB and have since grown back to about 28 KB as release and tracker knowledge was added. The probes check that the knowledge stays reachable; the size is a budget I keep spending.</li>
+  <Caveat id="team-size" locale={locale} />
+  <Caveat id="author-pr-share" locale={locale} />
+  <Caveat id="tracker-scope" locale={locale} badge={false} />
+  <Caveat term="Lead time" locale={locale}><strong>Partly status discipline.</strong> After a merge the flow sets the ready-for-test state itself; before, a developer did it by hand, sometimes late. The In Progress to pull request figure is sturdier, because that state was always set by hand.</Caveat>
+  <Caveat term="Project mix" locale={locale}><strong>Lead time and returns from test are medium reliability.</strong> The project mix changed between the periods; the direction holds when the comparison is restricted to the one project present in both, but the after sample there is small.</Caveat>
 </ul>
 
 ### Measured, before and after
 
 <ResultsGrid locale={locale} />
 
-Two of these are process measures, not quality measures: structured test notes show that the handover format is used, and multi-line delivery rose partly because more release lines ran in parallel. The quality signal is the share of tickets returned from testing (21 % → 11 %); the time from In Progress to pull request (−70 %) is a speed measure, and the sturdiest one here.
-
 ### And the number I cannot measure
 
 <div class="estimate" data-estimate>
-  The one figure for how much faster I work is my own estimate. It stands <a href={localizedPath(locale, "ai-delivery", "principle")}>in the first chapter</a>, with its badge, and it is kept apart from the measured set on purpose. The measured figures are the team's, with a smaller team and the same monthly ticket volume. If the two disagree, trust the measured ones.
+  <Stat id="five-to-ten-x" locale={locale} />
+  <p>The measured figures above are the team's, with a smaller team and the same monthly ticket volume; this one is mine alone. If the two disagree, trust the measured ones. Where the estimate comes from is in <a href={localizedPath(locale, "ai-delivery", "principle")}>the first chapter</a> of AI Delivery.</p>
 </div>

@@ -55,7 +55,7 @@ const cases = await loadCases(locale);
           <h3>
             <a href={subPagePath(locale, "wins", c.id)}>{c.title}</a>
           </h3>
-          <p class="card-summary">{c.summary}</p>
+          <p class="card-summary">{c.teaser}</p>
           <div class="card-stats">
             {c.highlights.map((id) => <Stat id={id} locale={locale} detail={false} />)}
           </div>
@@ -79,7 +79,7 @@ const cases = await loadCases(locale);
       <a href={localizedPath(locale, "ai-delivery")}>{tt("wins.howLink")}</a>
     </li>
     <li>
-      <p class="next-k">{tt("ai.bridgeEyebrow")}</p>
+      <p class="next-k">{tt("wins.offerEyebrow")}</p>
       <p>{tt("wins.offerText")}</p>
       <a href={localizedPath(locale, "ai-delivery", "offer")}>{tt("wins.offerLink")}</a>
     </li>

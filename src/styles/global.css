@@ -67,6 +67,9 @@ h2 {
   line-height: 0.92;
   text-wrap: balance;
 }
+:lang(cs) :is(h1, h2) {
+  line-height: 1.06;
+}
 h1 {
   font-size: clamp(3.2rem, 7.5vw, 7rem);
 }

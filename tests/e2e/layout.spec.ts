@@ -194,3 +194,20 @@ for (const [width, rootPx] of SCALE) {
     }
   });
 }
+
+test("CS display headings leave room for diacritics", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["cs/", "cs/ai-delivery/"]) {
+    await page.goto(`${BASE}${path}`);
+    const ratios = await page.evaluate(() =>
+      [document.querySelector("h1"), ...document.querySelectorAll("h2")]
+        .filter((el): el is Element => !!el)
+        .map((el) => {
+          const s = getComputedStyle(el);
+          return parseFloat(s.lineHeight) / parseFloat(s.fontSize);
+        }),
+    );
+    expect(ratios.length).toBeGreaterThan(1);
+    for (const r of ratios) expect(r).toBeGreaterThanOrEqual(1.05);
+  }
+});

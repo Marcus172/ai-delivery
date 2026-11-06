@@ -557,7 +557,7 @@ export const METRICS: Metric[] = [
       "jak dlouho už měla nejstarší část stacku, správce balíčků, nástupce, když upgrade začal; knihovna GraphQL byla 4,5 roku pozadu, Node.js rok po konci podpory",
     ),
     kind: "measured",
-    period: l("repository history · April 2020 → May 2026", "historie repozitáře · duben 2020 → květen 2026"),
+    period: l("repository history · January 2020 → May 2026", "historie repozitáře · leden 2020 → květen 2026"),
   },
   {
     id: "stack-one-pr",

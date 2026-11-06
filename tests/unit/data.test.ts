@@ -78,6 +78,13 @@ describe("metrics", () => {
     expect(new Set(METRICS.map((m) => m.id)).size).toBe(METRICS.length);
   });
 
+  it("the stack-drift period starts where its 6 years count from (the package manager's successor, January 2020)", () => {
+    const m = metric("stack-drift");
+    expect(m.value.en).toBe("6 years");
+    expect(m.period.en).toBe("repository history · January 2020 → May 2026");
+    expect(m.period.cs).toBe("historie repozitáře · leden 2020 → květen 2026");
+  });
+
   it("metric() throws on an unknown id", () => {
     expect(() => metric("no-such-metric")).toThrow();
   });

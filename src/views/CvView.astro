@@ -7,7 +7,7 @@ import Linked from "../components/Linked.astro";
 import { CV } from "../data/cv";
 import { formatRange } from "../i18n/dates";
 import type { Locale } from "../i18n/locales";
-import { localizedPath } from "../i18n/routes";
+import { cvPdfPath } from "../i18n/routes";
 import { t } from "../i18n/ui";
 
 interface Props {
@@ -16,10 +16,12 @@ interface Props {
 
 const { locale } = Astro.props;
 const name = t(locale, "site.name");
-const linkedinLabel = CV.contact.linkedin.replace(/^https?:\/\/(www\.)?/, "");
-const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
-const siteLabel = CV.contact.site.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
-const pdf = `${localizedPath(locale, "cv")}marek-rom-cv-${locale}.pdf`;
+/** A link label without protocol, `www.` or trailing slash. */
+const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const linkedinLabel = bare(CV.contact.linkedin);
+const githubLabel = bare(CV.contact.github);
+const siteLabel = bare(CV.contact.site);
+const pdf = cvPdfPath(locale);
 ---
 
 <article class="cv">

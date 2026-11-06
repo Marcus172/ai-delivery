@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { href, localizedPath, subPagePath, switchLocalePath, type PageId } from "../../src/i18n/routes";
+import { cvPdfPath, href, localizedPath, subPagePath, switchLocalePath, type PageId } from "../../src/i18n/routes";
 import type { Locale } from "../../src/i18n/locales";
 
 beforeEach(() => {
@@ -26,6 +26,13 @@ describe("href", () => {
   it("keeps the root base plain", () => {
     vi.stubEnv("BASE_URL", "/");
     expect(href("/cv/")).toBe("/cv/");
+  });
+});
+
+describe("cvPdfPath", () => {
+  it("points at the generated PDF of each locale", () => {
+    expect(cvPdfPath("en")).toBe("/ai-delivery/cv/marek-rom-cv-en.pdf");
+    expect(cvPdfPath("cs")).toBe("/ai-delivery/cs/cv/marek-rom-cv-cs.pdf");
   });
 });
 

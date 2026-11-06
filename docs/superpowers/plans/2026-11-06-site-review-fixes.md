@@ -428,9 +428,7 @@ The contract names neither.
 - Modify: `src/views/CvView.astro` (PDF button beside the h1, screen only; site link in the contact list)
 - Modify: `src/data/cv.ts`
   - `contact.site: "https://marcus172.github.io/ai-delivery/"`
-  - current role `summary` gains a sentence:
-    - EN: "Measured on the team, six months before the flow against five after: In Progress to pull request −70 %, pull requests that add or change tests 1 % → 56 %."
-    - CS: "Měřeno na týmu, šest měsíců před flow proti pěti po něm: od In Progress k pull requestu −70 %, pull requesty, které přidávají nebo mění testy, 1 % → 56 %."
+  - current role `summary`: unchanged (no figures next to the client name; an NDA guard test enforces it)
   - `languages`: "Czech — native" / "čeština – rodilý mluvčí"
 - Test: `tests/e2e/cv.spec.ts`, `tests/post-build/*`
 

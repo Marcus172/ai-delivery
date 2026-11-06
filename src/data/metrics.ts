@@ -248,14 +248,14 @@ export const METRICS: Metric[] = [
     id: "context-diet",
     value: l("57.6 KB → 7 KB", "57,6 kB → 7 kB"),
     label: l(
-      "always-loaded agent instructions after the context diet",
-      "trvale načtené instrukce pro agenta po dietě kontextu",
+      "always-loaded agent instructions after the context diet in July 2026; about 28 KB today, with release and tracker knowledge added",
+      "trvale načtené instrukce pro agenta po dietě kontextu v červenci 2026; dnes zhruba 28 kB, s přidanými znalostmi o release liniích a trackeru",
     ),
     kind: "measured",
     period: l("repository · July 2026", "repozitář · červenec 2026"),
     caveat: l(
-      "Verified by behavioural probes, not by feel. It has since grown back to about 28 KB as release and tracker knowledge was added; the probes check that this knowledge stays reachable.",
-      "Ověřeno behaviorálními sondami, ne pocitem. Od té doby kontext znovu narostl na zhruba 28 kB, protože přibyly znalosti o release liniích a trackeru; sondy hlídají, že zůstávají dosažitelné.",
+      "Verified by behavioural probes, not by feel; the probes check that the added knowledge stays reachable.",
+      "Ověřeno behaviorálními sondami, ne pocitem; sondy hlídají, že přidané znalosti zůstávají dosažitelné.",
     ),
   },
   // src: research note 01, §1.2 (growth table) and §1.3
@@ -310,8 +310,8 @@ export const METRICS: Metric[] = [
     id: "extension-points",
     value: l("7", "7"),
     label: l(
-      "extension points in the personal layer, a closed list; tools live only there",
-      "bodů rozšíření v osobní vrstvě, uzavřený seznam; nástroje žijí jen tam",
+      "extension points in the personal layer, a closed list; orchestration tools live only there",
+      "bodů rozšíření v osobní vrstvě, uzavřený seznam; orchestrační nástroje žijí jen tam",
     ),
     kind: "measured",
     period: l("delivery-flow contract · October 2026", "kontrakt delivery flow · říjen 2026"),

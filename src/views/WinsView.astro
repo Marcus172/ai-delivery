@@ -30,6 +30,11 @@ const cases = await loadCases(locale);
   <Eyebrow>{tt("wins.eyebrow")}</Eyebrow>
   <h1>{tt("wins.title")}</h1>
   <p class="lead">{tt("wins.lead")}</p>
+  <nav class="jump" aria-label={tt("wins.jumpLabel")}>
+    <a href="#results">{tt("wins.jump.results")}</a>
+    <a href="#cases">{tt("wins.jump.cases")} ({cases.length})</a>
+    <a href="#along-the-way">{tt("wins.jump.more")} ({WINS.length})</a>
+  </nav>
   <p class="as-of">{t(locale, "ai.asOf")}</p>
 </header>
 
@@ -123,6 +128,13 @@ const cases = await loadCases(locale);
   }
   .head .lead {
     margin-top: 1.5rem;
+  }
+  .jump {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    font-weight: 500;
   }
   .as-of {
     margin-top: 0.875rem;

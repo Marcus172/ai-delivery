@@ -155,7 +155,7 @@ alt text are per locale.
 - Image file names and paths are public — neutral names only.
 - Accessibility: every new page axe-clean in both themes; media components keyboard-operable;
   reduced motion respected; headings keep a single logical outline per page.
-- EN and CS stay structurally in sync: same cases, same order, same components, same media.
+- EN and CS stay structurally in sync: same cases, same order, same components, same media. A screenshot of a localized UI may have a version per locale (`<name>-en.png`, `<name>-cs.png`), showing the same thing.
 
 ## 7. Tests and checks
 

@@ -186,7 +186,7 @@ describe("wins & cases content", () => {
     for (const l of LOCALES) {
       const body = RESULTS[l].body;
       expect(body.indexOf("data-caveats"), l).toBeGreaterThan(-1);
-      expect(body.indexOf("data-caveats"), l).toBeLessThan(body.indexOf("<ResultsGrid"));
+      expect(body.indexOf("<ResultsGrid"), l).toBeLessThan(body.indexOf("data-caveats"));
       expect(body, l).toMatch(/localizedPath\(locale, "ai-delivery", "principle"\)/);
     }
   });

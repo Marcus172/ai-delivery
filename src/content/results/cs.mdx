@@ -1,11 +1,19 @@
 ---
-title: "Výsledky, nejdřív s výhradami"
+title: "Výsledky a co dalšího se změnilo"
 summary: "Šest měsíců před flow proti pěti měsícům po něm, z trackeru a z pull requestů téhož produktu, bez přechodového měsíce."
 ---
 import { Caveat, ResultsGrid, Stat } from "../../components/chapter";
 import { localizedPath } from "../../i18n/routes";
 
 export const locale = "cs";
+
+### Měřeno, před a&nbsp;po
+
+<ResultsGrid locale={locale} />
+
+### Kdo ve flow pracuje
+
+<Stat id="marketplace-contributors" locale={locale} />
 
 ### Kontext k&nbsp;číslům
 
@@ -18,10 +26,6 @@ Co se mezi obdobími změnilo kromě flow a&nbsp;nakolik čísla drží:
   <Caveat term="Lead time" locale={locale}><strong>Zčásti disciplína ve stavech.</strong> Po merge flow sám nastaví stav připraveno k&nbsp;testu; dřív to dělal vývojář ručně, někdy se zpožděním. Číslo od rozpracování po pull request je odolnější, protože ten stav se přepínal ručně vždy.</Caveat>
   <Caveat term="Mix projektů" locale={locale}><strong>Lead time a&nbsp;vrácení z&nbsp;testu mají střední spolehlivost.</strong> Mezi obdobími se změnil mix projektů; směr drží i&nbsp;při omezení na jediný projekt přítomný v&nbsp;obou, vzorek po změně je tam ale malý.</Caveat>
 </ul>
-
-### Měřeno, před a&nbsp;po
-
-<ResultsGrid locale={locale} />
 
 ### A&nbsp;číslo, které změřit neumím
 

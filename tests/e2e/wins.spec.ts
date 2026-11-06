@@ -25,7 +25,7 @@ for (const locale of LOCALES) {
       await expect(page.locator(`nav.rail a[href="${PREFIX[locale]}wins/"]`)).toHaveAttribute("aria-current", "page");
     });
 
-    test("results: caveats come before the measured set, every measured figure has a period, the estimate stays apart", async ({ page }) => {
+    test("results: figures come before their context, every measured figure has a period, the estimate stays apart", async ({ page }) => {
       await page.goto(WINS[locale]);
       const results = page.locator("section#results");
       const caveats = results.locator("[data-caveats]");
@@ -33,11 +33,19 @@ for (const locale of LOCALES) {
       expect(await caveats.locator("li").count()).toBeGreaterThanOrEqual(4);
       const grid = results.locator("[data-diagram=results-grid]");
       await expect(grid).toHaveCount(1);
-      const caveatsFirst = await caveats.evaluate(
-        (c, g) => !!g && !!(c.compareDocumentPosition(g) & Node.DOCUMENT_POSITION_FOLLOWING),
-        await grid.elementHandle(),
-      );
-      expect(caveatsFirst).toBe(true);
+      const follows = (a: string, b: string) =>
+        page.evaluate(
+          ([x, y]) => {
+            const ea = document.querySelector(x);
+            const eb = document.querySelector(y);
+            return !!ea && !!eb && !!(ea.compareDocumentPosition(eb) & Node.DOCUMENT_POSITION_FOLLOWING);
+          },
+          [a, b],
+        );
+      expect(await follows("[data-diagram=results-grid]", "[data-caveats]")).toBe(true);
+      expect(await follows("[data-diagram=results-grid]", "[data-metric=marketplace-contributors]")).toBe(true);
+      expect(await follows("[data-metric=marketplace-contributors]", "[data-caveats]")).toBe(true);
+      for (const id of ["results", "cases", "along-the-way"]) await expect(page.locator(`header.head a[href="#${id}"]`)).toHaveCount(1);
       const measured = results.locator(".stat[data-kind=measured]");
       expect(await measured.count()).toBeGreaterThanOrEqual(8);
       for (let i = 0; i < (await measured.count()); i++) await expect(measured.nth(i).locator(".period")).toBeVisible();

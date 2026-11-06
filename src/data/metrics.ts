@@ -335,8 +335,8 @@ export const METRICS: Metric[] = [
     id: "marketplace-contributors",
     value: l("7 / 5", "7 / 5"),
     label: l(
-      "people / roles contributing to the marketplace: developers, a backend developer, an analyst, a tester and the PM",
-      "lidí / rolí, které do marketplace přispívají: vývojáři, backendový vývojář, analytik, tester i PM",
+      "people / roles contributing to the marketplace: developers on this codebase, a backend developer, an analyst, a tester and the PM",
+      "lidí / rolí, které do marketplace přispívají: vývojáři na tomto kódu, backendový vývojář, analytik, tester i PM",
     ),
     kind: "measured",
     period: l("plugin marketplace · April → early November 2026", "marketplace pluginů · duben → začátek listopadu 2026"),

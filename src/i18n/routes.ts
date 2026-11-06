@@ -36,6 +36,11 @@ export function localizedPath(locale: Locale, page: PageId, hash?: string): stri
   return `${href(`${localePrefix(locale)}${PAGE_SEGMENT[page]}`)}${fragment}`;
 }
 
+/** The generated CV PDF of a locale, e.g. `/ai-delivery/cv/marek-rom-cv-en.pdf`. */
+export function cvPdfPath(locale: Locale): string {
+  return `${localizedPath(locale, "cv")}marek-rom-cv-${locale}.pdf`;
+}
+
 /** Full path of a subpage under a page, e.g. a case under `wins`: `/ai-delivery/cs/wins/tailwind/`. */
 export function subPagePath(locale: Locale, page: PageId, sub: string, hash?: string): string {
   const fragment = hash ? `#${hash.replace(/^#/, "")}` : "";

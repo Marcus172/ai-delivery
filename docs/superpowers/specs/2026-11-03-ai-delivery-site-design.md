@@ -123,7 +123,7 @@ Chapters:
 
 ### 5.4 CV
 
-Factual, print-friendly, source of the PDF. From the author's PDF CV, with these changes: headline "Senior Product Engineer"; current role **"Product Engineering & AI Lead · Finshape · J&T Bank internet banking & investments · Apr 2026 – now"** — the **only** place on the site where those names may appear; no phone. Sections: profile, experience (all roles), skills/toolkit, languages, contact.
+Factual, print-friendly, source of the PDF. From the author's PDF CV, with these changes: headline "Senior Product Engineer"; current role **"Product Engineering & AI Lead · <employer> · <client and product> · Apr 2026 – now"** (the real names live in `src/data/cv.ts`) — the **only** place on the site where those names may appear; no phone. Sections: profile, experience (all roles), skills/toolkit, languages, contact.
 
 ## 6. NDA gate
 

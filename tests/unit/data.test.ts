@@ -177,8 +177,9 @@ describe("offer", () => {
 describe("cv", () => {
   it("leads with the current role", () => {
     const r = CV.roles[0];
-    expect(r.company).toBe("Finshape");
-    expect(r.client).toBe("J&T Bank — internet banking & investments");
+    // The real names live only in cv.ts and render only on the CV page; the NDA gate checks the build.
+    expect(r.company.trim()).not.toBe("");
+    expect(r.client?.trim()).toBeTruthy();
     expect(r.title.en).toBe("Product Engineering & AI Lead");
     expect(r.from).toBe("2026-04");
     expect(r.to).toBeNull();

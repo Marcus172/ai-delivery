@@ -1,0 +1,123 @@
+---
+id: security
+order: 5
+highlights: ["sec-close", "sec-advisories"]
+title: "Bezpečnost jako systém, ne jednorázový audit"
+summary: "Audit je snímek: hned druhý den přibude nový kód a nová upozornění. Agenti zlevnili hloubkovou revizi natolik, že se z ní stala metoda, a každý vážný nález ověřuje člověk. Zůstává hygiena kolem: skript, který najde nevyužité bezpečnostní opravy, ohrožení ověřené místo předpokládaného, zabezpečení zapnuté jako výchozí stav a pravidla, díky kterým agenti nevynesou, co čtou."
+teaser: "Hloubková revize, kterou paralelně dělají agenti a ověřuje člověk, a pak hygiena, která výsledek drží: nevyužité bezpečnostní opravy najde skript, ohrožení se ověří, zabezpečení je výchozí stav."
+---
+import { Detail, Fact, Facts, Glance, Note, Point, Stat, Steps } from "../../../components/chapter";
+
+export const locale = "cs";
+
+## Proč: jeden audit je jen snímek
+
+Klasický bezpečnostní audit je drahý, takže se dělá zřídka, a&nbsp;report začne stárnout v&nbsp;den, kdy ho někdo předá: přibude nový kód, vyjdou nová upozornění a&nbsp;nikdo se znovu nezeptá až do dalšího auditu. AI mění cenu revize, ne odpovědnost za ni. Cílem byla metoda, kterou jde kdykoli pustit znovu, a&nbsp;hygiena, která výsledek drží platný mezi jednotlivými běhy.
+
+<Glance locale={locale} label="Co potřebuje systém a jednorázový audit nemá">
+  <Point locale={locale} title="Opakovatelná metoda">
+    Pokaždé stejné kroky: zmapovat, paralelně zrevidovat, ověřit, ohodnotit podle skutečného ohrožení, založit tikety a&nbsp;odhadnout.
+  </Point>
+  <Point locale={locale} title="Člověk u každého vážného nálezu">
+    Agenti hledají a&nbsp;vysvětlují; každý kritický a&nbsp;vysoký nález potvrdí v&nbsp;kódu člověk, než se započítá.
+  </Point>
+  <Point locale={locale} title="Hygiena mezi audity">
+    Závislosti, logy a&nbsp;kontejnery drží v&nbsp;bezpečí skripty a&nbsp;výchozí nastavení, ne paměť.
+  </Point>
+  <Point locale={locale} title="Agenti, kteří nic nevynesou">
+    Agenti čtou kód, logy a&nbsp;stránky plné citlivých dat, takže jejich vlastní pravidla jsou na prvním místě.
+  </Point>
+</Glance>
+
+## Audit: nejdřív mapa, pak paralelní revize
+
+<Steps
+  locale={locale}
+  id="security-audit"
+  label="Bezpečnostní audit, od zmapování systému po tikety s odhadem"
+  steps={[
+    { title: "Zmapovat", text: "První průchod zmapuje kód a hlavně to, jak aplikace na produkci skutečně běží; dokumentace může být zastaralá a to mění každé hodnocení." },
+    { title: "Revidovat paralelně", text: "Šest cílených revizí běží naráz, každá s jednou oblastí útoku na mysli." },
+    { title: "Ověřit", text: "Každý kritický a vysoký nález zkontroluje v kódu člověk; jeden vysoký se ukázal jako přejmenovaná konvence frameworku, ne díra." },
+    { title: "Hodnotit podle ohrožení", text: "Závažnost jde ruku v ruce s dosažitelností: kdo to může spustit, odkud a s jakým výsledkem." },
+    { title: "Zeptat se druhé strany", text: "Otevřené otázky se před odhadem dohledají v kódu backendu, což z odhadu vyřadilo celé role." },
+    { title: "Tiket a odhad", text: "Jeden tiket na nález, odhad po rolích a doporučené pořadí práce." },
+  ]}
+  note="Report vypisuje i to, co se zkontrolovalo a bylo v pořádku, takže čtenář vidí pokrytí, ne jen problémy."
+/>
+
+<Detail locale={locale} label="Šest revizí">
+
+<Facts label="Šest cílených revizí a co každá hledala">
+  <Fact k="Injection a markup">Místa, kde by se vstup mohl stát markupem nebo kódem, a&nbsp;jak se sanitizuje HTML.</Fact>
+  <Fact k="Autentizace a session">Jak session vzniká, jak se nese a&nbsp;jak končí.</Fact>
+  <Fact k="Tajemství a konfigurace">Co je commitnuté v&nbsp;repozitáři a&nbsp;co které prostředí vystavuje.</Fact>
+  <Fact k="Serverové routy">Co přijímají vlastní serverové endpointy aplikace a&nbsp;kam smějí vést její odchozí požadavky.</Fact>
+  <Fact k="Závislosti a dodavatelský řetězec">Upozornění, registr, lockfile, patche a&nbsp;jestli se dá něco podstrčit skriptům v&nbsp;CI.</Fact>
+  <Fact k="Přenos, hlavičky a logování">Bezpečnostní hlavičky, ověřování spojení a&nbsp;jestli se do logů dostanou tokeny nebo osobní údaje.</Fact>
+</Facts>
+
+Zmapování toho, jak aplikace skutečně běží, posunulo hodnocení oběma směry. Co bylo dosažitelné na živém serveru, se stalo skutečnou plochou pro útok místo teoretické, a&nbsp;některé ohrožení se naopak snížilo, jakmile se dohledalo, kde doopravdy končí. Kde skutečný dopad závisí na jiném systému, report to říká, místo aby hádal.
+
+</Detail>
+
+## Zdraví kódu: osm reviewerů, jeden na oblast
+
+Bezpečnost nekončí u&nbsp;zranitelností. Samostatný audit přečetl zhruba čtvrt milionu řádků produkčního kódu osmi review agenty jen pro čtení, jedním na každou oblast kódu. Každý spojil hledání známých antivzorů s&nbsp;hloubkovým čtením nejpodezřelejších souborů a&nbsp;nálezy ověřil proti místům volání; ty kritické zkontroloval člověk. Nálezy spadly do hrstky kategorií, zpracování chyb, vedlejší efekty při renderu, cesty k&nbsp;pádu při serverovém renderu, mezery v&nbsp;logování, duplicity a&nbsp;mrtvý kód, a&nbsp;audit zapsal i&nbsp;to, co kód dělá dobře.
+
+<Stat id="sec-code" locale={locale} />
+
+## Závislosti: bezpečnostní opravy, o&nbsp;které si nikdo neřekl
+
+Soubory balíčků můžou vypadat aktuálně, typová kontrola i&nbsp;testy můžou procházet, a&nbsp;bezpečnostní oprava přesto leží nevyužitá: správce balíčků nikdy znovu nevyřeší položku, která se pořád vejde do deklarovaného rozsahu. Na tohle se nástroje nikdy neptaly, takže se teď ptá skript. Vypíše každou přímou závislost vyřešenou starší, než už dovoluje její vlastní rozsah, rozdělí upozornění na přímá a&nbsp;tranzitivní a&nbsp;má režim kontroly, který při driftu spadne.
+
+<Stat id="sec-drift" locale={locale} />
+
+<Steps
+  locale={locale}
+  id="advisory-flow"
+  label="Jak se řeší nové upozornění, od nalezení po každou release linii"
+  steps={[
+    { title: "Najít", text: "Skript na drift nebo úklid závislostí vypíše, co zaostává a která upozornění platí." },
+    { title: "Vyřešit znovu", text: "Když deklarovaný rozsah opravu už dovoluje, stačí nové vyřešení závislostí." },
+    { title: "Ověřit ohrožení", text: "Je zranitelný kód v této aplikaci dosažitelný? Odpověď se zapíše k opravě." },
+    { title: "Opravit nebo odstranit", text: "Zvednout rodiče, přidat cílené vyřešení, nebo odstranit balíček, který nikdo nepoužívá; odstranění vyčistí, co zvednutí nezvládne." },
+    { title: "Každá linie", text: "Každá release linie dostane stejné úpravy a vlastní vyřešení a pustí vlastní plnou bránu." },
+  ]}
+/>
+
+## Zabezpečení jako výchozí stav
+
+Některé z&nbsp;nejsilnějších oprav přinesla běžná inženýrská práce a&nbsp;zůstaly jako výchozí nastavení:
+
+- **Logy, které nic nevynesou.** Kontejner při startu vypíše jen proměnné, které mají být veřejné; plný výpis potřebuje výslovný přepínač pro ladění. Přišlo se na to při zpřehledňování logů.
+- **Přestěhovaná služba, cestou zabezpečená.** Když se real-time služba přestěhovala do monorepa, začala běžet pod uživatelem bez práv roota, dostala typovaný seznam tajných klíčů, které se nikdy nedostanou do logů, escapuje řídicí znaky, aby klient nemohl podvrhnout řádky logu, a&nbsp;omezuje spojení i&nbsp;čekající požadavky dřív, než cokoli zavolá dál.
+- **Serverový kód zůstává na serveru.** Balíčky určené jen pro server jsou ve webových aplikacích zablokované na čtyřech místech: v&nbsp;omezeních balíčků, ve dvou lintových pravidlech a&nbsp;v&nbsp;kontrole image.
+
+## Pravidla pro samotné agenty
+
+<Glance locale={locale} label="Mantinely pro agenty, kteří čtou citlivé věci">
+  <Point locale={locale} title="Výchozí je jen čtení">
+    Auditní a&nbsp;review agenti nemůžou měnit kód; pracoviště pro review cizí práce jsou jen pro čtení.
+  </Point>
+  <Point locale={locale} title="Stránky jsou data, ne pokyny">
+    Obsah z&nbsp;prohlížeče nebo dokumentu je nedůvěryhodný vstup, s&nbsp;hranicemi obsahu a&nbsp;limity výstupu vždy zapnutými.
+  </Point>
+  <Point locale={locale} title="Nic citlivého neodchází">
+    Žádné tokeny ani osobní údaje v&nbsp;commitech, reportech ani logech; vypsaný token se počítá za prozrazený. Testovací data jsou jen vymyšlená.
+  </Point>
+  <Point locale={locale} title="Publikují lidé">
+    Žádný zápis do trackeru ani wiki bez potvrzení a&nbsp;komentáře začínají jako interní, vynucené konfigurací, ne promptem.
+  </Point>
+</Glance>
+
+<Note>
+  <strong>Co tenhle případ záměrně vynechává.</strong> Žádný nález tu není popsaný tak, aby pomohl někomu zaútočit na živý systém, a&nbsp;nic tu nejmenuje produkt, verzi knihovny ani dodavatele. Podstatná je metoda a&nbsp;tvar výsledků.
+</Note>
+
+## Proč to bez AI nešlo
+
+1. **Hloubka za cenu úkolu ve sprintu.** Šest paralelních revizí a&nbsp;mapovací průchod nad velkým kódem, s&nbsp;tiketem a&nbsp;odhadem pro každý nález, za dny místo zakázky na týdny.
+2. **Zdraví kódu v&nbsp;plném rozsahu.** Osm reviewerů nad čtvrt milionem řádků je čtení, které žádný tým ručně neudělá, a&nbsp;jde ho pustit znovu.
+3. **Ohrožení ověřené, ne předpokládané.** Dohledat u&nbsp;každého upozornění, jestli je zranitelný kód dosažitelný, je tak únavné, že se to obvykle vynechá; to dohledávání dělají agenti.
+4. **Rozhodují lidé.** Každý vážný nález potvrzuje člověk, každé hodnocení i&nbsp;každý merge zůstávají lidem.

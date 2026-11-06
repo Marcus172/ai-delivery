@@ -9,7 +9,7 @@ import { LOCALES, type Locale } from "../../src/i18n/locales";
 const CONTENT = join(__dirname, "../../src/content");
 const ROOT = join(CONTENT, "ai-delivery");
 const CHAPTER_IDS = ["principle", "flow", "tooling", "guardrails", "enablement", "planning", "offer"] as const;
-const CASE_IDS = ["brand-voice", "accessibility", "tailwind", "stack"] as const;
+const CASE_IDS = ["brand-voice", "accessibility", "tailwind", "stack", "security"] as const;
 
 type Chapter = { file: string; id: string; order: number; title: string; summary: string; teaser?: string; body: string };
 

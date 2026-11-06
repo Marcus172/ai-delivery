@@ -7,7 +7,7 @@ export const CHAPTER_IDS = ["principle", "flow", "tooling", "guardrails", "enabl
 export type ChapterId = (typeof CHAPTER_IDS)[number];
 
 /** Case subpages under Wins & cases, in reading order. The id is the URL segment in both locales. */
-export const CASE_IDS = ["brand-voice", "accessibility", "tailwind", "stack"] as const;
+export const CASE_IDS = ["brand-voice", "accessibility", "tailwind", "stack", "security"] as const;
 
 export type CaseId = (typeof CASE_IDS)[number];
 

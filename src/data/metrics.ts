@@ -619,6 +619,49 @@ export const METRICS: Metric[] = [
     period: l("release-line audit · July 2026", "audit release linií · červenec 2026"),
   },
 
+  // ── Case: security as a system (src: security audit report and its tickets, code audit, dependency sweeps) ──
+
+  {
+    id: "sec-close",
+    value: l("2 days", "2 dny"),
+    label: l(
+      "from the tickets to closing the critical and both high findings, out of 18 (1 critical, 2 high, 6 medium, 9 low)",
+      "od tiketů po uzavření kritického a obou vysokých nálezů z 18 (1 kritický, 2 vysoké, 6 středních, 9 nízkých)",
+    ),
+    kind: "measured",
+    period: l("security audit · June – July 2026", "bezpečnostní audit · červen – červenec 2026"),
+  },
+  {
+    id: "sec-advisories",
+    value: l("5 → 0", "5 → 0"),
+    label: l(
+      "critical advisories in the dependency audit; high 68 → 0, all advisories 167 → 47",
+      "kritických nálezů v auditu závislostí; vysoké 68 → 0, všechny nálezy 167 → 47",
+    ),
+    kind: "measured",
+    period: l("dependency audit · August – September 2026", "audit závislostí · srpen – září 2026"),
+  },
+  {
+    id: "sec-code",
+    value: l("~250k", "~250 tis."),
+    label: l(
+      "lines of production code read by eight review agents in parallel, one per area; every critical finding verified by a person",
+      "řádků produkčního kódu, které paralelně přečetlo osm review agentů, jeden na oblast; každý kritický nález ověřil člověk",
+    ),
+    kind: "measured",
+    period: l("code audit · July 2026", "audit kódu · červenec 2026"),
+  },
+  {
+    id: "sec-drift",
+    value: l("7", "7"),
+    label: l(
+      "security fixes found sitting in lockfile drift on the script's first run, one of them high severity",
+      "bezpečnostních oprav, které při prvním běhu skriptu ležely v driftu lockfilu, jedna z nich vysoké závažnosti",
+    ),
+    kind: "measured",
+    period: l("dependency sweep · August 2026", "úklid závislostí · srpen 2026"),
+  },
+
   // ── Estimate ──────────────────────────────────────────────────────────
 
   // src: research note 04, §9 (author's own words, explicitly not measured)

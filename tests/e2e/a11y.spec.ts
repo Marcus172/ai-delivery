@@ -11,6 +11,7 @@ const PAGES = [
   "wins/accessibility/",
   "wins/tailwind/",
   "wins/stack/",
+  "wins/security/",
   "sources/",
   "cv/",
   "cs/",
@@ -21,6 +22,7 @@ const PAGES = [
   "cs/wins/accessibility/",
   "cs/wins/tailwind/",
   "cs/wins/stack/",
+  "cs/wins/security/",
   "cs/sources/",
   "cs/cv/",
 ];

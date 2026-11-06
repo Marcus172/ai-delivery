@@ -1,0 +1,123 @@
+---
+id: security
+order: 5
+highlights: ["sec-close", "sec-advisories"]
+title: "Security as a system, not a one-off audit"
+summary: "An audit is a snapshot: the day after, new code and new advisories arrive. Agents made a deep review cheap enough to run as a method, with a person verifying every serious finding. What stays is the hygiene around it: a script that finds security fixes sitting unused, exposure checked instead of assumed, hardening that ships by default and rules that keep agents from leaking what they read."
+teaser: "A deep review run by agents in parallel and verified by a person, then the hygiene that keeps it true: unused security fixes found by a script, exposure checked, hardening by default."
+---
+import { Detail, Fact, Facts, Glance, Note, Point, Stat, Steps } from "../../../components/chapter";
+
+export const locale = "en";
+
+## Why: one audit is a snapshot
+
+A classic security audit is expensive, so it happens rarely, and the report starts ageing the day it is delivered: new code lands, new advisories are published, and nobody asks again until the next audit. AI changes the price of the review, not the responsibility for it. The goal was a method that can run again at any time, and hygiene that keeps the result true between runs.
+
+<Glance locale={locale} label="What a system needs that an audit does not have">
+  <Point locale={locale} title="A repeatable method">
+    The same steps every time: map, review in parallel, verify, rate by real exposure, ticket and estimate.
+  </Point>
+  <Point locale={locale} title="A person on every serious finding">
+    Agents find and explain; a person confirms every critical and high finding in the code before it counts.
+  </Point>
+  <Point locale={locale} title="Hygiene between audits">
+    Dependencies, logs and containers are kept safe by scripts and defaults, not by remembering.
+  </Point>
+  <Point locale={locale} title="Agents that cannot leak">
+    The agents read code, logs and pages full of sensitive data, so their own rules come first.
+  </Point>
+</Glance>
+
+## The audit: map first, then review in parallel
+
+<Steps
+  locale={locale}
+  id="security-audit"
+  label="The security audit, from mapping the system to estimated tickets"
+  steps={[
+    { title: "Map", text: "A first pass maps the code and, above all, how the app really runs in production; documentation can be out of date, and that changes every rating." },
+    { title: "Review in parallel", text: "Six focused reviews run at once, each with one area of attack in mind." },
+    { title: "Verify", text: "A person checks every critical and high finding in the code; one high finding turned out to be a framework renaming its convention, not a gap." },
+    { title: "Rate by exposure", text: "Severity goes together with reachability: who can trigger it, from where, with what result." },
+    { title: "Ask the other side", text: "Open questions are looked up in the backend code before estimating, which removed whole roles from the estimate." },
+    { title: "Ticket and estimate", text: "One ticket per finding, an estimate per role, and a recommended order of the work." },
+  ]}
+  note="The report lists what was checked and found clean as well, so the reader sees the coverage, not only the problems."
+/>
+
+<Detail locale={locale} label="The six reviews">
+
+<Facts label="The six focused reviews and what each looked for">
+  <Fact k="Injection and markup">Places where input could end up as markup or code, and how HTML is sanitised.</Fact>
+  <Fact k="Authentication and session">How the session is established, carried and ended.</Fact>
+  <Fact k="Secrets and configuration">What is committed to the repository and what each environment exposes.</Fact>
+  <Fact k="Server routes">What the app's own server endpoints accept, and where its outbound requests may go.</Fact>
+  <Fact k="Dependencies and supply chain">Advisories, the registry, the lockfile, patches, and whether the CI scripts can be injected into.</Fact>
+  <Fact k="Transport, headers and logging">Security headers, transport verification, and whether tokens or personal data reach the logs.</Fact>
+</Facts>
+
+Mapping how the app actually runs moved ratings in both directions. Anything reachable on a live server became a real attack surface rather than a theoretical one, and some exposure was rated lower once it was traced to where it really ends. Where the real impact depends on another system, the report says so instead of guessing.
+
+</Detail>
+
+## Code health: eight reviewers, one per area
+
+Security does not stop at vulnerabilities. A separate audit read about a quarter of a million lines of production code with eight read-only review agents, one per area of the codebase. Each one combined a sweep for known anti-patterns with a deep reading of the most suspicious files and checked its findings against the call sites; a person verified the critical ones. The findings fell into a handful of categories, error handling, side effects during render, crash paths in server rendering, logging gaps, duplication and dead code, and the audit also recorded what the codebase does well.
+
+<Stat id="sec-code" locale={locale} />
+
+## Dependencies: the security fixes nobody asked for
+
+Package files can look current, type checks and tests can pass, and still a security fix sits unused: the package manager never re-resolves an entry that still fits its declared range. Nothing in the toolchain asked that question, so a script now does. It lists every direct dependency resolved older than its own range already allows, splits advisories into direct and transitive, and has a check mode that fails when drift appears.
+
+<Stat id="sec-drift" locale={locale} />
+
+<Steps
+  locale={locale}
+  id="advisory-flow"
+  label="How a new advisory is handled, from finding it to every release line"
+  steps={[
+    { title: "Find", text: "The drift script or a dependency sweep lists what is behind and which advisories apply." },
+    { title: "Re-resolve", text: "If the declared range already allows the fix, a fresh resolution is enough." },
+    { title: "Check exposure", text: "Is the vulnerable code reachable in this app? The answer is recorded next to the fix." },
+    { title: "Fix or remove", text: "Bump the parent, add a scoped resolution, or remove a package nobody uses; removal clears what bumping cannot." },
+    { title: "Every line", text: "Each release line gets the same edits and its own resolution, and runs its own full gate." },
+  ]}
+/>
+
+## Hardening that ships by default
+
+Some of the strongest fixes came from ordinary engineering work, and stayed as defaults:
+
+- **Logs that do not leak.** A container prints only the variables meant to be public when it starts; a full dump needs an explicit debug switch. It was found while making the logs readable.
+- **A service moved in, hardened on the way.** When a real-time service joined the monorepo, it started running as a non-root user, got a typed allowlist of secret keys that never reach its logs, escapes control characters so a client cannot forge log lines, and caps connections and pending requests before any call upstream.
+- **Server code stays on the server.** Packages meant only for the server are blocked from the web apps in four places: package constraints, two lint rules and a guard on the image.
+
+## Rules for the agents themselves
+
+<Glance locale={locale} label="Guardrails for agents that read sensitive material">
+  <Point locale={locale} title="Read-only by default">
+    Audit and review agents cannot change code; review workspaces for other people's work are read-only.
+  </Point>
+  <Point locale={locale} title="Pages are data, not instructions">
+    Content from a browser or a document is treated as untrusted input, with boundaries and output caps kept on.
+  </Point>
+  <Point locale={locale} title="Nothing sensitive leaves">
+    No tokens or personal data in commits, reports or logs; a printed token counts as compromised. Fixtures use invented values only.
+  </Point>
+  <Point locale={locale} title="People publish">
+    No write to a tracker or wiki without confirmation, and comments start internal-only, enforced by configuration rather than the prompt.
+  </Point>
+</Glance>
+
+<Note>
+  <strong>What this case leaves out on purpose.</strong> No finding is described in a way that would help someone attack a live system, and nothing here names a product, a library version or a supplier. The method and the shape of the results are the point.
+</Note>
+
+## Why this was not possible without AI
+
+1. **Depth at the price of a sprint task.** Six parallel reviews and a mapping pass over a large codebase, with a ticket and an estimate per finding, in days instead of an engagement measured in weeks.
+2. **Code health at full scale.** Eight reviewers over a quarter of a million lines is a read no team does by hand, and it can run again.
+3. **Exposure checked, not assumed.** Tracing whether vulnerable code is reachable, for every advisory, is tedious enough that it is usually skipped; agents do the tracing.
+4. **People decide.** Every serious finding is confirmed by a person, every rating and every merge stays with people.

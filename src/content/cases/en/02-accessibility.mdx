@@ -117,7 +117,7 @@ Automated checks catch perhaps a third of real barriers, and the documentation s
   <p>A retest flagged one locked field in the Ferrylane booking-limits dialog: its "Not set" hint was visible, but a screen reader never read it. The fix for that field was one line, a description the field points to. The follow-up was the real fix. The shared form wrapper renders every hint under a predictable id and promises, in its own comment, that the input points to it, but only one field type had ever wired it. Ten other field types and the select had the same gap. All of them were wired in one pull request, one spec now checks the hint against every field type, and a person confirmed the original field with a screen reader.</p>
 </div>
 
-## Why this was not possible without AI
+## What AI made affordable
 
 1. **Reading the matrix as data.** Thousands of marks across about 130 pages in four variants, mapped to the libraries that own each fix in one triage run, as a diff a person reviews, instead of days of spreadsheet work.
 2. **Tests at volume, by the conventions.** Close to two hundred specs, each next to its code and each tied back to its manifest entry, written by an agent that knows the conventions and may not touch production code.

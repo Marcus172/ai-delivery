@@ -24,7 +24,7 @@ A classic security audit is expensive, so it happens rarely, and the report star
   <Point locale={locale} title="Hygiene between audits">
     Dependencies, logs and containers are kept safe by scripts and defaults, not by remembering.
   </Point>
-  <Point locale={locale} title="Agents that cannot leak">
+  <Point locale={locale} title="Rules for the agents come first">
     The agents read code, logs and pages full of sensitive data, so their own rules come first.
   </Point>
 </Glance>
@@ -115,7 +115,7 @@ Some of the strongest fixes came from ordinary engineering work, and stayed as d
   <strong>What this case leaves out on purpose.</strong> No finding is described in a way that would help someone attack a live system, and nothing here names a product, a library version or a supplier. The method and the shape of the results are the point.
 </Note>
 
-## Why this was not possible without AI
+## What AI made affordable
 
 1. **Depth at the price of a sprint task.** Six parallel reviews and a mapping pass over a large codebase, with a ticket and an estimate per finding, in days instead of an engagement measured in weeks.
 2. **Code health at full scale.** Eight reviewers over a quarter of a million lines is a read no team does by hand, and it can run again.

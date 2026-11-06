@@ -17,6 +17,21 @@ for (const locale of LOCALES) {
   const caseUrl = (id: string) => `${WINS[locale]}${id}/`;
 
   test.describe(`wins & cases (${locale})`, () => {
+    for (const id of CASES) {
+      test(`case ${id}: section index links every h2`, async ({ page }) => {
+        await page.goto(caseUrl(id));
+        const links = page.locator("nav[data-case-index] a");
+        const ids = await page.locator("article h2").evaluateAll((els) => els.map((el) => el.id));
+        expect(ids.length).toBeGreaterThan(0);
+        await expect(links).toHaveCount(ids.length);
+        const hrefs = await links.evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+        expect(hrefs).toEqual(ids.map((x) => `#${x}`));
+        const texts = await links.allTextContents();
+        for (const txt of texts) expect(txt).not.toMatch(/&\w+;/);
+        await expect(page.locator("nav[data-case-index]")).toHaveAttribute("aria-label", t(locale, "case.onThisPage"));
+      });
+    }
+
     test("has one h1, results before the cases, and the rail marks Wins as the current page", async ({ page }) => {
       await page.goto(WINS[locale]);
       await expect(page.locator("main h1")).toHaveCount(1);

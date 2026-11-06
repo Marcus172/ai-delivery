@@ -22,9 +22,10 @@ const cases = await loadCases(locale);
 const index = cases.findIndex((c) => c.id === id);
 const c = cases[index];
 if (!c) throw new Error(`case ${locale}/${id} is missing`);
-const { Content } = await render(c.entry);
+const { Content, headings } = await render(c.entry);
 const prev = cases[index - 1];
 const next = cases[index + 1];
+const sections = headings.filter((h) => h.depth === 2);
 const winsHref = localizedPath(locale, "wins");
 ---
 
@@ -44,6 +45,18 @@ const winsHref = localizedPath(locale, "wins");
   <div class="glance" data-case-glance>
     {c.highlights.map((m) => <Stat id={m} locale={locale} />)}
   </div>
+  {
+    sections.length > 0 && (
+      <nav class="index" data-case-index aria-label={t(locale, "case.onThisPage")}>
+        <span class="index-k" aria-hidden="true">{tt("case.onThisPage")}</span>
+        <ul>
+          {sections.map((h) => (
+            <li><a href={`#${h.slug}`}>{locale === "cs" ? csTypo(h.text) : h.text}</a></li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
 </header>
 
 <article class="case">
@@ -120,6 +133,36 @@ const winsHref = localizedPath(locale, "wins");
     grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
     gap: 1.5rem 1.75rem;
     margin-top: 2.25rem;
+  }
+  .index {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    margin-top: 1.75rem;
+    font-size: 0.9375rem;
+  }
+  .index-k {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--mute);
+  }
+  .index ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .index li {
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+  }
+  .index a {
+    color: var(--acc-text);
+    overflow-wrap: anywhere;
   }
   .case {
     padding-block: 1rem 4rem;

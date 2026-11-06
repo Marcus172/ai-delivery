@@ -79,8 +79,9 @@ subpage. Shape *(builder's call on details)*:
    AI Delivery `#principle` in the same locale.
 3. **Cases** — one summary card per case, in the current order (brand voice, accessibility,
    Tailwind): title, the existing chapter summary, two or three headline stats with their
-   measured/estimate labels, and a link to the subpage. The whole card is not a giant link; the
-   title (or an explicit "Read the case") is.
+   measured/estimate labels, and a link to the subpage. The whole card is clickable
+   *(author's call, 2026-11-06)*, but it is one link named by the title, stretched over the card;
+   "Read the case" is a visual cue only, not a second link.
 4. **Closing**: a short pointer to AI Delivery ("how the system behind these works") and to the
    offer, plus the standard CTAs.
 

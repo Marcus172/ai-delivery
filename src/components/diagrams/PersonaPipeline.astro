@@ -1,6 +1,7 @@
 ---
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -53,7 +54,7 @@ const bx = (i: number) => X0 + i * (BOX_W + GAP);
 const stages = STAGES[locale];
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
   <svg
     class="pipe"
     data-diagram="persona-pipeline"
@@ -113,6 +114,7 @@ const stages = STAGES[locale];
     <text class="legend" x={X0} y={H - 8} font-size="13">{LEGEND[locale]}</text>
   </svg>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

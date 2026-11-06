@@ -87,6 +87,7 @@ for (const [url, other] of PAGES) {
         for (const el of main.querySelectorAll("[data-diagram], .scroll, figure, table")) {
           const col = (el.closest(".column, .chapters") ?? main).getBoundingClientRect();
           const r = el.getBoundingClientRect();
+          if (!r.width) continue; // the role matrix variant that is not shown
           if (r.left < col.left - 1 || r.right > col.right + 1) out.push(`${name(el)} steps out of the column`);
           if (el.matches(".scroll") && el.scrollWidth > el.clientWidth + 1) out.push(`${name(el.firstElementChild ?? el)} scrolls sideways`);
         }
@@ -210,4 +211,36 @@ test("CS display headings leave room for diacritics", async ({ page }) => {
     expect(ratios.length).toBeGreaterThan(1);
     for (const r of ratios) expect(r).toBeGreaterThanOrEqual(1.05);
   }
+});
+
+test.describe("mobile diagrams (390 px)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("role matrix fits a 390 px screen", async ({ page }) => {
+    for (const path of ["ai-delivery/", "cs/ai-delivery/"]) {
+      await page.goto(`${BASE}${path}`);
+      const sizes = await page.locator('[data-diagram="role-matrix"]').evaluate((svg) => {
+        const el = svg.closest(".scroll") as HTMLElement;
+        return { sw: el.scrollWidth, cw: el.clientWidth };
+      });
+      expect(sizes.sw, path).toBeLessThanOrEqual(sizes.cw);
+    }
+  });
+
+  test("overflowing diagram regions say they scroll", async ({ page }) => {
+    for (const path of ["ai-delivery/", "cs/ai-delivery/", "wins/along-the-way/"]) {
+      await page.goto(`${BASE}${path}`);
+      const regions = await page.locator(".hscroll").evaluateAll((els) =>
+        els.map((el) => {
+          const h = el.nextElementSibling as HTMLElement | null;
+          return {
+            overflow: el.scrollWidth > el.clientWidth,
+            hint: !!h && h.classList.contains("hscroll-hint") && h.getBoundingClientRect().height > 0,
+          };
+        }),
+      );
+      if (path.includes("ai-delivery")) expect(regions.some((r) => r.overflow), path).toBe(true);
+      for (const r of regions) if (r.overflow) expect(r.hint, path).toBe(true);
+    }
+  });
 });

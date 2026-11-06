@@ -115,6 +115,7 @@ const en = {
   "media.play": "Play video",
   "media.youtube": "Plays on YouTube (no cookies until you click).",
   "media.transcript": "Transcript",
+  "diagram.scrollHint": "Swipe sideways",
 } as const;
 
 export type UiKey = keyof typeof en;
@@ -234,6 +235,7 @@ const cs: Record<UiKey, string> = {
   "media.play": "Přehrát video",
   "media.youtube": "Přehraje se na YouTube (cookies až po kliknutí).",
   "media.transcript": "Přepis",
+  "diagram.scrollHint": "Posuňte do strany",
 };
 
 const dictionaries: Record<Locale, Record<UiKey, string>> = { en, cs };

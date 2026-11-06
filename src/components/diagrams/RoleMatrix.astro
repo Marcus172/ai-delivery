@@ -1,6 +1,7 @@
 ---
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -19,10 +20,10 @@ const DESC = l(
 const LEGEND = l("filled: yes · hollow: no", "plný: ano · prázdný: ne");
 
 const COLS = [
-  l("full ticket flow", "plný flow tiketu"),
-  l("shared plugins", "sdílené pluginy"),
-  l("own role plugin", "plugin pro roli"),
-  l("contributed skills", "přispěné skilly"),
+  { title: l("full ticket flow", "plný flow tiketu"), short: l("flow", "flow") },
+  { title: l("shared plugins", "sdílené pluginy"), short: l("shared", "sdílené") },
+  { title: l("own role plugin", "plugin pro roli"), short: l("role", "role") },
+  { title: l("contributed skills", "přispěné skilly"), short: l("skills", "skilly") },
 ];
 // src: research note 02, §2.1–2.2, §3 (roles and their plugins; 7 contributors from 5 roles)
 const ROWS: { role: ReturnType<typeof l>; cells: boolean[] }[] = [
@@ -39,9 +40,27 @@ const COL_W = (W - LEFT - 16) / COLS.length;
 const TOP = 54;
 const ROW_H = 40;
 const H = TOP + ROWS.length * ROW_H + 34;
+
+// Phone layout: 358 px is the content box of a 390 px screen, so the box scales 1:1 and needs no scroll.
+const NW = 358;
+const NLEFT = 144; // 9rem role column
+const NCOL_W = (NW - NLEFT - 8) / COLS.length;
+const NROW_H = 48;
+const NH = TOP + ROWS.length * NROW_H + 34;
+
+/** Greedy wrap into lines of at most `max` characters. */
+function wrap(text: string, max: number): string[] {
+  const lines: string[] = [];
+  for (const word of text.split(" ")) {
+    const last = lines[lines.length - 1];
+    if (last !== undefined && (last + " " + word).length <= max) lines[lines.length - 1] = last + " " + word;
+    else lines.push(word);
+  }
+  return lines;
+}
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
   <svg
     class="matrix"
     data-diagram="role-matrix"
@@ -56,7 +75,7 @@ const H = TOP + ROWS.length * ROW_H + 34;
     {
       COLS.map((c, j) => (
         <text class="col" x={LEFT + j * COL_W + COL_W / 2} y="22" text-anchor="middle" font-size="12.5">
-          {c[locale]}
+          {c.title[locale]}
         </text>
       ))
     }
@@ -82,7 +101,53 @@ const H = TOP + ROWS.length * ROW_H + 34;
 
     <text class="legend" x="0" y={H - 6} font-size="12.5">{LEGEND[locale]}</text>
   </svg>
+  <svg
+    class="matrix-narrow"
+    data-diagram="role-matrix-narrow"
+    viewBox={`0 0 ${NW} ${NH}`}
+    role="img"
+    aria-labelledby="role-matrix-n-t"
+    aria-describedby="role-matrix-n-d"
+  >
+    <title id="role-matrix-n-t">{TITLE[locale]}</title>
+    <desc id="role-matrix-n-d">{DESC[locale]}</desc>
+
+    {
+      COLS.map((c, j) => (
+        <text class="col" x={NLEFT + j * NCOL_W + NCOL_W / 2} y="22" text-anchor="middle" font-size="12">
+          {c.short[locale]}
+        </text>
+      ))
+    }
+    <line class="rule" x1="0" y1={TOP - 16} x2={NW} y2={TOP - 16} />
+
+    {
+      ROWS.map((r, i) => {
+        const y = TOP + i * NROW_H;
+        const lines = wrap(r.role[locale], 20);
+
+        return (
+          <g class="row">
+            <text class="role" x="0" y={y + 5 - ((lines.length - 1) * 15) / 2} font-size="13">
+              {lines.map((ln, k) => (
+                <tspan x="0" dy={k === 0 ? 0 : 15}>
+                  {ln}
+                </tspan>
+              ))}
+            </text>
+            {r.cells.map((on, j) => (
+              <circle class:list={["cell", { on }]} cx={NLEFT + j * NCOL_W + NCOL_W / 2} cy={y} r="7" />
+            ))}
+            <line class="rule soft" x1="0" y1={y + NROW_H / 2} x2={NW} y2={y + NROW_H / 2} />
+          </g>
+        );
+      })
+    }
+
+    <text class="legend" x="0" y={NH - 6} font-size="12.5">{LEGEND[locale]}</text>
+  </svg>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {
@@ -96,6 +161,20 @@ const H = TOP + ROWS.length * ROW_H + 34;
     /* 660 / 760 keeps 12.5 px labels ≥ 11 px rendered inside a 358 px phone box. */
     min-width: 42.5rem;
     overflow: visible;
+  }
+  .matrix-narrow {
+    display: none;
+    width: 100%;
+    max-width: 30rem;
+    overflow: visible;
+  }
+  @media (max-width: 40rem) {
+    .matrix {
+      display: none;
+    }
+    .matrix-narrow {
+      display: block;
+    }
   }
   .col,
   .legend {

@@ -548,6 +548,17 @@ export const METRICS: Metric[] = [
 
   // ── Case: keeping the stack current (src: repo and backend history, upgrade tickets) ──
 
+  // src: repository history, package manifests before the May 2026 upgrade vs. successor release dates
+  {
+    id: "stack-drift",
+    value: l("6 years", "6 let"),
+    label: l(
+      "how long the oldest part of the stack, the package manager, had been superseded when the upgrade began; the GraphQL library was 4.5 years behind, Node.js a year past its end of life",
+      "jak dlouho už měla nejstarší část stacku, správce balíčků, nástupce, když upgrade začal; knihovna GraphQL byla 4,5 roku pozadu, Node.js rok po konci podpory",
+    ),
+    kind: "measured",
+    period: l("repository history · April 2020 → May 2026", "historie repozitáře · duben 2020 → květen 2026"),
+  },
   {
     id: "stack-one-pr",
     value: l("231 files", "231 souborů"),
@@ -562,8 +573,8 @@ export const METRICS: Metric[] = [
     id: "stack-java",
     value: l("5 days", "5 dní"),
     label: l(
-      "from the first commit to the merge: the last backend group from Java 11 / Spring Boot 2.5 to Java 21 / Spring Boot 3.4; the ticket had estimated 35–50 person-days",
-      "od prvního commitu po merge: poslední skupina backendu z Javy 11 / Spring Bootu 2.5 na Javu 21 / Spring Boot 3.4; tiket ji odhadoval na 35–50 člověkodnů",
+      "from the first commit to the merge, with agents running through the weekend: the last backend group from Java 11 / Spring Boot 2.5 to Java 21 / Spring Boot 3.4; the ticket had estimated 35–50 person-days",
+      "od prvního commitu po merge, s agenty běžícími i přes víkend: poslední skupina backendu z Javy 11 / Spring Bootu 2.5 na Javu 21 / Spring Boot 3.4; tiket ji odhadoval na 35–50 člověkodnů",
     ),
     kind: "measured",
     period: l("repository history · July 2026", "historie repozitáře · červenec 2026"),

@@ -662,6 +662,79 @@ export const METRICS: Metric[] = [
     period: l("dependency sweep · August 2026", "úklid závislostí · srpen 2026"),
   },
 
+  // ── Along the way: smaller wins (src: repo history, docs, tracker and the plugin marketplace; see the along-the-way data) ──
+
+  {
+    id: "atw-package-tests",
+    value: l("75", "75"),
+    label: l(
+      "packages whose own test command started working",
+      "balíčků, jejichž vlastní testovací příkaz začal fungovat",
+    ),
+    kind: "measured",
+    period: l("git history · August – October 2026", "historie gitu · srpen – říjen 2026"),
+  },
+  {
+    id: "atw-parity",
+    value: l("0 diffs", "0 rozdílů"),
+    label: l(
+      "between the old repository and the new apps across 33 parity scenarios; a negative control does report one",
+      "mezi původním repozitářem a novými aplikacemi ve 33 scénářích shody; negativní kontrola rozdíl hlásí",
+    ),
+    kind: "measured",
+    period: l("parity run · October 2026", "běh shody · říjen 2026"),
+  },
+  {
+    id: "atw-i18n-keys",
+    value: l("275", "275"),
+    label: l(
+      "unused translation keys removed after static and manual checks",
+      "nepoužívaných překladových klíčů odstraněných po statické a ruční kontrole",
+    ),
+    kind: "measured",
+    period: l("git history · October 2026", "historie gitu · říjen 2026"),
+  },
+  {
+    id: "atw-handover",
+    value: l("~208 + 48", "~208 + 48"),
+    label: l(
+      "manual scenarios and screenshots in the testing handover of one feature area",
+      "ručních scénářů a snímků v předávce testingu jedné oblasti produktu",
+    ),
+    kind: "measured",
+    period: l("handover document · October 2026", "předávací dokument · říjen 2026"),
+  },
+  {
+    id: "atw-nightly",
+    value: l("0", "0"),
+    label: l(
+      "application bugs among the nightly failures in the first full sort; all were test data, outdated tests, flakes or infrastructure",
+      "chyb aplikace mezi nočními selháními při prvním úplném roztřídění; všechno byla testovací data, zastaralé testy, nestabilní běhy nebo infrastruktura",
+    ),
+    kind: "measured",
+    period: l("nightly runs · July 2026", "noční běhy · červenec 2026"),
+  },
+  {
+    id: "atw-mocks",
+    value: l("3", "3"),
+    label: l(
+      "endpoints with no mock, found in one feature area on the first run",
+      "endpointy bez mocku, nalezené v jedné oblasti produktu při prvním běhu",
+    ),
+    kind: "measured",
+    period: l("mock audit · June 2026", "audit mocků · červen 2026"),
+  },
+  {
+    id: "atw-reviews",
+    value: l("153", "153"),
+    label: l(
+      "pull request reviews: 106 self-reviews of drafts and 47 as a reviewer",
+      "review pull requestů: 106 vlastních review draftů a 47 jako reviewer",
+    ),
+    kind: "measured",
+    period: l("review ledger · July – November 2026", "záznam review · červenec – listopad 2026"),
+  },
+
   // ── Estimate ──────────────────────────────────────────────────────────
 
   // src: research note 04, §9 (author's own words, explicitly not measured)

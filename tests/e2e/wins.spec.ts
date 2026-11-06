@@ -70,6 +70,24 @@ for (const locale of LOCALES) {
       }
     });
 
+    test("the smaller wins: a card under the cases leads to a map whose every chip opens its card", async ({ page }) => {
+      await page.goto(WINS[locale]);
+      const more = page.locator("[data-more-wins]");
+      await expect(more.locator("a")).toHaveCount(1);
+      await more.locator("a").click();
+      await expect(page).toHaveURL(new RegExp(`${PREFIX[locale]}wins/along-the-way/$`));
+      await expect(page.locator("main h1")).toHaveCount(1);
+      await expect(page.locator(`nav.rail a[href="${PREFIX[locale]}wins/"]`)).toHaveAttribute("aria-current", "true");
+      const cards = page.locator("[data-win]");
+      const n = await cards.count();
+      expect(n).toBeGreaterThan(10);
+      await expect(page.locator("[data-win-link]")).toHaveCount(n);
+      for (const id of await page.locator("[data-win-link]").evaluateAll((els) => els.map((e) => e.getAttribute("data-win-link"))))
+        await expect(page.locator(`#win-${id}`)).toHaveCount(1);
+      await expect(page.locator("[data-atw-count] b").first()).toHaveText(String(n));
+      for (const stat of await page.locator("[data-win] .stat[data-kind=measured]").all()) await expect(stat.locator(".period")).toBeVisible();
+    });
+
     test("a click anywhere on a case card opens the case", async ({ page }) => {
       await page.goto(WINS[locale]);
       // A real mouse click on the stats: the title link's overlay covers them, so it takes the click.

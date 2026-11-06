@@ -11,6 +11,7 @@ const PAGES: Array<[string, string]> = [
   ["wins/tailwind/", `${BASE}cs/wins/tailwind/`],
   ["wins/stack/", `${BASE}cs/wins/stack/`],
   ["cs/wins/security/", `${BASE}wins/security/`],
+  ["wins/along-the-way/", `${BASE}cs/wins/along-the-way/`],
   ["sources/", `${BASE}cs/sources/`],
   ["cv/", `${BASE}cs/cv/`],
   ["cs/", BASE],
@@ -18,6 +19,7 @@ const PAGES: Array<[string, string]> = [
   ["cs/ai-delivery/", `${BASE}ai-delivery/`],
   ["cs/wins/", `${BASE}wins/`],
   ["cs/wins/brand-voice/", `${BASE}wins/brand-voice/`],
+  ["cs/wins/along-the-way/", `${BASE}wins/along-the-way/`],
   ["cs/sources/", `${BASE}sources/`],
   ["cs/cv/", `${BASE}cv/`],
 ];

@@ -356,10 +356,21 @@ test.describe("anchors clear the sticky mobile rail", () => {
 
 test("lead paragraphs keep a readable measure", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  for (const path of ["", "journey/", "wins/"]) {
+  // Measured in characters of the paragraph's own font, not in pixels: CI fonts render wider than a Mac's.
+  for (const path of ["", "journey/", "wins/", "ai-delivery/", "cs/journey/"]) {
     await page.goto(`${BASE}${path}`);
-    const widths = await page.locator(".lead").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
-    expect(widths.length, `${path || "/"} has a .lead`).toBeGreaterThan(0);
-    for (const w of widths) expect(w, `${path || "/"} .lead width`).toBeLessThanOrEqual(760);
+    const measures = await page.locator(".lead").evaluateAll((els) =>
+      els.map((el) => {
+        const probe = document.createElement("span");
+        probe.textContent = "0".repeat(100);
+        probe.style.cssText = "position:absolute;visibility:hidden;white-space:nowrap;font:inherit";
+        el.appendChild(probe);
+        const ch = probe.getBoundingClientRect().width / 100;
+        probe.remove();
+        return el.getBoundingClientRect().width / ch;
+      }),
+    );
+    expect(measures.length, `${path || "/"} has a .lead`).toBeGreaterThan(0);
+    for (const m of measures) expect(m, `${path || "/"} .lead measure in ch`).toBeLessThanOrEqual(70);
   }
 });

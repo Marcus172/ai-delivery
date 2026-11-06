@@ -62,6 +62,35 @@ for (const [url, other] of PAGES) {
       }
     });
 
+    test("text runs to its column edge and no diagram or media steps out of the column (1440 px)", async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto(url);
+      const problems = await page.evaluate(() => {
+        const out: string[] = [];
+        const main = document.querySelector("main") as HTMLElement;
+        const name = (el: Element) => `${el.tagName.toLowerCase()}${el.classList[0] ? "." + el.classList[0] : ""}`;
+        for (const el of main.querySelectorAll<HTMLElement>("p, ul, ol, dl, details, aside, figcaption, .example, .estimate, .stats, .caveats")) {
+          if (el.closest("svg, dialog, .toc-side")) continue;
+          const cs = getComputedStyle(el);
+          if (cs.display === "none" || !el.getBoundingClientRect().width) continue;
+          const parent = el.parentElement as HTMLElement;
+          const pcs = getComputedStyle(parent);
+          // Grid and flex cells size their children; only a block's own max-width can make it narrower.
+          if (/grid|flex/.test(pcs.display)) continue;
+          const room = parent.clientWidth - parseFloat(pcs.paddingLeft) - parseFloat(pcs.paddingRight);
+          if (cs.maxWidth !== "none" && room - el.getBoundingClientRect().width > 24) out.push(`${name(el)} narrower than its column (max-width ${cs.maxWidth})`);
+        }
+        for (const el of main.querySelectorAll("[data-diagram], .scroll, figure, table")) {
+          const col = (el.closest(".column, .chapters") ?? main).getBoundingClientRect();
+          const r = el.getBoundingClientRect();
+          if (r.left < col.left - 1 || r.right > col.right + 1) out.push(`${name(el)} steps out of the column`);
+          if (el.matches(".scroll") && el.scrollWidth > el.clientWidth + 1) out.push(`${name(el.firstElementChild ?? el)} scrolls sideways`);
+        }
+        return [...new Set(out)];
+      });
+      expect(problems).toEqual([]);
+    });
+
     test("language switch targets the same page in the other locale", async ({ page }) => {
       await page.goto(url);
       const link = page.locator("a[data-lang-switch]");

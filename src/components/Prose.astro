@@ -67,7 +67,8 @@ const html = await Astro.slots.render("default");
   .body :global(.note + p),
   .body :global(.media + p),
   .body :global(.stat + p),
-  .body :global([data-diagram] + p) {
+  .body :global([data-diagram] + p),
+  .body :global(.glance + p) {
     margin-top: 2rem;
   }
   .body :global(.stat) {

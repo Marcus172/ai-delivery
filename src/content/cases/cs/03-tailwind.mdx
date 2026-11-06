@@ -1,29 +1,180 @@
 ---
 id: tailwind
 order: 3
-highlights: ["tailwind-components", "story-coverage"]
+highlights: ["tailwind-components", "bundle-size"]
 title: "Z CSS-in-JS na Tailwind za deset týdnů"
-summary: "Každá komponenta tří aplikací přešla z CSS-in-JS na Tailwind s čistě tokenovými škálami. Nejdřív vznikl harness pro vizuální regrese, teprve potom migrace, a největší nález přišel ze čtení snímků, ne ze zelené brány."
-teaser: "Tři aplikace přešly z CSS-in-JS na Tailwind. Harness pro vizuální regrese vznikl první a největší nález přišel ze čtení snímků, ne ze zelené brány."
+summary: "Stylovací knihovna byla na konci životnosti: žádné opravy, ani bezpečnostní, a každý styl se platil za běhu. Každá komponenta tří aplikací přešla na Tailwind bez runtime nad design tokeny, hlídaná harnessem pro vizuální regrese, který vznikl dřív než první převedená komponenta. Největší nález přišel ze čtení snímků, ne ze zelené brány."
+teaser: "Stylovací knihovna na konci životnosti, bez bezpečnostních oprav a s cenou za běhu. Tři aplikace přešly na Tailwind bez runtime, hlídané harnessem pro vizuální regrese, který vznikl dřív než první komponenta."
 ---
-import { MigrationBand, Note, Stat } from "../../../components/chapter";
+import { Detail, Fact, Facts, Figure, Glance, MigrationBand, Note, Point, Stat, Steps } from "../../../components/chapter";
+
+import storybookVisualTests from "../../../assets/wins/tailwind/storybook-visual-tests.png";
 
 export const locale = "cs";
 
-## Harness před první komponentou
+## Proč: stylovací knihovna byla na konci životnosti
 
-Přepsat styly celého produktu je práce, kterou AI zlevní a&nbsp;které se tým právem bojí, protože sto drobných vizuálních regresí je pro každý existující test neviditelných. První fáze proto nepřevedla nic. Postavila harness pro vizuální regrese, který v&nbsp;jednom běhu vykreslí každou story základu i&nbsp;změny, světlou i&nbsp;tmavou, a&nbsp;porovná je pixel po pixelu, se samotestem komparátoru a&nbsp;CI jobem na každý pull request. Teprve pak začala konverze: primitiva layoutu a&nbsp;textu, která převádějí props pro rozestupy a&nbsp;layout na třídy, pak sdílené UI, pak domény, pak odstranění starých knihoven. Jedna etapa, jeden pull request; stav plánu se mění ve stejném commitu.
+Celý produkt se styloval knihovnou CSS-in-JS, jejíž verze dosáhla konce životnosti, zatímco zbytek stacku se posunul na React 19 a aktuální Next.js. Fungovalo to, ale náhodou, ne s&nbsp;podporou, a&nbsp;každý měsíc na ní přidával riziko. Místo udržování při životě šla investice rovnou do cílového řešení.
+
+<Glance locale={locale} label="Čtyři důvody k přechodu">
+  <Point locale={locale} title="Konec životnosti">
+    Používaná verze nedostává vůbec žádné opravy a&nbsp;běží mimo podporovanou matici frameworku, ve kterém se vykresluje.
+  </Point>
+  <Point locale={locale} title="Bezpečnost">
+    Žádné bezpečnostní záplaty. Den, kdy ji rozbije zranitelnost nebo update frameworku, není kde vzít opravu, jen nouzová migrace.
+  </Point>
+  <Point locale={locale} title="Výkon">
+    Styly se generují a&nbsp;vkládají za běhu pro každou novou kombinaci props, s&nbsp;registrem stylů při každém serverovém renderu. Tailwind je zkompiluje předem.
+  </Point>
+  <Point locale={locale} title="Zablokovaný stack">
+    Její typový balíček držel typy Reactu na verzi 18, zatímco runtime běžel na 19: samotný bump typů dal 21&nbsp;656 chyb v&nbsp;52 balíčcích.
+  </Point>
+</Glance>
+
+<div class="stats">
+  <Stat id="runtime-style-rules" locale={locale} />
+  <Stat id="packages-removed" locale={locale} />
+  <Stat id="react-types" locale={locale} />
+</div>
+
+<Detail locale={locale} label="Zvážené varianty">
+
+<Facts label="Varianty pro stylovací vrstvu">
+  <Fact k="Zůstat">Odkládá problém a&nbsp;prohlubuje dluh: knihovna zůstává na konci životnosti a&nbsp;mimo podporovanou matici.</Fact>
+  <Fact k="Emotion">Skoro náhrada kus za kus, ale stejná kategorie, CSS-in-JS za běhu: cena migrace bez úniku z&nbsp;problému.</Fact>
+  <Fact k="Tailwind v4">Zvolený cíl: bez runtime, největší ekosystém a&nbsp;trh vývojářů, dlouhodobá jistota.</Fact>
+  <Fact k="PandaCSS">Nejbližší dědic původního prop API, ale nejmladší projekt: vrací riziko údržby, kvůli kterému se přecházelo.</Fact>
+  <Fact k="shadcn/ui">Není stylovací knihovna, ale Tailwind a&nbsp;zkopírované komponenty; pro zralý design systém největší rozsah, ne zkratka.</Fact>
+</Facts>
+
+Za hotovou se migrace považuje podle strojové kontroly, ne podle pocitu: typy Reactu 19 s&nbsp;čistou typovou kontrolou, která projde jen tehdy, když původní knihovna opravdu zmizí. Tahle brána platila už před první etapou.
+
+</Detail>
+
+## Harness dřív než první komponenta
+
+Přepsat styly celého produktu je práce, kterou AI zlevní a&nbsp;které se tým právem bojí, protože sto drobných vizuálních regresí je pro každý existující test neviditelných. První fáze proto nepřevedla nic. Postavila harness pro [**VRT, Visual Regression Testing**](https://storybook.js.org/docs/writing-tests/visual-testing), tedy testování vizuálních regresí: každá story se vykreslí před změnou a&nbsp;po ní a&nbsp;porovná se po pixelech. Uzavřela pokrytí stories, aby každá komponenta měla vedle sebe story, a&nbsp;teprve potom začala konverze: primitiva, sdílené UI, domény, odstranění starých knihoven.
+
+<Figure
+  src={storybookVisualTests}
+  locale={locale}
+  alt="Storybook s otevřeným panelem Visual tests nad story posuvníku rozsahu s histogramem cen. Panel hlásí nalezené změny a překrývá nový snímek přes předchozí, se zvýrazněnými změněnými sloupci, vedle tlačítka Accept."
+  caption="Jak vypadá vizuální testování ve Storybooku: změněná story je označená a rozdíl je zvýrazněný na jejím snímku, aby ho člověk schválil. Ilustrace z dokumentace Storybooku; harness v tomto případu funguje na stejném principu, na vlastní infrastruktuře."
+/>
 
 <MigrationBand locale={locale} />
 
-<Stat id="bundle-size" locale={locale} />
+<Steps
+  locale={locale}
+  id="vrt-pipeline"
+  label="Jak probíhá jeden běh vizuálních regresí, od bodu větvení po report"
+  steps={[
+    { title: "Bod větvení", text: "Základem je worktree v bodě, kde se změna odvětvila od release linie; žádné referenční snímky se necommitují." },
+    { title: "Dva buildy", text: "Základ i změna se sestaví jako statické Storybooky a servírují se po sobě na stejném portu." },
+    { title: "Render", text: "Každá story v linuxovém kontejneru, světlý i tmavý motiv, se zmrazeným časem a náhodou a bez animací." },
+    { title: "Ustálení", text: "Snímky, časovače, změny DOM a commity Reactu musí utichnout, než se pořídí snímek." },
+    { title: "Porovnání", text: "Po pixelech s kalibrovanou tolerancí; ztracená nebo rozbitá story shodí běh." },
+    { title: "Report", text: "Základ, změna a maska rozdílů, nejhorší první, vložené do každého pull requestu." },
+  ]}
+  note="Tentýž harness běží lokálně i jako job u každého pull requestu, na každé release linii."
+/>
+
+<Stat id="vrt-flake" locale={locale} />
+
+<Detail locale={locale} label="Harness do detailu">
+
+Jediným zdrojem pravdy jsou design tokeny. Téma pro Tailwind se generuje z&nbsp;konstant tokenů, zhruba 250 custom properties s&nbsp;přepisy pro tmavý motiv, a&nbsp;kontrola driftu spadne, když se vygenerovaný soubor a&nbsp;generátor rozejdou. Ověřovací krok prožene zkušební třídy samotným Tailwindem a&nbsp;zkontroluje každý token v&nbsp;obou motivech; negativní sondy dokazují, že se standardní barvy, velikosti a&nbsp;breakpointy Tailwindu nepřeloží, takže žádné místo volání nemůže tokeny obejít. Škála mezer Tailwindu se nahradila, ne rozšířila, vlastními kroky design systému, takže třída pro mezeru znamená přesně totéž co původní prop; bez toho by byl každý rozdíl všude o&nbsp;pixel vedle.
+
+Základ a&nbsp;změna se smějí lišit jen v&nbsp;kódu komponent a&nbsp;stories: harness na základ kopíruje vlastní konfiguraci, protože rozdíl v&nbsp;konfiguraci jednou vyrobil 250 falešných rozdílů. Běh si každý očekávaný snímek odškrtne proti indexu stories ze svého buildu, takže story ztracená na straně základu běh shodí, místo aby se tiše objevila jako „přidaná“. Komparátor má vlastní self-test, třináct kontrol nad syntetickými obrázky zhruba za sekundu, uvnitř lintové brány.
+
+<Facts label="Značky, které drží harness poctivý">
+  <Fact k="Očekávaný rozdíl">Trailer v&nbsp;commitu ohlásí zamýšlenou vizuální změnu a&nbsp;její důvod; ohlášení, které na nic nesedí, běh shodí, a&nbsp;s&nbsp;commitem putuje i&nbsp;na další release linie.</Fact>
+  <Fact k="Prohlédnutá story">Značka ve story zaznamená, že její snímek opravdu přečetl člověk.</Fact>
+  <Fact k="Allowlist">Jen pro stories, které jsou z&nbsp;podstaty nedeterministické, každá s&nbsp;důvodem.</Fact>
+  <Fact k="Návratové kódy">Čisto, vizuální změna, selhání harnessu, ztracené snímky na základu, neplatný trailer: job podle toho spadne, nebo varuje.</Fact>
+</Facts>
+
+</Detail>
+
+## Primitiva: stejné props, pod nimi třídy
+
+Největší plocha se nikdy nepřepisovala ručně. Layoutová a&nbsp;textová primitiva si nechala veřejné prop API do posledního bajtu, jen ty props teď překládají na třídy Tailwindu: výčtové hodnoty na skutečné utility z&nbsp;generovaného safelistu, otevřené hodnoty přes CSS custom property. Zvláštnosti původní knihovny props se záměrně zopakovaly, od responzivních polí po „vyhrává poslední prop“, protože cílem byly stejné pixely, ne hezčí API.
+
+<Stat id="primitive-call-sites" locale={locale} />
+
+<Detail locale={locale} label="Dva systémy vedle sebe">
+
+Tailwind a&nbsp;původní knihovna běžely ve stejném kódu celou migraci a&nbsp;aplikace šla vydat po každém mergi. Reset Tailwindu zůstal vypnutý, aby nepřepsal stávající globální styly. Utility sedí v&nbsp;kaskádové vrstvě a&nbsp;původní pravidla ne, takže původní pravidlo vždy vyhrálo: převést komponentu znamenalo smazat její původní definici, nikdy na ni vrstvit třídy. Automatická detekce zdrojů v&nbsp;Tailwindu se ve dvou build pipelinách vyhodnotila jinak a&nbsp;v&nbsp;jedné z&nbsp;nich spočítala mezery jako nulové, proto jsou zdroje deklarované výslovně.
+
+</Detail>
+
+## Etapa po etapě: agenti převádějí, lidé čtou snímky
+
+<Steps
+  locale={locale}
+  id="stage-recipe"
+  label="Recept jedné etapy migrace"
+  steps={[
+    { title: "Rozsah", text: "Nejvýš zhruba deset definic, nad čistou vizuální baseline." },
+    { title: "Nejdřív číst", text: "Snímek každé story, na kterou se ještě nikdo nedíval, přečte člověk dřív, než se převede." },
+    { title: "Převod", text: "Statické styly na utility, varianty na tabulky celých řetězců tříd, hodnoty tématu na třídy tokenů." },
+    { title: "Brána", text: "Při iteraci filtrované běhy; schválení jen nad plným, nefiltrovaným během." },
+    { title: "Pull request", text: "Stav plánu se mění ve stejném commitu; report jde do pull requestu." },
+  ]}
+  note="Celkem čtyřicet etap. Každý nenulový rozdíl potřebuje schválení designu a je vypsaný v pull requestu."
+/>
+
+<Glance locale={locale} label="Kdo co dělá">
+  <Point locale={locale} title="Agenti">
+    Převádějí etapy, několik paralelně nad oddělenými adresáři; dopisují chybějící stories; dohledávají příčiny chyb v&nbsp;harnessu.
+  </Point>
+  <Point locale={locale} title="Skripty">
+    Generují a&nbsp;ověřují téma a&nbsp;safelist, počítají původní místa volání po etapách, odškrtávají každý snímek, pouštějí codemody.
+  </Point>
+  <Point locale={locale} title="Lidé">
+    Kontrolují snímky místo diffů, schvalují zamýšlené změny a&nbsp;rozhodují: na kterých variantách záleží, co zůstává mimo rozsah, kdy má harness přednost před další komponentou.
+  </Point>
+</Glance>
+
+Samotný plán byl psaný pro agenty: jedna složka se stavovou tabulkou, receptem etapy a&nbsp;seznamem známých pastí, kterou každý agent čte vedle svých instrukcí. Když agent navrhl prohlédnout před mergem všechny snímky naráz, člověk to nahradil levnějším pravidlem, které drží: přečti story dřív, než ji převedeš.
 
 ## Brány byly zelené, pravda byla v&nbsp;pixelech
 
-Harness měl slepou skvrnu a&nbsp;ta přinesla nejužitečnější lekci migrace. Každá story knihovny grafů byla snímek prázdného grafu, pořízený v&nbsp;prvním snímku animace, a&nbsp;každá brána byla zelená, protože základ i&nbsp;změna byly stejně prázdné. Přišel na to člověk, který snímky četl. Odpovědí nebyla další brána: značka u&nbsp;každé story, na kterou se člověk opravdu podíval, a&nbsp;kontrola, která dovolí počtu nepřečtených stories jen klesat. Stejnou poctivost dostal i&nbsp;měřicí přístroj: když se ukázalo, že sčítání zbývajících míst počítá i&nbsp;prózu v&nbsp;komentářích, opravilo se a&nbsp;dokumentace varuje, aby se tabulky přes tu opravu nesrovnávaly.
+Harness měl slepou skvrnu a&nbsp;ta přinesla nejužitečnější lekci migrace. Každá story knihovny grafů byla snímek prázdného grafu, pořízený v&nbsp;prvním snímku animace, a&nbsp;každá brána byla zelená, protože základ i&nbsp;změna byly stejně prázdné. Přišel na to člověk, který snímky četl. Oprava harnessu je pro harness neviditelná, protože se mění obě strany najednou; uvidí ji jen oči.
 
-Další vady prošly každou automatickou bránou a&nbsp;chytilo je review nebo oko: libovolná varianta, která potichu odstranila focus-visible ring, ztracený selektor potomka, ohraničení neviditelné v&nbsp;tmavém motivu, nevalidní CSS převedené na nic. Z&nbsp;každé se stalo pravidlo nebo test.
+Bránami prošly i&nbsp;další vady. Z&nbsp;každé se stalo pravidlo nebo test:
+
+<Facts label="Vady, které prošly bránami, a pravidlo, které z každé vzniklo">
+  <Fact k="Prázdné grafy">Vykreslení do canvasu nemění layout ani DOM, takže pravidlo ustálení vystřelilo v&nbsp;prvním snímku. Animace grafů jsou teď v&nbsp;harnessu vypnuté.</Fact>
+  <Fact k="Ztracený focus ring">Libovolná varianta se vygenerovala až za viditelným fokusem a&nbsp;odstranila ho. Pravidlo: pořadí změřit proti kompilátoru pro každou variantu zvlášť.</Fact>
+  <Fact k="Ztracený hover">Smazání obalu předalo jeho hover pravidlo převedenému potomkovi, který generuje vlastní. Pravidlo: u&nbsp;každého selektoru potomka znovu ověřit specificitu.</Fact>
+  <Fact k="Jen tmavý motiv">Sedm dialogů ztratilo výplň fokusovaného tlačítka v&nbsp;tmavém motivu, okraj hlavičky zmizel. Pravidlo: každý stav potřebuje tmavé dvojče.</Fact>
+  <Fact k="Neplatné CSS">Původní styly jako kurzor nastavený na false se nikdy neaplikovaly; platná náhrada by ovládací prvky rozšířila. Pravidlo: zkontrolovat každou větev podmíněného stylu.</Fact>
+  <Fact k="Vymazané popisky">Původní globální reset mimo jakoukoli vrstvu smazal všechny utility na popiscích, 1&nbsp;248 změněných snímků při všech ostatních branách zelených. Přesunul se do základní vrstvy.</Fact>
+  <Fact k="Hotovo, nebo nezačato">Tabulka doplnila řádky až po prvním vykreslení a&nbsp;vyfotila se prázdná na té straně, kde závod dopadl. Teď rozhodují sondy časovačů a&nbsp;změn DOM a&nbsp;drží to fixture story.</Fact>
+</Facts>
 
 <Note>
-  <strong>Harness má přednost před konverzí.</strong> Když se ukázalo, že settle pravidlo harnessu nerozezná „stabilní, protože hotové“ od „stabilní, protože nezačalo“, oprava dráhy předběhla převod další komponenty. Přehodnocení odhadu po pilotu přesunulo cenu z&nbsp;komponenty na její spotřebitele a&nbsp;plán se kolem toho přepsal, místo aby se bránil.
+  <strong>Harness před konverzí.</strong> Když se ukázalo, že pravidlo ustálení nerozliší „stabilní, protože hotové“ od „stabilní, protože nezačalo“, oprava harnessu dostala přednost před převodem další komponenty. Přepočet odhadu po pilotu přesunul náklady z&nbsp;komponenty na její konzumenty a&nbsp;plán se kolem toho přepsal, místo aby se obhajoval.
 </Note>
+
+## Co po migraci zůstává
+
+<Glance locale={locale} label="Konečný stav">
+  <Point locale={locale} title="Původní knihovny jsou pryč">
+    Obě knihovny, jejich typy, serverový registr stylů a&nbsp;build plugin v&nbsp;54 konfiguračních souborech.
+  </Point>
+  <Point locale={locale} title="Harness zůstává">
+    Běží u&nbsp;každého pull requestu na každé release linii a&nbsp;zamýšlená vizuální změna se musí ohlásit.
+  </Point>
+  <Point locale={locale} title="Pravidlo pro další práci">
+    Jen tokeny, celé řetězce tříd, žádné syrové barvy ani pixely a&nbsp;žádný návrat CSS-in-JS, zapsané v&nbsp;pravidlech, která čte každý agent.
+  </Point>
+</Glance>
+
+## Proč to bez AI nešlo
+
+1. **Objem s&nbsp;věrností.** Zhruba 1&nbsp;300 komponent ve čtyřiceti etapách převedených na stejné pixely, zatímco místa volání primitiv se vůbec nezměnila.
+2. **Pokrytí dřív než převod.** Chybějící stories napsali paralelní agenti nad oddělenými částmi produktu, takže každá komponenta měla snímek dřív, než na ni kdokoli sáhl.
+3. **Harness, kterému jde věřit.** Příčiny nestabilit a&nbsp;falešných rozdílů se dohledávaly jedna po druhé, dokud pět set porovnání v&nbsp;řadě nevyšlo stabilně.
+4. **Rozhodují lidé.** Čtení snímků, schvalování zamýšlených změn a&nbsp;určování rozsahu zůstalo lidem; přepisování dělali agenti.

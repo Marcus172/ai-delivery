@@ -546,6 +546,79 @@ export const METRICS: Metric[] = [
   },
 
 
+  // ── Case: keeping the stack current (src: repo and backend history, upgrade tickets) ──
+
+  {
+    id: "stack-one-pr",
+    value: l("231 files", "231 souborů"),
+    label: l(
+      "one pull request: Next.js 15.3 → 16.2, React 19.2, Node.js 18 → 24, Yarn 1 → 4, Storybook 8 → 10, Nx 22, React Compiler on",
+      "jeden pull request: Next.js 15.3 → 16.2, React 19.2, Node.js 18 → 24, Yarn 1 → 4, Storybook 8 → 10, Nx 22, zapnutý React Compiler",
+    ),
+    kind: "measured",
+    period: l("repository history · May 2026", "historie repozitáře · květen 2026"),
+  },
+  {
+    id: "stack-java",
+    value: l("5 days", "5 dní"),
+    label: l(
+      "from the first commit to the merge: the last backend group from Java 11 / Spring Boot 2.5 to Java 21 / Spring Boot 3.4; the ticket had estimated 35–50 person-days",
+      "od prvního commitu po merge: poslední skupina backendu z Javy 11 / Spring Bootu 2.5 na Javu 21 / Spring Boot 3.4; tiket ji odhadoval na 35–50 člověkodnů",
+    ),
+    kind: "measured",
+    period: l("repository history · July 2026", "historie repozitáře · červenec 2026"),
+  },
+  {
+    id: "stack-backend-tests",
+    value: l("2,113 / 2,113", "2 113 / 2 113"),
+    label: l(
+      "backend tests green across about 90 modules after the move, matching the baseline taken before it",
+      "zelených testů backendu v zhruba 90 modulech po přechodu, shodně s baseline změřenou před ním",
+    ),
+    kind: "measured",
+    period: l("test run · July 2026", "běh testů · červenec 2026"),
+  },
+  {
+    id: "stack-turbo",
+    value: l("−21,000", "−21 000"),
+    label: l(
+      "lines removed by moving the build from Nx to Turborepo (+6.1k / −21.0k across 509 files)",
+      "řádků odebraných přechodem buildu z Nx na Turborepo (+6,1 tis. / −21,0 tis. v 509 souborech)",
+    ),
+    kind: "measured",
+    period: l("repository history · May 2026", "historie repozitáře · květen 2026"),
+  },
+  {
+    id: "stack-image",
+    value: l("2.33 GB → 979 MB", "2,33 GB → 979 MB"),
+    label: l(
+      "production container image of one app: 2,534 → 884 packages once the development toolchain stopped shipping",
+      "produkční image kontejneru jedné aplikace: 2 534 → 884 balíčků, jakmile se přestala přibalovat vývojářská výbava",
+    ),
+    kind: "measured",
+    period: l("container build · July 2026", "build kontejneru · červenec 2026"),
+  },
+  {
+    id: "stack-port",
+    value: l("37 / 37", "37 / 37"),
+    label: l(
+      "package edits that matched exactly once on every receiving release line in one upgrade wave",
+      "úprav balíčků, které na každé přijímající release linii sedly právě jednou v jedné vlně upgradů",
+    ),
+    kind: "measured",
+    period: l("port script · September 2026", "portovací skript · září 2026"),
+  },
+  {
+    id: "stack-line-audit",
+    value: l("55 → 1", "55 → 1"),
+    label: l(
+      "missing fixes reported by matching titles, against the real ones found by comparing content",
+      "chybějících oprav hlášených podle názvů proti skutečným, nalezeným porovnáním obsahu",
+    ),
+    kind: "measured",
+    period: l("release-line audit · July 2026", "audit release linií · červenec 2026"),
+  },
+
   // ── Estimate ──────────────────────────────────────────────────────────
 
   // src: research note 04, §9 (author's own words, explicitly not measured)

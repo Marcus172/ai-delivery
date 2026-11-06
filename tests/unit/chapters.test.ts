@@ -9,7 +9,7 @@ import { LOCALES, type Locale } from "../../src/i18n/locales";
 const CONTENT = join(__dirname, "../../src/content");
 const ROOT = join(CONTENT, "ai-delivery");
 const CHAPTER_IDS = ["principle", "flow", "tooling", "guardrails", "enablement", "planning", "offer"] as const;
-const CASE_IDS = ["brand-voice", "accessibility", "tailwind"] as const;
+const CASE_IDS = ["brand-voice", "accessibility", "tailwind", "stack"] as const;
 
 type Chapter = { file: string; id: string; order: number; title: string; summary: string; teaser?: string; body: string };
 
@@ -146,10 +146,10 @@ describe("ai-delivery chapters", () => {
 });
 
 describe("wins & cases content", () => {
-  it("has the three cases in both locales, same ids and orders, file names carrying both", () => {
+  it("has every case in both locales, same ids and orders, file names carrying both", () => {
     for (const l of LOCALES) {
       expect(CASES[l].map((c) => c.id), l).toEqual([...CASE_IDS]);
-      expect(CASES[l].map((c) => c.order), l).toEqual([1, 2, 3]);
+      expect(CASES[l].map((c) => c.order), l).toEqual(CASE_IDS.map((_, i) => i + 1));
       for (const c of CASES[l]) expect(c.file).toMatch(new RegExp(`/0${c.order}-${c.id}\\.mdx$`));
     }
   });

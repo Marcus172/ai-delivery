@@ -151,19 +151,19 @@ const phases = PHASES[locale];
     font-variant-numeric: tabular-nums;
   }
   .phase rect {
-    fill: var(--tint);
+    fill: light-dark(var(--tint), color-mix(in srgb, var(--ink) 18%, var(--bg)));
     stroke: var(--line);
   }
   .phase.first rect {
-    fill: var(--ink);
-    stroke: var(--ink);
+    fill: var(--strong);
+    stroke: var(--strong);
   }
   .phase .ph {
     fill: var(--ink);
     font-weight: 600;
   }
   .phase.first .ph {
-    fill: var(--bg);
+    fill: var(--on-strong);
     font-weight: 700;
   }
   .brace {

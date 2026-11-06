@@ -147,8 +147,8 @@ const year = new Date().getFullYear();
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 2rem;
     align-items: center;
-    background: var(--ink);
-    color: var(--bg);
+    background: var(--strong);
+    color: var(--on-strong);
     border-radius: 1.125rem;
     padding: 2.75rem;
   }
@@ -164,24 +164,24 @@ const year = new Date().getFullYear();
     opacity: 0.8;
   }
   .contact :global(.eyebrow) {
-    color: var(--bg);
+    color: var(--on-strong);
     opacity: 0.7;
   }
   .contact :global(.eyebrow::before) {
     background: var(--acc);
   }
   .contact :global(.btn) {
-    background: var(--bg);
-    color: var(--ink);
-    border-color: var(--bg);
+    background: var(--on-strong);
+    color: var(--strong);
+    border-color: var(--on-strong);
   }
   .contact :global(.btn.ghost) {
     background: transparent;
-    color: var(--bg);
-    border-color: color-mix(in srgb, var(--bg) 40%, transparent);
+    color: var(--on-strong);
+    border-color: color-mix(in srgb, var(--on-strong) 40%, transparent);
   }
   .contact :global(.btn.ghost:hover) {
-    border-color: var(--bg);
+    border-color: var(--on-strong);
   }
   .colophon {
     padding: 1.75rem 0 0;

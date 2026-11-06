@@ -257,6 +257,23 @@ for (const locale of LOCALES) {
       }
     });
 
+    test("on a phone, LinkedIn and GitHub share a row of their own", async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(URL_OF[locale]);
+      for (const row of await page.locator(".cta").all()) {
+        const boxes = await row.locator("a").evaluateAll((els) =>
+          els.map((e) => {
+            const r = e.getBoundingClientRect();
+            return { top: Math.round(r.top), left: Math.round(r.left) };
+          }),
+        );
+        const [, cv, linkedin, github] = boxes;
+        expect(linkedin.top).toBe(github.top);
+        expect(linkedin.top).toBeGreaterThan(cv.top);
+        expect(linkedin.left).toBe(boxes[0].left);
+      }
+    });
+
     for (const width of [1440, 1024]) {
       test(`row stays on one line at ${width}px`, async ({ page }) => {
         await page.setViewportSize({ width, height: 900 });

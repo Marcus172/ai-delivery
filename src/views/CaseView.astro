@@ -1,6 +1,7 @@
 ---
 import { render } from "astro:content";
 import Eyebrow from "../components/Eyebrow.astro";
+import Pager from "../components/Pager.astro";
 import Prose from "../components/Prose.astro";
 import Stat from "../components/Stat.astro";
 import { caseNumber, loadCases } from "../data/cases";
@@ -65,31 +66,15 @@ const winsHref = localizedPath(locale, "wins");
   </Prose>
 </article>
 
-<nav class="pager" aria-label={tt("wins.casesEyebrow")}>
-  {
-    prev ? (
-      <a class="prev" href={subPagePath(locale, "wins", prev.id)} rel="prev">
-        <span class="k">{tt("wins.prev")}</span>
-        <span class="v">{prev.title}</span>
-      </a>
-    ) : (
-      <span />
-    )
+<Pager
+  label={tt("wins.casesEyebrow")}
+  prev={prev && { href: subPagePath(locale, "wins", prev.id), k: tt("wins.prev"), v: prev.title, rel: "prev" }}
+  next={
+    next
+      ? { href: subPagePath(locale, "wins", next.id), k: tt("wins.next"), v: next.title, rel: "next" }
+      : { href: subPagePath(locale, "wins", "along-the-way"), k: tt("wins.moreEyebrow"), v: tt("atw.title") }
   }
-  {
-    next ? (
-      <a class="next" href={subPagePath(locale, "wins", next.id)} rel="next">
-        <span class="k">{tt("wins.next")}</span>
-        <span class="v">{next.title}</span>
-      </a>
-    ) : (
-      <a class="next" href={localizedPath(locale, "ai-delivery", "offer")}>
-        <span class="k">{tt("ai.bridgeEyebrow")}</span>
-        <span class="v">{tt("wins.offerLink")}</span>
-      </a>
-    )
-  }
-</nav>
+/>
 </div>
 
 <style>
@@ -172,46 +157,4 @@ const winsHref = localizedPath(locale, "wins");
     scroll-margin-top: 1rem;
   }
 
-  .pager {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
-    padding-block: 2.5rem 1rem;
-    border-top: 1px solid var(--line);
-  }
-  .pager a {
-    display: grid;
-    gap: 0.375rem;
-    padding: 1.25rem 1.375rem;
-    background: var(--tint);
-    border-radius: 0.875rem;
-    text-decoration: none;
-  }
-  .pager a:hover {
-    outline: 2px solid var(--acc);
-    outline-offset: -2px;
-  }
-  .pager .next {
-    text-align: right;
-  }
-  .pager .k {
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: var(--acc-text);
-  }
-  .pager .v {
-    font-weight: 800;
-    font-variation-settings: "wdth" 75;
-    text-transform: uppercase;
-    font-size: 1.375rem;
-    line-height: 1.05;
-  }
-  @media (max-width: 699px) {
-    .pager {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .pager .next {
-      text-align: left;
-    }
-  }
 </style>

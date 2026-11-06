@@ -1,4 +1,5 @@
 import type { Locale } from "./locales";
+import type { PluralForms } from "./plural";
 
 const en = {
   "site.name": "Marek Rom",
@@ -103,8 +104,6 @@ const en = {
   "atw.eyebrow": "Along the way",
   "atw.title": "Smaller wins along the way",
   "atw.lead": "Everything here was measured on one project, from April 2026, when I joined a product team that did not use AI at all. Beyond the cases, the same way of working kept paying off in smaller pieces: pipelines, a service brought into the monorepo, handovers to testing, everyday tooling. Each card says what changed, what proves it, and who did the work: an agent, a deterministic script or a person.",
-  "atw.countWins": "smaller wins",
-  "atw.countAreas": "areas",
   "atw.countPeriod": "May – November 2026",
   "atw.toCases": "Back to the cases",
   "toolkit.eyebrow": "Toolkit",
@@ -229,8 +228,6 @@ const cs: Record<UiKey, string> = {
   "atw.eyebrow": "Po cestě",
   "atw.title": "Menší výhry po cestě",
   "atw.lead": "Všechno tady je naměřené na jednom projektu od dubna 2026, kdy jsem přišel do produktového týmu, který AI vůbec nepoužíval. Mimo případy se stejný způsob práce vyplácel i po menších kouscích: pipeliny, služba přestěhovaná do monorepa, předávky testingu, nástroje na každý den. Každá karta říká, co se změnilo, co to dokládá a kdo práci udělal: agent, deterministický skript, nebo člověk.",
-  "atw.countWins": "menších výher",
-  "atw.countAreas": "oblastí",
   "atw.countPeriod": "květen – listopad 2026",
   "atw.toCases": "Zpět na případy",
   "toolkit.eyebrow": "Nástroje",
@@ -255,3 +252,15 @@ const dictionaries: Record<Locale, Record<UiKey, string>> = { en, cs };
 export function t(locale: Locale, key: UiKey): string {
   return dictionaries[locale][key];
 }
+
+/** Plural noun forms for counts, kept apart from the flat string table. */
+export const PLURALS: Record<Locale, Record<"atw.countWins" | "atw.countAreas", PluralForms>> = {
+  en: {
+    "atw.countWins": { one: "smaller win", other: "smaller wins" },
+    "atw.countAreas": { one: "area", other: "areas" },
+  },
+  cs: {
+    "atw.countWins": { one: "menší výhra", few: "menší výhry", other: "menších výher" },
+    "atw.countAreas": { one: "oblast", few: "oblasti", other: "oblastí" },
+  },
+};

@@ -28,7 +28,7 @@ export const CV: Cv = {
   headline: title("Senior Product Engineer"),
   profile: l(
     "Senior Product Engineer with 12 years of delivering web and mobile products, from product design and architecture to production. My current focus is AI-enabled software delivery for whole teams: a shared delivery flow with guardrails, measurements and quality gates that hold with or without AI, and agent tooling that analysts and testers use in their own work. The process that worked before AI stays; AI takes over the grunt work and people decide. Strong TypeScript, React and Next.js foundation, hands-on Node.js, Kotlin and Spring Boot, and a widening back-end and cloud scope.",
-    "Senior Product Engineer s dvanácti lety praxe v dodávání webových a mobilních produktů – od produktového návrhu a architektury až po provoz. Dnes se soustředím na dodávání softwaru s AI pro celé týmy: sdílený delivery flow s mantinely, měřením a kvalitativními branami, které platí s AI i bez ní, a agentní nástroje, které si do své práce vzali i analytici a testeři. Proces, který fungoval před AI, zůstává; mravenčí práci přebírá AI a rozhodují lidé. Pevný základ v TypeScriptu, Reactu a Next.js, praxe s Node.js, Kotlinem a Spring Bootem a postupně rozšiřovaný záběr do backendu a cloudu.",
+    "Senior Product Engineer s dvanácti lety praxe v dodávání webových a mobilních produktů – od produktového návrhu a architektury až po provoz. Dnes se soustředím na dodávání softwaru s AI pro celé týmy: sdílený delivery flow s mantinely, měřením a branami kvality, které platí s AI i bez ní, a agentní nástroje, které si do své práce vzali i analytici a testeři. Proces, který fungoval před AI, zůstává; mravenčí práci přebírá AI a rozhodují lidé. Pevný základ v TypeScriptu, Reactu a Next.js, praxe s Node.js, Kotlinem a Spring Bootem a postupně rozšiřovaný záběr do backendu a cloudu.",
   ),
   roles: [
     {
@@ -39,7 +39,7 @@ export const CV: Cv = {
       to: null,
       summary: l(
         "Lead product engineering for an internet-banking and investment platform built with Next.js, TypeScript and GraphQL, delivered across several parallel release lines. Combine hands-on delivery with technical direction and product coordination. Brought AI-assisted delivery to the whole team: a shared delivery flow with guardrails and quality gates for developers, and AI tooling for testing and analysis, with people approving every result.",
-        "Vedu produktový vývoj platformy internetového bankovnictví a investic (Next.js, TypeScript, GraphQL) dodávané v několika paralelních release liniích. Spojuji vlastní vývoj s technickým směřováním a produktovou koordinací. Zavedl jsem dodávání s AI pro celý tým: sdílený delivery flow s mantinely a kvalitativními branami pro vývojáře a AI nástroje pro testování a analýzu, přičemž každý výsledek schvaluje člověk.",
+        "Vedu produktový vývoj platformy internetového bankovnictví a investic (Next.js, TypeScript, GraphQL) dodávané v několika paralelních release liniích. Spojuji vlastní vývoj s technickým směřováním a produktovou koordinací. Zavedl jsem dodávání s AI pro celý tým: sdílený delivery flow s mantinely a branami kvality pro vývojáře a AI nástroje pro testování a analýzu, přičemž každý výsledek schvaluje člověk.",
       ),
     },
     {

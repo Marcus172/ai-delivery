@@ -17,7 +17,7 @@ export const OFFER: OfferCard[] = [
     title: l("A shared delivery flow with guardrails", "Sdílený delivery flow s mantinely"),
     body: l(
       "I set up the flow your team works in: agent context and rules, quality gates that hold with or without AI, behavioural tests for the agent setup, and a personal tooling layer, so each developer can change tools without changing the process.",
-      "Nastavím flow, ve kterém váš tým pracuje: kontext a pravidla pro agenty, kvalitativní brány, které platí s AI i bez ní, behaviorální testy AI setupu a osobní vrstvu nástrojů, aby si každý vývojář mohl vyměnit nástroj, aniž by se měnil proces.",
+      "Nastavím flow, ve kterém váš tým pracuje: kontext a pravidla pro agenty, brány kvality, které platí s AI i bez ní, behaviorální testy AI setupu a osobní vrstvu nástrojů, aby si každý vývojář mohl vyměnit nástroj, aniž by se měnil proces.",
     ),
   },
   {

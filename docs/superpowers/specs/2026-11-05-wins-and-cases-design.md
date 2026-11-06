@@ -131,7 +131,8 @@ Components to build now (usable from MDX, localized captions via the existing pa
 - **Figure** — a still image (screenshot, photo of a whiteboard, exported diagram). Required `alt`
   and visible caption; optimized through Astro's image pipeline from a per-case asset folder;
   legible in both themes (a framed surface behind light screenshots in dark mode); zoomable to full
-  size without a lightbox dependency (a plain link to the full image is enough).
+  size without a lightbox dependency: a plain link to the full image, which with JS opens a native
+  `<dialog>` that fits the image to the viewport (a readable width with scrolling on a phone).
 - **Clip** — short animated captures. Prefer muted `mp4`/`webm` over GIF (size, and it can be
   paused). No autoplay under `prefers-reduced-motion`; always a visible pause/play control (WCAG
   2.2.2 for anything moving longer than 5 s); a poster frame; a caption. If the author supplies a
@@ -154,7 +155,7 @@ alt text are per locale.
 - Image file names and paths are public — neutral names only.
 - Accessibility: every new page axe-clean in both themes; media components keyboard-operable;
   reduced motion respected; headings keep a single logical outline per page.
-- EN and CS stay structurally in sync: same cases, same order, same components, same media.
+- EN and CS stay structurally in sync: same cases, same order, same components, same media. A screenshot of a localized UI may have a version per locale (`<name>-en.png`, `<name>-cs.png`), showing the same thing.
 
 ## 7. Tests and checks
 

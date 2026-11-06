@@ -80,9 +80,10 @@ const winsHref = localizedPath(locale, "wins");
 </div>
 
 <style>
-  /* No side TOC here: one reading column, as wide as the text measure, centred in the page. */
+  /* No side TOC here: one column, centred, as wide as the widest diagram, so text, examples, stats and
+     diagrams share both edges (the same width as the Wins & cases landing). */
   .column {
-    max-width: 46rem;
+    max-width: 54rem;
     margin-inline: auto;
   }
   .head {
@@ -112,7 +113,6 @@ const winsHref = localizedPath(locale, "wins");
   }
   .lead {
     margin-top: 1.5rem;
-    max-width: 64ch;
     font-size: 1.125rem;
   }
   .glance {
@@ -120,19 +120,9 @@ const winsHref = localizedPath(locale, "wins");
     grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
     gap: 1.5rem 1.75rem;
     margin-top: 2.25rem;
-    max-width: 47.5rem;
   }
   .case {
     padding-block: 1rem 4rem;
-  }
-  /* Diagrams and stat rows need more room than a line of text: on wide screens they step out of the
-     text column, symmetrically, to the width the long-read pages give them. */
-  @media (min-width: 1100px) {
-    .case :global(.body > :is(.scroll, .stats, [data-diagram])) {
-      width: 54rem;
-      max-width: none;
-      margin-inline: -4rem;
-    }
   }
 
   .pager {

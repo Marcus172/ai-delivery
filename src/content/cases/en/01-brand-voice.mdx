@@ -2,17 +2,21 @@
 id: brand-voice
 order: 1
 highlights: ["persona-strings", "persona-proposals"]
-title: "Brand voice as code"
-summary: "A client said the product's copy felt off and gave no example. The brand rules existed; nothing enforced them. The answer was a persona that a person and an agent both read, an audit pipeline that verifies itself before anyone looks, and a loop that carries decisions back into code."
+title: "AI persona for copywriting"
+summary: "A client said the product's copy felt off and gave no example. The brand rules existed; nothing enforced them. The answer was a persona that a person and an agent both read, an audit pipeline that verifies itself before anyone looks, and a loop that carries decisions back into code. Agents apply it as they write; the audit checks the whole application once per release."
 teaser: "The product's copy “felt off” and nobody gave an example. A brand persona that a person and an agent both read turned the complaint into an audit a person approves."
 ---
-import { Note, PersonaPipeline, Stat } from "../../../components/chapter";
+import { Figure, PersonaPipeline, Stat } from "../../../components/chapter";
+import reviewDecisions from "../../../assets/wins/brand-voice/review-document-decisions-en.png";
+import reviewOverview from "../../../assets/wins/brand-voice/review-document-overview-en.png";
+
+import { localizedPath } from "../../../i18n/routes";
 
 export const locale = "en";
 
 ## The brief: "it feels off", no examples
 
-The product had thousands of strings written over years by developers, analysts, translators and the client's own people, in several places with no single gate between them. The client's brand rules existed, but they had been written for other channels, letters and a mobile app, and nobody checked the product against them. The copywriter who was to take the role over was never hired. So I started with an inventory instead of fixes: over 150 terms with more than one translation, the support contact under six different names, the same generic error in about thirty wordings. The vague complaint became a measurable one.
+The product had thousands of strings written over years by developers, analysts, translators and the client's own people, in several places with no single gate between them. The client's brand rules existed, but they had been written for other channels, letters and a mobile app, and nobody checked the product against them. So I started with an inventory instead of fixes: over 150 terms with more than one translation, the support contact under six different names, the same generic error in about thirty wordings. The vague complaint became a measurable one.
 
 ## A persona that a person and an agent both read
 
@@ -56,22 +60,43 @@ A reviewer should approve a sentence where a customer will see it, not in a spre
 
 ## The review document closes the loop
 
-One self-contained HTML document, no server, written for a non-technical reader: no keys, no code, no technical reasons. Changes sit in three parts by what is asked of the client: **(a) by your own rules** (confirm), **(b) our proposals** where the rules are silent (approve), **(c) conflicts in your rules** (decide). Each row shows before, after, the rule's source and the screenshot. The reviewer approves, disagrees or edits, may grant an exception, and exports the decisions as one file. The pipeline validates it, writes approved strings back to the sources by key, skipping any key whose text changed in the meantime, opens one pull request per rule group, and turns rejected findings into exceptions in the persona. The next audit does not raise them again.
+One self-contained HTML file for a non-technical reader. It goes out by email or to a shared drive: no server, no install, no login. Changes sit in three parts by what is asked of the client: **(a) by your own rules** (confirm), **(b) our proposals** where the rules are silent (approve), **(c) conflicts in your rules** (decide).
 
-<div class="example">
-  <span class="k">Review rows, fictional brand</span>
-  <p>Ferrylane · (a) by your rules · "Submit / Confirm / Authorise" on three screens → "Confirm" · <em>approve · disagree · edit</em></p>
-  <p>Ferrylane · (b) our proposal · "Customer line", "Helpdesk", "our team" → "Ferrylane support" · <em>approve · disagree · edit</em></p>
-</div>
+<Figure
+  src={reviewOverview}
+  locale={locale}
+  alt="The top of the review document: title, progress bar, search, filters by part and status, load and export buttons, a short how-to and four counts: 58 proposed changes, 15 per your rules, 38 our proposals, 5 conflicts to decide. Below, the first rule with its source, a note, a before and after example, bulk actions and two rows, each with a screenshot and the string framed."
+  caption="The opening of the document: progress, search and filters, how to work with it, and the count per part. A demo over this website's own texts, with a persona written for the site; a client's document is built the same way."
+/>
+
+How the reviewer works with it:
+
+- **By rule, then by string.** Inside each part the changes are grouped by rule. A rule shows where it comes from in the client's own document, a before/after example and how many of its strings are decided.
+- **Every occurrence in context.** A row shows where the string appears, a screenshot with the string framed (full size on click), today's wording, the proposal with the difference highlighted, and why.
+- **One string or the whole rule.** Approve, disagree, or edit with your own wording, with an optional comment. A rule can be settled at once: approve all, disagree with the rule, approve the remaining.
+- **A note on the rule itself.** When the rule is the problem, not the string, "propose a rule change" in its header takes a note on the rule as a whole.
+- **Finding your way.** Search across texts and keys, filter by part and by state; from the second round on, new and changed findings are marked.
+- **Nothing to lose.** Decisions are saved in the browser as you go. Export writes one file to send back, and loading an exported file opens the work again.
+
+<Figure
+  src={reviewDecisions}
+  locale={locale}
+  alt="A rule with an open rule change proposal: a note on the rule as a whole above its source and example. Below, rows with decisions: one approved, one edited with the reviewer's own wording and a comment, one disagreed."
+  caption="Decisions in progress: approved, disagreed, an edit in the reviewer's own words, and a note that proposes a change to a whole rule."
+/>
+
+The returned file closes the loop. The pipeline first checks it against the run the document came from: the same set of findings, every decision paired with a finding, variables kept in edited texts, and contradictory decisions listed. Then it writes approved and edited strings back to the sources by key, without reformatting the file and skipping any key whose text changed in the meantime, opens one pull request per rule group, and turns rejected findings into exceptions in the persona and rule notes into proposed rule changes, which a person approves. In the next round the previous decisions are filled in, and rejected findings are not raised again.
+
+## Part of everyday development, not a one-off audit
+
+The persona ships as a plugin in the team's <a href={localizedPath(locale, "ai-delivery", "enablement")}>marketplace</a>, so every agent in the delivery flow has it wherever text is written or checked: building the UI and the back-end, checking an analysis or the client's brief, reviewing a Figma design. New strings follow the rules from the start, so the flow should not bring in new errors. The audit stays as a separate run: once per release it checks the application as a whole.
+
+It also reaches past this codebase. The text a customer reads comes from other suppliers too, the mobile app, the sign-in (OIDC) provider, the client's website and more, and the audit takes them in as sources. The brand is checked where the customer reads it, not only where we write it.
 
 ## Why this was not possible without AI
 
-1. **The person was missing.** Without AI the project would have stalled, or produced one more style guide that nobody enforces.
+1. **Nobody owned the copy.** Without AI the project would have stalled, or produced one more style guide that nobody enforces.
 2. **Judgment in a non-English language at volume.** Ordinary linters handle this language with regular expressions and a word list. Tone, clarity and "what happened and what to do" across thousands of strings and dozens of rules is well over a hundred thousand string-by-rule decisions, which no person makes consistently.
 3. **Context for every string.** Finding the state where one error message appears is tens of minutes of a tester's time; the agents did it for hundreds of keys.
 4. **Repeatability.** Every change of the persona or the code is a new run that recomputes only what changed. A manual audit is one snapshot, stale by the next release.
 5. **People only approve.** Nobody writes from scratch; the human work of the whole phase was planned at roughly ten person-days, an estimate, while the agents ran in parallel. From an empty folder to the complete document with screenshots took about four weeks, alongside normal delivery.
-
-<Note>
-  <strong>Known limits.</strong> The persona does not yet cover spelling and grammar, so the audit does not report typos. Gates on pull requests and releases, further string sources and a second brand are designed, not running. What the client did with the document is not something I will describe here.
-</Note>

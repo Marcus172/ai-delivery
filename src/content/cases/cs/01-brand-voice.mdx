@@ -2,17 +2,21 @@
 id: brand-voice
 order: 1
 highlights: ["persona-strings", "persona-proposals"]
-title: "Hlas značky jako kód"
-summary: "Klient řekl, že texty v produktu „nesedí“, a nedal jediný příklad. Pravidla značky existovala, jen je nikdo nehlídal. Odpovědí byla persona, kterou čte člověk i agent, auditní pipeline, která se ověří dřív, než se na ni někdo podívá, a smyčka, která vrací rozhodnutí zpátky do kódu."
+title: "AI persona pro copywriting"
+summary: "Klient řekl, že texty v produktu „nesedí“, a nedal jediný příklad. Pravidla značky existovala, jen je nikdo nehlídal. Odpovědí byla persona, kterou čte člověk i agent, auditní pipeline, která se ověří dřív, než se na ni někdo podívá, a smyčka, která vrací rozhodnutí zpátky do kódu. Agenti ji používají přímo při psaní a audit jednou za vydání zkontroluje celou aplikaci."
 teaser: "Texty v produktu „nesedí“ a nikdo nedal příklad. Persona značky, kterou čte člověk i agent, z výtky udělala audit, který schvaluje člověk."
 ---
-import { Note, PersonaPipeline, Stat } from "../../../components/chapter";
+import { Figure, PersonaPipeline, Stat } from "../../../components/chapter";
+import reviewDecisions from "../../../assets/wins/brand-voice/review-document-decisions-cs.png";
+import reviewOverview from "../../../assets/wins/brand-voice/review-document-overview-cs.png";
+
+import { localizedPath } from "../../../i18n/routes";
 
 export const locale = "cs";
 
 ## Zadání: „nesedí nám to“, bez příkladu
 
-Produkt měl tisíce textů, které roky psali vývojáři, analytici, překladatelé i&nbsp;lidé na straně klienta, na několika místech a&nbsp;bez jediné brány, kudy by prošlo všechno. Pravidla značky klient měl, jenže byla psaná pro jiné kanály, dopisy a&nbsp;mobilní aplikaci, a&nbsp;produkt proti nim nikdo nekontroloval. Copywriter, který měl roli převzít, nakonec nebyl najat. Začal jsem tedy inventurou, ne opravami: přes 150 termínů s&nbsp;více než jedním překladem, kontakt na podporu pod šesti různými jmény, tatáž obecná chyba ve zhruba třiceti formulacích. Z&nbsp;vágní stížnosti se stala měřitelná.
+Produkt měl tisíce textů, které roky psali vývojáři, analytici, překladatelé i&nbsp;lidé na straně klienta, na několika místech a&nbsp;bez jediné brány, kudy by prošlo všechno. Pravidla značky klient měl, jenže byla psaná pro jiné kanály, dopisy a&nbsp;mobilní aplikaci, a&nbsp;produkt proti nim nikdo nekontroloval. Začal jsem tedy inventurou, ne opravami: přes 150 termínů s&nbsp;více než jedním překladem, kontakt na podporu pod šesti různými jmény, tatáž obecná chyba ve zhruba třiceti formulacích. Z&nbsp;vágní stížnosti se stala měřitelná.
 
 ## Persona, kterou čte člověk i&nbsp;agent
 
@@ -56,22 +60,43 @@ Recenzent má schvalovat větu tam, kde ji uvidí zákazník, ne v&nbsp;řádku 
 
 ## Dokument k&nbsp;review uzavírá kruh
 
-Jeden samostatný HTML dokument, bez serveru, psaný pro netechnického čtenáře: žádné klíče, žádný kód, žádné technické důvody. Změny jsou ve třech částech podle toho, co se od klienta chce: **(a) podle vašich pravidel** (potvrdit), **(b) naše návrhy** tam, kde pravidla mlčí (schválit), **(c) rozpory ve vašich pravidlech** (rozhodnout). Každý řádek ukazuje text před a&nbsp;po, zdroj pravidla a&nbsp;snímek. Recenzent schválí, nesouhlasí, nebo upraví, může udělit výjimku a&nbsp;rozhodnutí vyexportuje jako jeden soubor. Pipeline ho zvaliduje, schválené texty zapíše po klíčích zpátky do zdrojů, klíč, jehož text se mezitím změnil, přeskočí, otevře jeden pull request na skupinu pravidel a&nbsp;ze zamítnutých nálezů udělá výjimky v&nbsp;personě. Další audit je už nehlásí.
+Jeden samostatný HTML soubor pro netechnického čtenáře. Odchází e-mailem nebo na sdílený disk: bez serveru, bez instalace, bez přihlášení. Změny jsou ve třech částech podle toho, co se od klienta chce: **(a) podle vašich pravidel** (potvrdit), **(b) naše návrhy** tam, kde pravidla mlčí (schválit), **(c) rozpory ve vašich pravidlech** (rozhodnout).
 
-<div class="example">
-  <span class="k">Řádky review, smyšlená značka</span>
-  <p>Ferrylane · (a) podle vašich pravidel · „Odeslat / Potvrdit / Autorizovat“ na třech obrazovkách → „Potvrdit“ · <em>schválit · nesouhlasím · upravit</em></p>
-  <p>Ferrylane · (b) náš návrh · „Zákaznická linka“, „Helpdesk“, „náš tým“ → „podpora Ferrylane“ · <em>schválit · nesouhlasím · upravit</em></p>
-</div>
+<Figure
+  src={reviewOverview}
+  locale={locale}
+  alt="Začátek dokumentu k review: nadpis, ukazatel průběhu, hledání, filtry podle části a stavu, tlačítka pro načtení a export, krátký návod a čtyři počty: 46 navrhovaných změn, 37 podle vašich pravidel, 5 našich návrhů, 4 rozpory. Pod tím první pravidlo se zdrojem, příkladem před a po, hromadnými akcemi a dvěma řádky, každý se snímkem a textem v rámečku."
+  caption="Začátek dokumentu: průběh, hledání a filtry, návod k práci a počet změn v každé části. Ukázka nad texty tohoto webu s personou napsanou pro web; dokument pro klienta vzniká stejně."
+/>
+
+Jak s&nbsp;ním recenzent pracuje:
+
+- **Po pravidlech, pak po textech.** V&nbsp;každé části jsou změny seskupené podle pravidel. Pravidlo ukazuje, odkud v&nbsp;klientově dokumentu pochází, příklad před a&nbsp;po a&nbsp;kolik jeho textů je rozhodnutých.
+- **Každý výskyt v&nbsp;kontextu.** Řádek ukazuje, kde se text objeví, snímek s&nbsp;textem v&nbsp;rámečku (po kliknutí v&nbsp;plné velikosti), dnešní znění, návrh se zvýrazněným rozdílem a&nbsp;proč.
+- **Jeden text, nebo celé pravidlo.** Schválit, nesouhlasit, nebo upravit vlastním zněním, s&nbsp;nepovinným komentářem. Pravidlo jde vyřídit najednou: schválit vše, nesouhlasit s&nbsp;pravidlem, schválit zbývající.
+- **Poznámka k&nbsp;pravidlu samotnému.** Když je problém v&nbsp;pravidle, ne v&nbsp;textu, „navrhnout změnu pravidla“ v&nbsp;jeho záhlaví vezme poznámku k&nbsp;pravidlu jako celku.
+- **Orientace.** Hledání v&nbsp;textech i&nbsp;klíčích, filtr podle části a&nbsp;stavu; od druhého kola jsou nové a&nbsp;změněné nálezy označené.
+- **Nic se neztratí.** Rozhodnutí se průběžně ukládají v&nbsp;prohlížeči. Export zapíše jeden soubor, který se pošle zpátky, a&nbsp;načtením exportovaného souboru se práce zase otevře.
+
+<Figure
+  src={reviewDecisions}
+  locale={locale}
+  alt="Pravidlo s otevřeným návrhem změny: poznámka k pravidlu jako celku nad jeho zdrojem a příkladem. Pod tím řádky s rozhodnutím: jeden schválený, jeden zamítnutý a zašedlý, jeden upravený vlastním zněním."
+  caption="Rozhodování v běhu: schváleno, nesouhlas, úprava vlastními slovy a poznámka, která navrhuje změnu celého pravidla."
+/>
+
+Vrácený soubor uzavře kruh. Pipeline ho nejdřív ověří proti běhu, ze kterého dokument vznikl: stejná sada nálezů, každé rozhodnutí spárované s&nbsp;nálezem, proměnné zachované v&nbsp;upravených textech, a&nbsp;vypíše rozporná rozhodnutí. Pak schválené a&nbsp;upravené texty zapíše po klíčích zpátky do zdrojů, bez přeformátování souboru a&nbsp;s&nbsp;přeskočením klíčů, jejichž text se mezitím změnil, otevře jeden pull request na skupinu pravidel, ze zamítnutých nálezů udělá výjimky v&nbsp;personě a&nbsp;z&nbsp;poznámek k&nbsp;pravidlům návrhy změn pravidel, které schvaluje člověk. V&nbsp;dalším kole jsou minulá rozhodnutí předvyplněná a&nbsp;zamítnuté nálezy se znovu nehlásí.
+
+## Součást vývoje, ne jednorázový audit
+
+Persona je plugin v&nbsp;týmovém <a href={localizedPath(locale, "ai-delivery", "enablement")}>marketplace</a>, takže ji má každý agent v&nbsp;delivery flow všude, kde se text píše nebo kontroluje: při vývoji rozhraní i&nbsp;backendu, při kontrole analýzy a&nbsp;zadání klienta i&nbsp;při revizi návrhu ve Figmě. Nové texty vznikají rovnou podle pravidel, takže by flow nemělo přinášet nové chyby. Audit zůstává jako samostatný běh: jednou za vydání zkontroluje aplikaci jako celek.
+
+A&nbsp;nekončí u&nbsp;tohoto kódu. Texty, které zákazník čte, dodávají i&nbsp;jiní dodavatelé, mobilní aplikace, poskytovatel přihlášení (OIDC), web klienta a&nbsp;další, a&nbsp;audit je bere jako zdroje. Značka se tak kontroluje tam, kde ji zákazník čte, ne jen tam, kde ji píšeme my.
 
 ## Proč by to bez AI nešlo
 
-1. **Chyběl člověk.** Bez AI by projekt buď stál, nebo by vznikl další style guide, který nikdo nevynucuje.
+1. **Texty neměly vlastníka.** Bez AI by projekt buď stál, nebo by vznikl další style guide, který nikdo nevynucuje.
 2. **Úsudek v&nbsp;češtině ve velkém objemu.** Běžné lintery umí v&nbsp;češtině jen regulární výrazy a&nbsp;seznam slov. Tón, srozumitelnost a&nbsp;„co se stalo a&nbsp;co dělat“ přes tisíce textů a&nbsp;desítky pravidel je hodně přes sto tisíc rozhodnutí text × pravidlo, která žádný člověk neudělá konzistentně.
 3. **Kontext pro každý text.** Najít stav, kde se objeví jedna chybová hláška, jsou desítky minut práce testera; agenti to udělali pro stovky klíčů.
 4. **Opakovatelnost.** Každá změna persony nebo kódu je nový běh, který přepočítá jen to, co se změnilo. Ruční audit je jeden snímek, zastaralý do příštího vydání.
 5. **Lidé jen schvalují.** Nikdo nepíše od nuly; lidská práce celé fáze byla plánovaná na zhruba deset člověkodnů, jako odhad, zatímco agenti běželi paralelně. Od prázdné složky ke kompletnímu dokumentu se snímky to trvalo asi čtyři týdny, souběžně s&nbsp;běžnou dodávkou.
-
-<Note>
-  <strong>Známé limity.</strong> Persona zatím nepokrývá pravopis a&nbsp;gramatiku, takže audit nehlásí překlepy. Brány na pull requestech a&nbsp;vydáních, další zdroje textů a&nbsp;druhá značka jsou navržené, ne spuštěné. Co klient s&nbsp;dokumentem udělal, tady popisovat nebudu.
-</Note>

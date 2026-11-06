@@ -35,7 +35,7 @@ const STATIONS: Station[] = [
 const W = 1010;
 const H = 236;
 const Y = 112;
-const X0 = 40;
+const X0 = 56;
 const X_DEST = 760;
 const STEP = (X_DEST - X0 - 60) / STATIONS.length;
 const sx = (i: number) => X0 + 50 + i * STEP;
@@ -58,8 +58,9 @@ const spurFrom = sx(0);
 
     <line class="track" x1={X0} y1={Y} x2={X_DEST - 14} y2={Y} />
 
-    <path class="spur" d={`M${spurFrom} ${Y} C ${spurFrom + 40} ${Y + 50}, ${spurFrom + 60} ${Y + 78}, ${spurFrom + 120} ${Y + 84}`} />
-    <text class="out" x={spurFrom + 128} y={Y + 88} font-size="12.5">{OUT[locale]}</text>
+    {/* Straight down first, clear of the next station's note, then right to its label. */}
+    <path class="spur" d={`M${spurFrom} ${Y} C ${spurFrom + 2} ${Y + 50}, ${spurFrom + 10} ${Y + 82}, ${spurFrom + 60} ${Y + 84} L ${spurFrom + 120} ${Y + 84}`} />
+    <text class="out" x={spurFrom + 128} y={Y + 88} font-size="13">{OUT[locale]}</text>
 
     {
       STATIONS.map((s, i) => {
@@ -73,7 +74,7 @@ const spurFrom = sx(0);
             <text class="name" x={sx(i)} y={ty} text-anchor="middle" font-size="13">
               {name}
             </text>
-            <text class="note" x={sx(i)} y={ty + (up ? -16 : 16)} text-anchor="middle" font-size="12">
+            <text class="note" x={sx(i)} y={ty + (up ? -16 : 16)} text-anchor="middle" font-size="13">
               {note}
             </text>
           </g>
@@ -90,7 +91,7 @@ const spurFrom = sx(0);
       ))}
     </g>
 
-    <text class="legend" x={X0} y={H - 8} font-size="12.5">{LEGEND[locale]}</text>
+    <text class="legend" x={X0} y={H - 8} font-size="13">{LEGEND[locale]}</text>
   </svg>
 </div>
 
@@ -103,9 +104,8 @@ const spurFrom = sx(0);
   .trail {
     display: block;
     width: 100%;
-    /* 780 / 860 keeps 12 px notes ≥ 11 px rendered in a 358 px phone box. */
-    /* 930 / 1010 keeps 12 px notes ≥ 11 px rendered in a 358 px phone box. */
-    min-width: 58.125rem;
+    /* 860 / 1010 keeps 13 px labels ≥ 11 px and fits the 860 px column every page shares. */
+    min-width: 53.75rem;
     overflow: visible;
   }
   .map {

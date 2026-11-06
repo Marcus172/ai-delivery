@@ -1,6 +1,7 @@
 ---
 /**
- * Long-form body for MDX content (AI Delivery chapters, Results, case pages): text measure, lists, stats, examples, caveats.
+ * Long-form body for MDX content (AI Delivery chapters, Results, case pages): lists, stats, examples, caveats.
+ * Every block runs to the column edge; the page decides the column width, so text and diagrams share both edges.
  * Text rules target the body's own children only (`>`), so they never leak into the markup of a diagram.
  */
 import { linkToolsInHtml } from "../lib/link-tools-html";
@@ -19,13 +20,6 @@ const html = await Astro.slots.render("default");
 <style>
   .body {
     margin-top: 1.75rem;
-  }
-  .body > :global(p),
-  .body > :global(ul),
-  .body > :global(ol),
-  .body > :global(h2),
-  .body > :global(h3) {
-    max-width: 68ch;
   }
   /* On a case page the body's sections are h2 (the page has no chapter level); they read like h3 in a chapter. */
   .body > :global(h2) {
@@ -66,12 +60,12 @@ const html = await Astro.slots.render("default");
     grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
     gap: 1.5rem 1.75rem;
     margin-top: 2rem;
-    max-width: 47.5rem;
   }
   .body :global(.stats + p),
   .body :global(.band + p),
   .body :global(.scroll + p),
   .body :global(.note + p),
+  .body :global(.media + p),
   .body :global(.stat + p) {
     margin-top: 2rem;
   }
@@ -86,7 +80,6 @@ const html = await Astro.slots.render("default");
     padding: 1.375rem 1.5rem;
     background: var(--tint);
     border-radius: 0.875rem;
-    max-width: 68ch;
   }
   .body :global(.example p + p) {
     margin-top: 0.625rem;
@@ -103,7 +96,6 @@ const html = await Astro.slots.render("default");
     list-style: none;
     margin: 1.25rem 0 0;
     padding: 0;
-    max-width: 53.75rem;
   }
   .body :global(.caveats + h3) {
     margin-top: 3rem;
@@ -113,7 +105,6 @@ const html = await Astro.slots.render("default");
     padding: 1.125rem 1.375rem;
     border: 1px dashed var(--line);
     border-radius: 0.875rem;
-    max-width: 68ch;
     color: var(--mute);
   }
   .body :global(.estimate .stat) {

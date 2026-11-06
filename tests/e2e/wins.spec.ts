@@ -60,12 +60,25 @@ for (const locale of LOCALES) {
         const card = cards.nth(i);
         await expect(card).toHaveAttribute("data-case", id);
         await expect(card.locator(`h3 a[href="${PREFIX[locale]}wins/${id}/"]`)).toHaveCount(1);
+        // One link per card, named by the title; it covers the whole card.
+        await expect(card.locator("a")).toHaveCount(1);
         const stats = card.locator(".stat");
         expect(await stats.count(), id).toBeGreaterThan(0);
         for (let j = 0; j < (await stats.count()); j++) {
           expect([t(locale, "badge.measured"), t(locale, "badge.estimate")]).toContain((await stats.nth(j).locator("small").textContent())?.trim());
         }
       }
+    });
+
+    test("a click anywhere on a case card opens the case", async ({ page }) => {
+      await page.goto(WINS[locale]);
+      // A real mouse click on the stats: the title link's overlay covers them, so it takes the click.
+      const stats = page.locator("[data-case-cards] > li").nth(1).locator(".card-stats");
+      await stats.scrollIntoViewIfNeeded();
+      const box = await stats.boundingBox();
+      if (!box) throw new Error("case card stats not rendered");
+      await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+      await expect(page).toHaveURL(new RegExp(`${PREFIX[locale]}wins/${CASES[1]}/$`));
     });
 
     for (const [i, id] of CASES.entries()) {

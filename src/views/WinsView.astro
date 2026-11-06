@@ -59,12 +59,12 @@ const cases = await loadCases(locale);
           <div class="card-stats">
             {c.highlights.map((id) => <Stat id={id} locale={locale} detail={false} />)}
           </div>
-          <a class="card-more" href={subPagePath(locale, "wins", c.id)} aria-hidden="true" tabindex="-1">
+          <span class="card-more" aria-hidden="true">
             {t(locale, "wins.readCase")}
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M5 12h14M13 6l6 6-6 6" />
             </svg>
-          </a>
+          </span>
         </li>
       ))
     }
@@ -162,6 +162,20 @@ const cases = await loadCases(locale);
   }
   .card h3 a {
     text-decoration: none;
+  }
+  /* The title link stretches over the whole card: one link, named by the title, clickable anywhere. */
+  .card h3 a::after {
+    content: "";
+    position: absolute;
+    inset: -2px 0 0;
+    border-radius: 0 0 0.875rem 0.875rem;
+  }
+  .card h3 a:focus-visible {
+    outline: none;
+  }
+  .card h3 a:focus-visible::after {
+    outline: 2px solid var(--acc);
+    outline-offset: 0.1875rem;
   }
   .card h3 a:hover {
     text-decoration: underline;

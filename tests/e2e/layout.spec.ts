@@ -75,6 +75,8 @@ for (const [url, other] of PAGES) {
         const name = (el: Element) => `${el.tagName.toLowerCase()}${el.classList[0] ? "." + el.classList[0] : ""}`;
         for (const el of main.querySelectorAll<HTMLElement>("p, ul, ol, dl, details, aside, figcaption, .example, .estimate, .stats, .caveats")) {
           if (el.closest("svg, dialog, .toc-side")) continue;
+          // Leads and Journey entries are capped to a reading measure on purpose (see "lead paragraphs keep a readable measure").
+          if (el.matches(".lead") || el.closest(".card-text, .month-text")) continue;
           const cs = getComputedStyle(el);
           if (cs.display === "none" || !el.getBoundingClientRect().width) continue;
           const parent = el.parentElement as HTMLElement;
@@ -291,5 +293,15 @@ test.describe("rail labels", () => {
         }
       });
     }
+  }
+});
+
+test("lead paragraphs keep a readable measure", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["", "journey/", "wins/"]) {
+    await page.goto(`${BASE}${path}`);
+    const widths = await page.locator(".lead").evaluateAll((els) => els.map((el) => el.getBoundingClientRect().width));
+    expect(widths.length, `${path || "/"} has a .lead`).toBeGreaterThan(0);
+    for (const w of widths) expect(w, `${path || "/"} .lead width`).toBeLessThanOrEqual(760);
   }
 });

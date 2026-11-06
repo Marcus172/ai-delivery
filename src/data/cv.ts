@@ -19,7 +19,7 @@ export type Cv = {
   roles: Role[];
   skills: { group: L10n; items: string[] }[];
   languages: L10n[];
-  contact: { email: string; linkedin: string; github: string };
+  contact: { email: string; linkedin: string; github: string; site: string };
 };
 
 /** Historical job titles stay as they were (readers check them against LinkedIn and references). */
@@ -152,10 +152,11 @@ export const CV: Cv = {
     },
     { group: l("Product & leadership", "Produkt a vedení"), items: ["Product design", "Figma", "Tech leadership", "Mentoring", "Workshops & training"] },
   ],
-  languages: [l("English — fluent", "angličtina – plynně"), l("Czech — fluent", "čeština – plynně")],
+  languages: [l("English — fluent", "angličtina – plynně"), l("Czech — native", "čeština – rodilý mluvčí")],
   contact: {
     email: "marek.marcus.rom@gmail.com",
     linkedin: "https://www.linkedin.com/in/marek-rom-a91445b8",
     github: "https://github.com/Marcus172",
+    site: "https://marcus172.github.io/ai-delivery/",
   },
 };

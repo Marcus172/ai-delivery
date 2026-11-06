@@ -243,4 +243,21 @@ test.describe("mobile diagrams (390 px)", () => {
       for (const r of regions) if (r.overflow) expect(r.hint, path).toBe(true);
     }
   });
+
+  test("a hint appears when a hidden overflowing region is revealed", async ({ page }) => {
+    await page.goto(`${BASE}ai-delivery/`);
+    // No diagram lives inside a <details> today, so move one into a closed one and open it.
+    await page.evaluate(() => {
+      const region = [...document.querySelectorAll<HTMLElement>(".hscroll")].find((el) => el.scrollWidth > el.clientWidth)!;
+      const hint = region.nextElementSibling!;
+      const d = document.createElement("details");
+      region.before(d);
+      d.append(document.createElement("summary"), region, hint);
+      d.id = "reveal-test";
+    });
+    const hint = page.locator("#reveal-test .hscroll-hint");
+    await expect(hint).toBeHidden();
+    await page.locator("#reveal-test summary").evaluate((el) => ((el.parentElement as HTMLDetailsElement).open = true));
+    await expect(hint).toBeVisible();
+  });
 });

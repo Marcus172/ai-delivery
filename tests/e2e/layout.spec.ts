@@ -261,3 +261,35 @@ test.describe("mobile diagrams (390 px)", () => {
     await expect(hint).toBeVisible();
   });
 });
+
+const SHORT: Record<string, string[]> = {
+  "": ["Intro", "Journey", "AI", "Wins", "Toolkit", "CV"],
+  "cs/": ["Úvod", "Cesta", "AI", "Výsledky", "Nástroje", "CV"],
+};
+
+test.describe("rail labels", () => {
+  for (const [path, labels] of Object.entries(SHORT)) {
+    for (const [w, h] of [
+      [1440, 900],
+      [390, 844],
+    ]) {
+      test(`rail shows a text label for every page (${path || "en"}, ${w}px)`, async ({ page }) => {
+        await page.setViewportSize({ width: w, height: h });
+        await page.goto(`${BASE}${path}`);
+        const links = page.locator("nav.rail a[href]:not(.mark):not([data-lang-switch])");
+        await expect(links).toHaveCount(labels.length);
+        for (let i = 0; i < labels.length; i++) {
+          const label = links.nth(i).locator(".label");
+          await expect(label).toBeVisible();
+          await expect(label).toHaveText(labels[i]);
+        }
+        if (w === 390) {
+          const fits = await page.locator("nav.rail").evaluate((el) => el.scrollWidth <= el.clientWidth);
+          expect(fits, "rail needs no horizontal scroll").toBe(true);
+          const box = await links.first().boundingBox();
+          expect(box!.height).toBeGreaterThanOrEqual(44);
+        }
+      });
+    }
+  }
+});

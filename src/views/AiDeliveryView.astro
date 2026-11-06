@@ -52,8 +52,11 @@ const moved: Record<string, string> = {
   <p class="as-of">{t(locale, "ai.asOf")}</p>
 </header>
 
-<details class="toc-details" data-toc-details>
-  <summary>{t(locale, "ai.toc")}</summary>
+<details class="toc-details" data-toc-details data-toc-bar>
+  <summary>
+    <span class="toc-label">{t(locale, "ai.toc")}</span>
+    <span class="toc-current" data-toc-current></span>
+  </summary>
   <nav data-toc aria-label={t(locale, "ai.toc")}>
     <ol>
       {
@@ -135,18 +138,37 @@ const moved: Record<string, string> = {
 </div>
 
 <script>
-  // Mark the chapter in view in the side TOC. No motion, no scroll hijacking: links stay plain anchors.
-  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>(".toc-side nav[data-toc] a"));
-  const sections = links
-    .map((a) => document.querySelector<HTMLElement>(a.getAttribute("href") ?? ""))
+  // Mark the chapter in view in both TOCs (side list on desktop, bar on mobile). No motion, no scroll
+  // hijacking: links stay plain anchors.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>("nav[data-toc] a"));
+  const sections = Array.from(new Set(links.map((a) => a.getAttribute("href") ?? "")))
+    .map((h) => document.querySelector<HTMLElement>(h))
     .filter((s): s is HTMLElement => !!s);
+  const bar = document.querySelector<HTMLDetailsElement>("[data-toc-bar]");
+  const current = bar?.querySelector<HTMLElement>("[data-toc-current]");
+  const root = document.documentElement;
+  // The mobile rail and the chapter bar are sticky; their heights keep anchors from landing under them.
+  const measure = () => {
+    const rail = document.querySelector<HTMLElement>(".rail");
+    const narrow = matchMedia("(max-width: 899px)").matches;
+    root.style.setProperty("--rail-h", `${narrow && rail ? rail.offsetHeight : 0}px`);
+    root.style.setProperty("--bar-h", `${narrow && bar ? bar.querySelector("summary")!.offsetHeight : 0}px`);
+  };
+  measure();
+  addEventListener("resize", measure);
+  for (const a of links) a.addEventListener("click", () => bar?.removeAttribute("open"));
   if (links.length && "IntersectionObserver" in window) {
     const visible = new Set<string>();
     const mark = () => {
-      const current = sections.find((s) => visible.has(s.id))?.id;
+      const section = sections.find((s) => visible.has(s.id));
       for (const a of links) {
-        if (a.getAttribute("href") === `#${current}`) a.setAttribute("aria-current", "true");
+        if (section && a.getAttribute("href") === `#${section.id}`) a.setAttribute("aria-current", "true");
         else a.removeAttribute("aria-current");
+      }
+      if (current) {
+        const n = section?.querySelector("[data-chapter-number]")?.textContent?.match(/\d+/)?.[0];
+        const h = section?.querySelector("h2")?.textContent?.trim();
+        current.textContent = section && h ? `· ${n} ${h}` : "";
       }
     };
     const io = new IntersectionObserver(
@@ -232,6 +254,17 @@ const moved: Record<string, string> = {
     align-items: center;
     gap: 0.625rem;
   }
+  .toc-label {
+    flex: none;
+  }
+  .toc-current {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: var(--mute);
+  }
   .toc-details summary::-webkit-details-marker {
     display: none;
   }
@@ -280,7 +313,7 @@ const moved: Record<string, string> = {
   .chapter {
     padding-block: 4rem;
     border-top: 1px solid var(--line);
-    scroll-margin-top: 0.75rem;
+    scroll-margin-top: calc(var(--rail-h, 0px) + var(--bar-h, 0px) + 1rem);
   }
   .chapter:first-child {
     border-top: 0;
@@ -365,6 +398,27 @@ const moved: Record<string, string> = {
     }
     .chapter:first-child {
       padding-top: 1.75rem;
+    }
+    /* Chapter bar: stays under the sticky rail (z-index 5) while reading. */
+    .toc-details {
+      position: sticky;
+      top: var(--rail-h, 3.25rem);
+      z-index: 4;
+      margin-top: 0;
+      padding-bottom: 0;
+      background: var(--bg);
+    }
+    .toc-details summary {
+      padding-block: 0.75rem;
+    }
+    .toc-details summary:focus-visible {
+      outline: 2px solid var(--acc);
+      outline-offset: -2px;
+    }
+    .toc-details nav {
+      max-height: calc(100dvh - var(--rail-h, 3.25rem) - var(--bar-h, 3rem) - 1rem);
+      overflow-y: auto;
+      padding-bottom: 0.75rem;
     }
   }
 </style>

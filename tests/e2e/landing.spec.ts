@@ -230,3 +230,44 @@ for (const locale of LOCALES) {
     }
   });
 }
+
+for (const locale of LOCALES) {
+  test.describe(`landing CTA hierarchy (${locale})`, () => {
+    test("email is the primary action, social links are icon-only", async ({
+      page,
+    }) => {
+      await page.goto(URL_OF[locale]);
+      const links = page.locator(".cta").first().locator("a");
+      await expect(links).toHaveCount(4);
+      const first = links.nth(0);
+      await expect(first).toHaveAttribute("href", /^mailto:/);
+      await expect(first).toHaveClass(/\bbtn\b/);
+      await expect(first).not.toHaveClass(/\bghost\b/);
+      await expect(links.nth(1)).toHaveAttribute("download", "");
+      for (const [i, name] of [
+        [2, t(locale, "cta.linkedin")],
+        [3, t(locale, "cta.github")],
+      ] as const) {
+        const a = links.nth(i);
+        await expect(a).toHaveAttribute("aria-label", name);
+        await expect(a).toHaveText("");
+        const box = await a.boundingBox();
+        expect(box!.width).toBeGreaterThanOrEqual(44);
+        expect(box!.height).toBeGreaterThanOrEqual(44);
+      }
+    });
+
+    for (const width of [1440, 1024]) {
+      test(`row stays on one line at ${width}px`, async ({ page }) => {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(URL_OF[locale]);
+        const tops = await page
+          .locator(".cta")
+          .first()
+          .locator("a")
+          .evaluateAll((els) => els.map((e) => (e as HTMLElement).offsetTop));
+        expect(new Set(tops).size).toBe(1);
+      });
+    }
+  });
+}

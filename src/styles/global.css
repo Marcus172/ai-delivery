@@ -84,6 +84,7 @@ h3 {
 .lead {
   font-size: 1.125rem;
   color: var(--mute);
+  max-width: 64ch;
 }
 .mute {
   color: var(--mute);

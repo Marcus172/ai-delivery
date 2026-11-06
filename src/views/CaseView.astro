@@ -167,6 +167,10 @@ const winsHref = localizedPath(locale, "wins");
   .case {
     padding-block: 1rem 4rem;
   }
+  /* A little air above a section heading reached from the index (the mobile rail is reserved globally). */
+  .case :global(h2[id]) {
+    scroll-margin-top: 1rem;
+  }
 
   .pager {
     display: grid;

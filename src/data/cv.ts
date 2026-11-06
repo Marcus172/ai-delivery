@@ -13,6 +13,8 @@ export type Role = {
 
 export type Cv = {
   headline: L10n;
+  /** One-line facts for recruiters (role now, place, languages, availability), shown on landing and CV. */
+  facts: L10n[];
   profile: L10n;
   roles: Role[];
   skills: { group: L10n; items: string[] }[];
@@ -26,6 +28,12 @@ const title = (t: string): L10n => ({ en: t, cs: t });
 // src: author's CV (PDF), rewritten towards product engineering; current role per spec §5.4.
 export const CV: Cv = {
   headline: title("Senior Product Engineer"),
+  facts: [
+    l("Now: Product Engineering & AI Lead", "Teď: Product Engineering & AI Lead"),
+    l("Prague or remote", "Praha nebo remote"),
+    l("English, Czech", "čeština, angličtina"),
+    l("Available from January 2027", "K dispozici od ledna 2027"),
+  ],
   profile: l(
     "Senior Product Engineer with 12 years of delivering web and mobile products, from product design and architecture to production. My current focus is AI-enabled software delivery for whole teams: a shared delivery flow with guardrails, measurements and quality gates that hold with or without AI, and agent tooling that analysts and testers use in their own work. The process that worked before AI stays; AI takes over the grunt work and people decide. Strong TypeScript, React and Next.js foundation, hands-on Node.js, Kotlin and Spring Boot, and a widening back-end and cloud scope.",
     "Senior Product Engineer s dvanácti lety praxe v dodávání webových a mobilních produktů – od produktového návrhu a architektury až po provoz. Dnes se soustředím na dodávání softwaru s AI pro celé týmy: sdílený delivery flow s mantinely, měřením a branami kvality, které platí s AI i bez ní, a agentní nástroje, které si do své práce vzali i analytici a testeři. Proces, který fungoval před AI, zůstává; mravenčí práci přebírá AI a rozhodují lidé. Pevný základ v TypeScriptu, Reactu a Next.js, praxe s Node.js, Kotlinem a Spring Bootem a postupně rozšiřovaný záběr do backendu a cloudu.",

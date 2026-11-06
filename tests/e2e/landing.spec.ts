@@ -271,3 +271,23 @@ for (const locale of LOCALES) {
     }
   });
 }
+
+for (const locale of LOCALES) {
+  for (const vp of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    test.describe(`landing hero reader paths and facts (${locale}, ${vp.width}px)`, () => {
+      test.use({ viewport: vp });
+
+      test("facts line is in the first viewport and names the role", async ({ page }) => {
+        await page.goto(URL_OF[locale]);
+        const facts = page.locator("[data-facts]");
+        await expect(facts).toBeVisible();
+        await expect(facts).toContainText("Product Engineering & AI Lead");
+        const box = await facts.boundingBox();
+        expect(box!.y + box!.height).toBeLessThanOrEqual(vp.height);
+      });
+    });
+  }
+}

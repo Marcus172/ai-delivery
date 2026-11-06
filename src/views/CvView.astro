@@ -15,6 +15,7 @@ const { locale } = Astro.props;
 const name = t(locale, "site.name");
 const linkedinLabel = CV.contact.linkedin.replace(/^https?:\/\/(www\.)?/, "");
 const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
+import FactsLine from "../components/FactsLine.astro";
 import Linked from "../components/Linked.astro";
 ---
 
@@ -23,6 +24,7 @@ import Linked from "../components/Linked.astro";
     <Eyebrow>{t(locale, "cv.eyebrow")}</Eyebrow>
     <h1>{name}</h1>
     <p class="headline">{CV.headline[locale]}</p>
+    <FactsLine locale={locale} />
   </header>
 
   <div class="about">

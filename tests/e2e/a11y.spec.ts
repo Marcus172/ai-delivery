@@ -10,6 +10,7 @@ const PAGES = [
   "wins/brand-voice/",
   "wins/accessibility/",
   "wins/tailwind/",
+  "wins/stack/",
   "sources/",
   "cv/",
   "cs/",
@@ -19,6 +20,7 @@ const PAGES = [
   "cs/wins/brand-voice/",
   "cs/wins/accessibility/",
   "cs/wins/tailwind/",
+  "cs/wins/stack/",
   "cs/sources/",
   "cs/cv/",
 ];

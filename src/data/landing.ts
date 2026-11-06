@@ -48,8 +48,8 @@ export const LANDING = {
       page: "wins" as const,
       title: l("Wins & cases", "Výsledky a případy"),
       body: l(
-        "What it delivered: measured results with their caveats, and three cases in depth.",
-        "Co to přineslo: měřené výsledky i s výhradami a tři případy do hloubky.",
+        "What it delivered: measured results with their caveats, and cases in depth.",
+        "Co to přineslo: měřené výsledky i s výhradami a případy do hloubky.",
       ),
     },
     {

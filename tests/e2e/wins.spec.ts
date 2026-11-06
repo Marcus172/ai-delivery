@@ -7,7 +7,7 @@ import { t } from "../../src/i18n/ui";
 
 const PREFIX: Record<Locale, string> = { en: "/ai-delivery/", cs: "/ai-delivery/cs/" };
 const WINS: Record<Locale, string> = { en: "wins/", cs: "cs/wins/" };
-const CASES = ["brand-voice", "accessibility", "tailwind"] as const;
+const CASES = ["brand-voice", "accessibility", "tailwind", "stack"] as const;
 /** The fictional brand used for every persona and accessibility example. */
 const FICTIONAL_BRAND = "Ferrylane";
 const denylist = loadDenylistText();
@@ -52,10 +52,10 @@ for (const locale of LOCALES) {
       await expect(estimate.locator(`a[href="${PREFIX[locale]}ai-delivery/#principle"]`)).toHaveCount(1);
     });
 
-    test("three case cards in order, each linking to its case page, with labelled highlights", async ({ page }) => {
+    test("the case cards in order, each linking to its case page, with labelled highlights", async ({ page }) => {
       await page.goto(WINS[locale]);
       const cards = page.locator("[data-case-cards] > li");
-      await expect(cards).toHaveCount(3);
+      await expect(cards).toHaveCount(CASES.length);
       for (const [i, id] of CASES.entries()) {
         const card = cards.nth(i);
         await expect(card).toHaveAttribute("data-case", id);

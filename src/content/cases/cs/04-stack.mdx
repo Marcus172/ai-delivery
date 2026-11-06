@@ -1,0 +1,140 @@
+---
+id: stack
+order: 4
+highlights: ["stack-one-pr", "stack-java"]
+title: "Pryč s prehistorickým tech stackem"
+summary: "Produkt s několika release liniemi souběžně zaostal o dvě generace. Z upgradů se stal postup místo události: najít drift, upgradovat ve vlnách, přenést každou vlnu na linie, které ji potřebují, doložit chování během shody a hlídat, co se skutečně vyřeší. Backendoví vývojáři jeli podle stejných pravidel na Javě, Spring Bootu a zbytku svého stacku."
+teaser: "Upgrady jako postup, ne událost: drift najde skript, vlny dojdou na každou release linii, která je potřebuje, a chování doloží běh shody. Webové aplikace i backend podle stejných pravidel."
+---
+import { Detail, Fact, Facts, Glance, Note, Point, Stat, Steps } from "../../../components/chapter";
+
+export const locale = "cs";
+
+## Proč: zaostávání stojí každý měsíc víc
+
+Produktový tým, který vydává několik release linií najednou, má na upgrady málokdy volný týden, takže se odkládají a&nbsp;odklad se sčítá. Tady se sečetl do čtyř konkrétních problémů naráz.
+
+<Glance locale={locale} label="Čtyři důvody, proč to nemohlo čekat">
+  <Point locale={locale} title="Bezpečnostní upozornění">
+    Kritické upozornění k&nbsp;UI frameworku. Aplikace dotčenou funkci nepoužívaly, oprava se ale přesto doporučovala a&nbsp;čekala už měsíce.
+  </Point>
+  <Point locale={locale} title="Nástroje, které přestaly běžet">
+    Yarnu 1 při řešení závislostí na aktuálním Node.js došla paměť i&nbsp;s&nbsp;32&nbsp;GB heapu a&nbsp;Storybook 8 se proti Next.js 16 nenačetl.
+  </Point>
+  <Point locale={locale} title="Dvě generace backendu">
+    Jedna skupina backendových modulů byla pořád na Javě 11 a Spring Bootu 2.5, zatímco zbytek běžel na Javě 21, a&nbsp;kopírované varianty sdílených tříd se začaly rozcházet.
+  </Point>
+  <Point locale={locale} title="Několik linií souběžně">
+    Každý upgrade i&nbsp;každá oprava musí dojít na každou release linii, která ji potřebuje, a&nbsp;nerozbít ty, které se hýbat nesmějí.
+  </Point>
+</Glance>
+
+## Postup: vlna, ne jednorázovka
+
+Odpovědí nebyl jeden hrdinský upgrade, ale opakovatelný postup. Migrační práci dělá agent, deterministické skripty dokazují, že nic neproklouzlo, a&nbsp;člověk rozhoduje, co kam jde, a&nbsp;schvaluje každý pull request.
+
+<Steps
+  locale={locale}
+  id="upgrade-wave"
+  label="Jedna vlna upgradů, od nalezení driftu po audit release linií"
+  steps={[
+    { title: "Najít drift", text: "Skript vypíše závislosti vyřešené starší, než už dovoluje jejich vlastní rozsah; při prvním běhu v té mezeře našel sedm bezpečnostních oprav." },
+    { title: "Rozdělit do vln", text: "Patch a minor, majory, bezpečnost, mrtvé závislosti. Balíček, který nikdo nepoužívá, se odstraní, ne zvedne." },
+    { title: "Upgradovat jednu linii", text: "Agent převede kód na hlavní linii; plná brána a vizuální regrese běží proti základu s jeho vlastními starými závislostmi." },
+    { title: "Přenést dál", text: "Každá přijímající linie dostane stejné úpravy balíčků a vlastní nové vyřešení, nikdy cherry-pick lockfilu; portovací skript dokáže, že každá úprava sedla právě jednou." },
+    { title: "Doložit chování", text: "Riziková místa projdou stejnými scénáři na starém i novém kódu se stejnými daty a porovnají se tvrzení po tvrzení." },
+    { title: "Prověřit linie", text: "Nakonec audit porovná linie podle obsahu a vypíše, co chybí; mezi portem a přeskočením rozhoduje člověk." },
+  ]}
+  note="Jedna verze každého balíčku v celém repozitáři: sdílený katalog a kontrola, která na drift spadne. Riziko upgradu řeší testy a běhy shody, ne druhá, izolovaná kopie."
+/>
+
+<div class="stats">
+  <Stat id="stack-port" locale={locale} />
+  <Stat id="stack-line-audit" locale={locale} />
+</div>
+
+<Detail locale={locale} label="Proč se lockfile nikdy necherry-pickuje">
+
+Lockfile cherry-picknutý z&nbsp;jedné release linie na druhou konfliktuje pokaždé a&nbsp;ručně sloučený lockfile popisuje strom závislostí, který nikdy žádný resolver nespočítal. Každá linie proto zopakuje stejné úpravy ve vlastních souborech balíčků a&nbsp;závislosti si vyřeší sama. Zvednutí verzí, která mění jen lockfile, s&nbsp;diffem vůbec necestují, takže se na každé linii zopakují ručně a&nbsp;výsledný lockfile se porovná se zdrojovou linií: ze stejného výchozího stavu má být bajt po bajtu stejný. Každá přijímající linie dostane vlastní draft pull request, který říká, proč to není cherry-pick, a&nbsp;pustí vlastní plnou bránu, protože každá linie má trochu jinou sadu testů a&nbsp;zelená na jedné nezastoupí zelenou na druhé.
+
+Které linie vlnu dostanou, je rozhodnutí, ne výchozí stav. Linie, které brzy vypadnou z&nbsp;podpory, záměrně zůstávají na svém toolchainu; vlny jdou na linie s&nbsp;tím novým.
+
+</Detail>
+
+## Webové aplikace: platforma v&nbsp;jednom pull requestu
+
+První krok posunul celou platformu naráz, protože se jednotlivé kusy navzájem blokovaly: Next.js 16 potřeboval Storybook 10, aktuální Node.js potřeboval Yarn 4. O&nbsp;dva dny později přešla orchestrace buildu z&nbsp;Nx na Turborepo, CI na stejný Node.js jako lokální vývoj a&nbsp;fáze kontejneru, díky které jsou zamčené instalace opakovatelné.
+
+<Stat id="stack-turbo" locale={locale} />
+
+<Facts label="Vlny, které následovaly">
+  <Fact k="TypeScript 7">5.4 → 7&nbsp;s nativním kompilátorem na typovou kontrolu a&nbsp;s&nbsp;přemosťujícím balíčkem pro nástroje, které ještě potřebují staré programové API.</Fact>
+  <Fact k="Produkční image">Yarn 4 ignoruje proměnnou prostředí, která dřív držela vývojářské nástroje venku, takže produkční image nesl test runnery i&nbsp;Storybook. Čistě produkční instalace je odstranila; vývojový server přešel na Turbopack, produkční build zůstal na webpacku.</Fact>
+  <Fact k="GraphQL">graphql 15 → 17 a Apollo Client 3 → 4 přes sedm kol review. Harness shody proti předchozí release linii zjistil, že zrušené požadavky se teď ukazují jako chybové hlášky a&nbsp;prázdné grafy, dřív než to viděl jakýkoli uživatel.</Fact>
+  <Fact k="Vlna majorů">Cypress 16, Jest 30, date-fns 4, Vite 8, Express 5, chart.js 4 a další: šestnáct majorů a&nbsp;šest odstraněných balíčků v&nbsp;jedné vlně, přenesené na přijímající linie.</Fact>
+</Facts>
+
+<Stat id="stack-image" locale={locale} />
+
+## Backend: Java 21 podle stejných pravidel
+
+Backendoví vývojáři dělali stejnou práci na své straně a&nbsp;podle stejných pravidel. Poslední zastaralá skupina modulů prošla po fázích z&nbsp;Javy 11 přes 17 na 21 a ze Spring Bootu 2.5 přes 2.7 na 3.4, integrační framework pod ní z&nbsp;Apache Camelu 2 přes 3 na 4, a&nbsp;každou fázi uzavřel plný běh testů porovnaný s&nbsp;baseline změřenou před změnou. Přechod z&nbsp;javax na jakarta přegeneroval přes tisíc datových tříd a&nbsp;skript ověřil, že diff je čistá změna jmenného prostoru a&nbsp;nic jiného. Kopírované varianty sdílených tříd se slily zpátky do jednoho modulu a&nbsp;ze dvou definic buildu se stala jedna.
+
+<Stat id="stack-backend-tests" locale={locale} />
+
+Potom stejný postup pokračoval: Hazelcast 3 → 5, pět upgradů platformních komponent dodavatele podle jejich migračních návodů, build běžící na Mavenu 3.10, aktualizace databázového ovladače a&nbsp;knihoven kvůli známým zranitelnostem a&nbsp;Liquibase na opraveném buildu, připnutý pod další major kvůli změně licence.
+
+<Glance locale={locale} label="Stejná pravidla, jiný toolchain">
+  <Point locale={locale} title="Fáze s baseline">
+    Každá fáze končí plnou sadou testů porovnanou s&nbsp;během změřeným před změnou.
+  </Point>
+  <Point locale={locale} title="Jedna verze každé závislosti">
+    Jedna definice buildu a&nbsp;jedna sdílená sada verzí, takže se žádný modul neodchýlí sám.
+  </Point>
+  <Point locale={locale} title="Hlídat, co se skutečně vyřeší">
+    Krok buildu kontroluje knihovny uvnitř sestavených artefaktů, ne to, co deklarují soubory buildu.
+  </Point>
+  <Point locale={locale} title="Před a po">
+    Upgradované komponenty se před vydáním porovnají vedle sebe s&nbsp;předchozí verzí.
+  </Point>
+</Glance>
+
+<Note>
+  <strong>Kde se toolchain liší.</strong> Backend nemá lockfile, který by se dal znovu vyřešit, takže jeho upgrady přistávají na hlavní vývojové větvi a&nbsp;na release linie se dostanou mergem dopředu. Pravidla jsou stejná; mechanika se řídí nástrojem.
+</Note>
+
+## Co se rozbilo a&nbsp;jaké pravidlo z&nbsp;toho vzniklo
+
+<Facts label="Incidenty během upgradů a pravidlo, které z každého vzniklo">
+  <Fact k="Konflikty lockfilu">Cherry-picknutý lockfile vždycky konfliktoval a&nbsp;ručně sloučený popisoval strom, který nikdo nevyřešil. Pravidlo: na každé linii vyřešit znovu.</Fact>
+  <Fact k="Zvednutí, která necestovala">Změny jen v&nbsp;lockfilu na přijímajících liniích chyběly. Pravidlo: zvednutí zopakovat a&nbsp;lockfily porovnat.</Fact>
+  <Fact k="Základ, který nebyl základem">Vizuální regrese použila pro základ nové závislosti, takže major knihovny grafů prošel, aniž by se stará verze kdy vykreslila. Pravidlo: při změně lockfilu závislosti nikdy nesdílet.</Fact>
+  <Fact k="Plovoucí základní image">LTS tag image Node.js se přes noc posunul na nový major a&nbsp;spadl každý build. Pravidlo: základní image připnout na major Node.js, který deklaruje repozitář.</Fact>
+  <Fact k="Zelené testy, padající pody">Backendové moduly s&nbsp;rodičem od dodavatele si za zády buildu vyřešily standardní verze knihoven. Pravidlo: kontrolovat vyřešené artefakty, z&nbsp;čehož vznikla brána artefaktů.</Fact>
+  <Fact k="Dvě generace JSON">Míchání Jacksonu 2 a Jacksonu 3 tiše zahazovalo pole z&nbsp;payloadů. Pravidlo: sdílené datové třídy používají jen anotace, které čtou obě generace.</Fact>
+  <Fact k="Názvy, které lhaly">Porovnání názvů commitů hlásilo 55 chybějících oprav a&nbsp;skutečná byla jedna. Pravidlo: rozhoduje obsah, nikdy název.</Fact>
+</Facts>
+
+## Co zůstává
+
+<Glance locale={locale} label="Brány a nástroje">
+  <Point locale={locale} title="Drift je vidět">
+    Jeden příkaz vypíše každou závislost vyřešenou starší, než dovoluje její rozsah, s&nbsp;režimem kontroly, který při driftu spadne.
+  </Point>
+  <Point locale={locale} title="Jedna verze, vynucená">
+    Kontrola omezení spadne na odchylce verzí i&nbsp;na serverovém balíčku, který by prosákl do webového image.
+  </Point>
+  <Point locale={locale} title="Linie prověřené podle obsahu">
+    Audit release linií běží pravidelně, se záznamem rozhodnutých mezer a&nbsp;regresním testem postaveným z&nbsp;jeho vlastních dřívějších omylů.
+  </Point>
+  <Point locale={locale} title="Artefakty, ne deklarace">
+    Backendový build kontroluje knihovny, které skutečně dodává, včetně minimálních verzí, které zavírají známé zranitelnosti.
+  </Point>
+</Glance>
+
+## Proč to bez AI nešlo
+
+1. **Migrační práce ve velkém.** Stovky souborů na vlnu, migrace zdrojáků pro každý major a&nbsp;přechod backendu o&nbsp;dvě generace Javy a&nbsp;dvě Spring Bootu za dny místo týdnů, na které byl odhadnutý.
+2. **Stejná úprava všude, kam patří.** Přenášet vlnu na každou přijímající linii ručně je náchylné k&nbsp;chybám; agenti ji zopakují a&nbsp;skripty dokážou, že každá úprava přistála právě jednou.
+3. **Shoda místo naděje.** Napsat a&nbsp;pustit scénáře, které porovnají staré a&nbsp;nové chování, je dost levné na to, aby se to dělalo u&nbsp;každého rizikového místa.
+4. **Rozhodují lidé.** Které linie se pohnou, které balíčky jdou pryč, co se počítá za regresi, a&nbsp;každý merge zůstávají lidem.

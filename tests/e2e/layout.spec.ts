@@ -9,6 +9,7 @@ const PAGES: Array<[string, string]> = [
   ["ai-delivery/", `${BASE}cs/ai-delivery/`],
   ["wins/", `${BASE}cs/wins/`],
   ["wins/tailwind/", `${BASE}cs/wins/tailwind/`],
+  ["wins/stack/", `${BASE}cs/wins/stack/`],
   ["sources/", `${BASE}cs/sources/`],
   ["cv/", `${BASE}cs/cv/`],
   ["cs/", BASE],

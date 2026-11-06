@@ -1,0 +1,140 @@
+---
+id: stack
+order: 4
+highlights: ["stack-one-pr", "stack-java"]
+title: "Retiring a prehistoric tech stack"
+summary: "A product with several release lines in parallel had fallen two generations behind. Upgrades became a procedure instead of an event: find the drift, upgrade in waves, carry each wave to the lines that need it, prove behaviour with parity runs and gate what actually resolves. The backend developers ran the same rules on Java, Spring Boot and the rest of their stack."
+teaser: "Upgrades as a procedure, not an event: drift found by a script, waves carried to every release line that needs them, behaviour proven by parity runs. The web apps and the backend under the same rules."
+---
+import { Detail, Fact, Facts, Glance, Note, Point, Stat, Steps } from "../../../components/chapter";
+
+export const locale = "en";
+
+## Why: falling behind costs more every month
+
+A product team that ships several release lines at once rarely has a week for upgrades, so they wait, and the waiting compounds. Here it had compounded into four concrete problems at once.
+
+<Glance locale={locale} label="Four reasons it could not wait">
+  <Point locale={locale} title="A security advisory">
+    A critical advisory for the UI framework. The apps did not use the affected feature, but the fix was still recommended, and it had been waiting for months.
+  </Point>
+  <Point locale={locale} title="Tools that stopped running">
+    Yarn 1 ran out of memory resolving dependencies on the current Node.js, even with a 32 GB heap, and Storybook 8 would not load against Next.js 16.
+  </Point>
+  <Point locale={locale} title="Two backend generations">
+    One group of backend modules was still on Java 11 and Spring Boot 2.5 while the rest ran Java 21, and copied variants of shared classes had started to drift apart.
+  </Point>
+  <Point locale={locale} title="Several lines in parallel">
+    Every upgrade and every fix has to reach each release line that needs it, without breaking the ones that must not move.
+  </Point>
+</Glance>
+
+## The procedure: a wave, not a one-off
+
+The answer was not one heroic upgrade but a repeatable procedure. An agent does the migration work, deterministic scripts prove that nothing slipped, and a person decides what goes where and approves every pull request.
+
+<Steps
+  locale={locale}
+  id="upgrade-wave"
+  label="One upgrade wave, from finding the drift to auditing the release lines"
+  steps={[
+    { title: "Find the drift", text: "A script lists dependencies resolved older than their own declared range already allows; on its first run it found seven security fixes sitting in that gap." },
+    { title: "Group into waves", text: "Patch and minor, majors, security, dead dependencies. A package nobody uses is removed, not bumped." },
+    { title: "Upgrade one line", text: "The agent migrates the code on the primary line; the full gate and the visual regression run against a base with its own old dependencies." },
+    { title: "Carry it across", text: "Each receiving line gets the same package edits and its own fresh resolution, never a cherry-picked lockfile; a port script proves every edit matched exactly once." },
+    { title: "Prove behaviour", text: "Risky clusters run the same scenarios on the old and the new code with the same data, compared assertion by assertion." },
+    { title: "Audit the lines", text: "Afterwards an audit compares the lines by content and lists what is missing; a person decides between port and skip." },
+  ]}
+  note="One version per package across the repository: a shared catalog, and a constraint check that fails on drift. Upgrade risk is handled with tests and parity runs, not with a second, isolated copy."
+/>
+
+<div class="stats">
+  <Stat id="stack-port" locale={locale} />
+  <Stat id="stack-line-audit" locale={locale} />
+</div>
+
+<Detail locale={locale} label="Why a lockfile is never cherry-picked">
+
+A lockfile cherry-picked from one release line to another conflicts every time, and a hand-merged lockfile describes a dependency tree that no resolver ever computed. So each line re-applies the same edits to its own package files and resolves on its own. Bumps that change only the lockfile do not travel with a diff at all, so they are repeated by hand on each line, and the resulting lockfile is compared with the source line: from the same starting point it should be byte-identical. Every receiving line gets its own draft pull request that says why it is not a cherry-pick, and runs its own full gate, because each line has a slightly different set of tests and one line's green does not stand in for another's.
+
+Which lines receive a wave is a decision, not a default. Lines that are about to go out of support stay on their toolchain on purpose; the waves go to the lines on the new one.
+
+</Detail>
+
+## The web apps: the platform in one pull request
+
+The first step moved the whole platform at once, because the pieces were blocking each other: Next.js 16 needed Storybook 10, the current Node.js needed Yarn 4. Two days later the build orchestration moved from Nx to Turborepo, with CI on the same Node.js as local development and a container stage that makes locked installs reproducible.
+
+<Stat id="stack-turbo" locale={locale} />
+
+<Facts label="The waves that followed">
+  <Fact k="TypeScript 7">5.4 → 7 with the native compiler for type checks, and a bridge package for the tools that still need the old programmatic API.</Fact>
+  <Fact k="Production image">Yarn 4 ignores the environment flag that used to keep development tools out, so the production image had carried test runners and Storybook. A production-only install removed them; the dev server moved to Turbopack, while the production build stayed on webpack.</Fact>
+  <Fact k="GraphQL cluster">graphql 15 → 17 and Apollo Client 3 → 4 through seven review rounds. A parity harness against the previous release line found that cancelled requests now surfaced as error messages and blank charts, before any user saw them.</Fact>
+  <Fact k="Majors wave">Cypress 16, Jest 30, date-fns 4, Vite 8, Express 5, chart.js 4 and more: sixteen majors and six packages removed in one wave, carried to the receiving lines.</Fact>
+</Facts>
+
+<Stat id="stack-image" locale={locale} />
+
+## Backend: Java 21 under the same rules
+
+The backend developers ran the same kind of work on their side, by the same rules. The last legacy group of modules went Java 11 → 17 → 21 and Spring Boot 2.5 → 2.7 → 3.4 in phases, with the integration framework underneath from Apache Camel 2 through 3 to 4, every phase gated by a full test run compared with the baseline taken before it. The javax to jakarta move regenerated more than a thousand data classes, and a script checked that the diff was a clean namespace change and nothing else. The copied variants of shared classes were merged back into one module, and two build definitions became one.
+
+<Stat id="stack-backend-tests" locale={locale} />
+
+After that the same procedure kept going: Hazelcast 3 → 5, five upgrades of the vendor's platform components following their migration guides, a build that runs on Maven 3.10, database driver and library updates for known vulnerabilities, and Liquibase on a patched build pinned below the next major because of its licence change.
+
+<Glance locale={locale} label="Same rules, a different toolchain">
+  <Point locale={locale} title="Phases with a baseline">
+    Each phase ends with the full test suite compared against the run taken before the change.
+  </Point>
+  <Point locale={locale} title="One version per dependency">
+    One build definition and one shared set of versions, so no module drifts on its own.
+  </Point>
+  <Point locale={locale} title="Gate what actually resolves">
+    A build step inspects the libraries inside the built artefacts, not what the build files declare.
+  </Point>
+  <Point locale={locale} title="Before and after">
+    Upgraded components are compared side by side against the previous version before they ship.
+  </Point>
+</Glance>
+
+<Note>
+  <strong>Where the toolchain differs.</strong> The backend has no lockfile to re-resolve, so its upgrades land on the main development branch and reach the release lines by merging forward. The rules are the same; the mechanics follow the tool.
+</Note>
+
+## What broke, and the rule each became
+
+<Facts label="Incidents during the upgrades, and the rule each one became">
+  <Fact k="Lockfile conflicts">A cherry-picked lockfile always conflicted, and a hand-merged one described a tree nobody resolved. Rule: re-resolve on each line.</Fact>
+  <Fact k="Bumps that did not travel">Changes that touched only the lockfile went missing on the receiving lines. Rule: repeat the bumps and compare the lockfiles.</Fact>
+  <Fact k="A base that was not the base">Visual regression reused the new dependencies for the base, so a chart-library major merged without the old version ever being rendered. Rule: never share dependencies when the lockfile changes.</Fact>
+  <Fact k="A floating base image">The LTS tag of the Node.js image moved to a new major overnight and every build failed. Rule: pin the base image to the Node.js major the repository declares.</Fact>
+  <Fact k="Green tests, failing pods">Backend modules with a vendor parent resolved stock library versions behind the build's back. Rule: check the resolved artefacts, which became the artefact gate.</Fact>
+  <Fact k="Two JSON generations">Mixing Jackson 2 and Jackson 3 silently dropped fields from payloads. Rule: shared data classes use only annotations both generations read.</Fact>
+  <Fact k="Titles that lied">Matching commit titles reported 55 missing fixes, and one was real. Rule: content decides, never titles.</Fact>
+</Facts>
+
+## What stays
+
+<Glance locale={locale} label="Gates and tools">
+  <Point locale={locale} title="Drift is visible">
+    One command lists every dependency resolved older than its range allows, with a check mode that fails when drift appears.
+  </Point>
+  <Point locale={locale} title="One version, enforced">
+    A constraint check fails on version drift and on a server-only package leaking into a web image.
+  </Point>
+  <Point locale={locale} title="Lines audited by content">
+    The release-line audit runs regularly, with a ledger of decided gaps and a regression test built from its own past misjudgements.
+  </Point>
+  <Point locale={locale} title="Artefacts, not declarations">
+    The backend build checks the libraries it actually ships, including the minimum versions that close known vulnerabilities.
+  </Point>
+</Glance>
+
+## Why this was not possible without AI
+
+1. **Migration work at volume.** Hundreds of files per wave, source migrations for every major, and a backend move of two Java and two Spring Boot generations in days instead of the weeks it had been estimated at.
+2. **The same edit, everywhere it belongs.** Carrying a wave to each receiving line by hand is error-prone; agents repeat it and scripts prove that every edit landed exactly once.
+3. **Parity instead of hope.** Writing and running the scenarios that compare old and new behaviour is cheap enough to do for every risky cluster.
+4. **People decide.** Which lines move, which packages go, what counts as a regression and every merge stay with people.

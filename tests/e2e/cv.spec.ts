@@ -63,6 +63,17 @@ for (const locale of LOCALES) {
       await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 255, 255)");
       await expect(page.locator("[data-role]").first()).toBeVisible();
     });
+
+    test("print at A4 width keeps the portrait photo, not the phone's ringed circle", async ({ page }) => {
+      // A4 at 96 dpi is ~794 px wide, under the 899 px phone breakpoint: the phone rules must stay on screen.
+      await page.setViewportSize({ width: 794, height: 1123 });
+      await page.goto(CV_URL[locale]);
+      await page.emulateMedia({ media: "print" });
+      const photo = page.locator("figure.photo");
+      await expect(photo).toHaveCSS("box-shadow", "none");
+      const box = (await photo.boundingBox())!;
+      expect(box.height, "portrait, taller than wide").toBeGreaterThan(box.width * 1.3);
+    });
   });
 }
 

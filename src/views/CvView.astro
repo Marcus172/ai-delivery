@@ -5,6 +5,7 @@ import Eyebrow from "../components/Eyebrow.astro";
 import { CV } from "../data/cv";
 import { formatRange } from "../i18n/dates";
 import type { Locale } from "../i18n/locales";
+import { localizedPath } from "../i18n/routes";
 import { t } from "../i18n/ui";
 
 interface Props {
@@ -15,6 +16,8 @@ const { locale } = Astro.props;
 const name = t(locale, "site.name");
 const linkedinLabel = CV.contact.linkedin.replace(/^https?:\/\/(www\.)?/, "");
 const githubLabel = CV.contact.github.replace(/^https?:\/\/(www\.)?/, "");
+const siteLabel = CV.contact.site.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "");
+const pdf = `${localizedPath(locale, "cv")}marek-rom-cv-${locale}.pdf`;
 import FactsLine from "../components/FactsLine.astro";
 import Linked from "../components/Linked.astro";
 ---
@@ -22,7 +25,15 @@ import Linked from "../components/Linked.astro";
 <article class="cv">
   <header class="head">
     <Eyebrow>{t(locale, "cv.eyebrow")}</Eyebrow>
-    <h1>{name}</h1>
+    <div class="title-row">
+      <h1>{name}</h1>
+      <a class="btn ghost pdf-btn" href={pdf} download>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12M7 10l5 5 5-5M4 19h16"></path>
+        </svg>
+        {t(locale, "cta.cv")}
+      </a>
+    </div>
     <p class="headline">{CV.headline[locale]}</p>
     <FactsLine locale={locale} />
   </header>
@@ -93,6 +104,9 @@ import Linked from "../components/Linked.astro";
             <li>
               <a href={CV.contact.github} rel="noopener" target="_blank">{githubLabel}</a>
             </li>
+            <li>
+              <a href={CV.contact.site} rel="noopener" target="_blank">{siteLabel}</a>
+            </li>
           </ul>
         </section>
       </div>
@@ -101,6 +115,17 @@ import Linked from "../components/Linked.astro";
 </article>
 
 <style>
+  .title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .pdf-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+  }
   .head {
     margin-bottom: 2.75rem;
   }
@@ -259,6 +284,9 @@ import Linked from "../components/Linked.astro";
 
   /* ---------- print / PDF (A4, light, ≤ 2 pages) ---------- */
   @media print {
+    .pdf-btn {
+      display: none;
+    }
     .cv {
       position: relative;
       font-size: 10pt;

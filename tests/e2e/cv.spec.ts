@@ -94,3 +94,21 @@ for (const locale of LOCALES) {
     });
   });
 }
+
+for (const locale of LOCALES) {
+  test.describe(`cv header (${locale}, phone)`, () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+    test("PDF button is in the first viewport", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      const button = page.locator('a[download][href$=".pdf"]').first();
+      await expect(button).toBeVisible();
+      const box = await button.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+    });
+
+    test("contact list links to the site", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      await expect(page.locator(`main a[href="${CV.contact.site}"]`)).toHaveCount(1);
+    });
+  });
+}

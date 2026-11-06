@@ -44,6 +44,17 @@ for (const locale of LOCALES) {
       expect(text).toContain(CV.contact.github.replace(/^https?:\/\/(www\.)?/, ""));
     });
 
+    it("shows the site link and the native Czech level", async () => {
+      const { text } = await read(file);
+      expect(text).toContain("marcus172.github.io/ai-delivery");
+      expect(text).toContain(locale === "cs" ? "rodilý mluvčí" : "native");
+    });
+
+    it("has exactly two pages", async () => {
+      const { totalPages } = await read(file);
+      expect(totalPages).toBe(2);
+    });
+
     it("lists every role title", async () => {
       const { text } = await read(file);
       for (const role of CV.roles) expect(text).toContain(role.title[locale]);

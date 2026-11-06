@@ -78,7 +78,7 @@ Shared on every page: rail/top nav (Landing · Journey · AI Delivery · CV), EN
 ### 5.1 Landing — "one minute"
 
 For the reader who gives it a minute. Content:
-- Hero: name, "Senior Product Engineer", one-sentence claim (team-wide AI-enabled delivery), orbit diagram, three measured stats with a "measured" label — **decided by the author**: **In-Progress → PR −70 %**, **PRs with tests 1 % → 56 %**, **2,423 accessibility findings → 18 systemic patterns** (period and baseline on AI Delivery). Lead time and returns-from-test figures appear only in the Results chapter, with their reliability caveats.
+- Hero: name, "Senior Product Engineer", one-sentence claim (team-wide AI-enabled delivery), orbit diagram, three measured stats with a "measured" label — **decided by the author**: **In-Progress → PR −70 %**, **PRs with tests 1 % → 56 %**, **2,423 accessibility findings / 18 systemic patterns** (period and baseline on AI Delivery). Lead time and returns-from-test figures appear only in the Results chapter, with their reliability caveats.
 - **What I can set up for you** (consulting offer), three cards — builder's call on wording:
   1. AI-SDLC assessment of an existing team and codebase;
   2. setting up a shared delivery flow with guardrails (agent context, gates, behavioral tests, personal tooling layer);

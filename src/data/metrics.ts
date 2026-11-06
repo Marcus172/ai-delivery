@@ -66,10 +66,10 @@ export const METRICS: Metric[] = [
   // src: research note 01, §2.1
   {
     id: "a11y-patterns",
-    value: l("2,423 → 18", "2 423 → 18"),
+    value: l("2,423 / 18", "2 423 / 18"),
     label: l(
-      "accessibility audit findings traced to 18 systemic patterns, fixed in shared components",
-      "nálezů auditu přístupnosti svedených na 18 systémových vzorců, opravovaných ve sdílených komponentách",
+      "audit findings / systemic patterns behind them, fixed in shared components",
+      "nálezů auditu / systémových vzorců za nimi, opravených ve sdílených komponentách",
     ),
     kind: "measured",
     period: A11Y,
@@ -447,10 +447,10 @@ export const METRICS: Metric[] = [
   // src: research note 01, §2.1 (18 of 27 criteria fail on 99 % of pages; one fix ≈ 130 pages)
   {
     id: "a11y-fix-reach",
-    value: l("1 → ~130", "1 → ~130"),
+    value: l("~130", "~130"),
     label: l(
-      "pages one fix in a shared component reaches; 18 of 27 criteria were failing on almost every page",
-      "stránek, kam dosáhne jedna oprava ve sdílené komponentě; 18 z 27 kritérií padalo téměř na každé stránce",
+      "pages a single fix in a shared component reaches; 18 of 27 criteria were failing on almost every page",
+      "stránek, kam dosáhne jediná oprava ve sdílené komponentě; 18 z 27 kritérií padalo téměř na každé stránce",
     ),
     kind: "measured",
     period: A11Y,

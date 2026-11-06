@@ -111,6 +111,13 @@ for (const locale of LOCALES) {
       for (const stat of await page.locator("[data-win] .stat[data-kind=measured]").all()) await expect(stat.locator(".period")).toBeVisible();
     });
 
+    test("smaller wins come after the last case and lead on to the offer", async ({ page }) => {
+      await page.goto(`${PREFIX[locale]}wins/along-the-way/`);
+      const prev = page.locator('nav.pager a[rel="prev"]');
+      await expect(prev).toHaveAttribute("href", `${PREFIX[locale]}wins/${CASES[CASES.length - 1]}/`);
+      await expect(page.locator(`nav.pager a[href="${PREFIX[locale]}ai-delivery/#offer"]`)).toHaveCount(1);
+    });
+
     test("a click anywhere on a case card opens the case", async ({ page }) => {
       await page.goto(WINS[locale]);
       // A real mouse click on the stats: the title link's overlay covers them, so it takes the click.
@@ -140,7 +147,7 @@ for (const locale of LOCALES) {
         await expect(next).toHaveCount(i < CASES.length - 1 ? 1 : 0);
         if (i > 0) await expect(prev).toHaveAttribute("href", `${PREFIX[locale]}wins/${CASES[i - 1]}/`);
         if (i < CASES.length - 1) await expect(next).toHaveAttribute("href", `${PREFIX[locale]}wins/${CASES[i + 1]}/`);
-        else await expect(page.locator(`nav.pager a[href="${PREFIX[locale]}ai-delivery/#offer"]`)).toHaveCount(1);
+        else await expect(page.locator(`nav.pager a[href="${PREFIX[locale]}wins/along-the-way/"]`)).toHaveCount(1);
       });
     }
 

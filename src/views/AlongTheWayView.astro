@@ -2,12 +2,14 @@
 /** "Along the way": the smaller wins beyond the three cases — a map by area and month, then one card per win. */
 import Eyebrow from "../components/Eyebrow.astro";
 import Linked from "../components/Linked.astro";
+import Pager from "../components/Pager.astro";
 import Stat from "../components/Stat.astro";
 import WinsMap from "../components/diagrams/WinsMap.astro";
+import { loadCases } from "../data/cases";
 import { AREAS, WINS, winPeriod, winsIn, type Role } from "../data/alongTheWay";
 import { csTypo, l } from "../data/l10n";
 import type { Locale } from "../i18n/locales";
-import { localizedPath } from "../i18n/routes";
+import { localizedPath, subPagePath } from "../i18n/routes";
 import { plural } from "../i18n/plural";
 import { PLURALS, t, type UiKey } from "../i18n/ui";
 
@@ -31,6 +33,7 @@ const ROLE: Record<Role, ReturnType<typeof l>> = {
 };
 const WHO = l("Who does what", "Kdo co dělá");
 const winsHref = localizedPath(locale, "wins");
+const lastCase = (await loadCases(locale)).at(-1);
 ---
 
 <div class="column">
@@ -78,9 +81,11 @@ const winsHref = localizedPath(locale, "wins");
   ))
 }
 
-<p class="back-end">
-  <a href={`${winsHref}#cases`}>{tt("atw.toCases")}</a>
-</p>
+<Pager
+  label={tt("atw.eyebrow")}
+  prev={lastCase && { href: subPagePath(locale, "wins", lastCase.id), k: tt("wins.prev"), v: lastCase.title, rel: "prev" }}
+  next={{ href: localizedPath(locale, "ai-delivery", "offer"), k: tt("wins.offerEyebrow"), v: tt("wins.offerLink") }}
+/>
 </div>
 
 <style>
@@ -205,13 +210,6 @@ const winsHref = localizedPath(locale, "wins");
   .role.person {
     border-color: var(--ink);
     color: var(--ink);
-  }
-  .back-end {
-    margin-top: 3.5rem;
-    padding-bottom: 2rem;
-  }
-  .back-end a {
-    font-weight: 700;
   }
   @media (max-width: 799px) {
     .cards {

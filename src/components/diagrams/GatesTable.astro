@@ -2,6 +2,7 @@
 import { l } from "../../data/l10n";
 import { metric } from "../../data/metrics";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -45,7 +46,7 @@ const ROWS: Record<Locale, Row[]> = {
 };
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={CAPTION[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={CAPTION[locale]}>
   <table class="gates" data-diagram="gates-table">
     <caption>{CAPTION[locale]}</caption>
     <thead>
@@ -71,6 +72,7 @@ const ROWS: Record<Locale, Row[]> = {
     </tbody>
   </table>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

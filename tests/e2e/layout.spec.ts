@@ -12,7 +12,7 @@ const PAGES: Array<[string, string]> = [
   ["wins/stack/", `${BASE}cs/wins/stack/`],
   ["cs/wins/security/", `${BASE}wins/security/`],
   ["wins/along-the-way/", `${BASE}cs/wins/along-the-way/`],
-  ["sources/", `${BASE}cs/sources/`],
+  ["toolkit/", `${BASE}cs/toolkit/`],
   ["cv/", `${BASE}cs/cv/`],
   ["cs/", BASE],
   ["cs/journey/", `${BASE}journey/`],
@@ -20,7 +20,7 @@ const PAGES: Array<[string, string]> = [
   ["cs/wins/", `${BASE}wins/`],
   ["cs/wins/brand-voice/", `${BASE}wins/brand-voice/`],
   ["cs/wins/along-the-way/", `${BASE}wins/along-the-way/`],
-  ["cs/sources/", `${BASE}sources/`],
+  ["cs/toolkit/", `${BASE}toolkit/`],
   ["cs/cv/", `${BASE}cv/`],
 ];
 
@@ -87,6 +87,7 @@ for (const [url, other] of PAGES) {
         for (const el of main.querySelectorAll("[data-diagram], .scroll, figure, table")) {
           const col = (el.closest(".column, .chapters") ?? main).getBoundingClientRect();
           const r = el.getBoundingClientRect();
+          if (!r.width) continue; // the role matrix variant that is not shown
           if (r.left < col.left - 1 || r.right > col.right + 1) out.push(`${name(el)} steps out of the column`);
           if (el.matches(".scroll") && el.scrollWidth > el.clientWidth + 1) out.push(`${name(el.firstElementChild ?? el)} scrolls sideways`);
         }
@@ -183,7 +184,7 @@ const SCALE: Array<[number, number]> = [
 for (const [width, rootPx] of SCALE) {
   test(`root font size is ${rootPx}px at ${width}px and nothing overflows sideways`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
-    for (const url of ["", "journey/", "ai-delivery/", "wins/", "wins/brand-voice/", "sources/", "cv/"]) {
+    for (const url of ["", "journey/", "ai-delivery/", "wins/", "wins/brand-voice/", "toolkit/", "cv/"]) {
       await page.goto(`${BASE}${url}`);
       const { root, overflow } = await page.evaluate(() => ({
         root: parseFloat(getComputedStyle(document.documentElement).fontSize),
@@ -194,3 +195,101 @@ for (const [width, rootPx] of SCALE) {
     }
   });
 }
+
+test("CS display headings leave room for diacritics", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const path of ["cs/", "cs/ai-delivery/"]) {
+    await page.goto(`${BASE}${path}`);
+    const ratios = await page.evaluate(() =>
+      [document.querySelector("h1"), ...document.querySelectorAll("h2")]
+        .filter((el): el is Element => !!el)
+        .map((el) => {
+          const s = getComputedStyle(el);
+          return parseFloat(s.lineHeight) / parseFloat(s.fontSize);
+        }),
+    );
+    expect(ratios.length).toBeGreaterThan(1);
+    for (const r of ratios) expect(r).toBeGreaterThanOrEqual(1.05);
+  }
+});
+
+test.describe("mobile diagrams (390 px)", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("role matrix fits a 390 px screen", async ({ page }) => {
+    for (const path of ["ai-delivery/", "cs/ai-delivery/"]) {
+      await page.goto(`${BASE}${path}`);
+      const sizes = await page.locator('[data-diagram="role-matrix"]').evaluate((svg) => {
+        const el = svg.closest(".scroll") as HTMLElement;
+        return { sw: el.scrollWidth, cw: el.clientWidth };
+      });
+      expect(sizes.sw, path).toBeLessThanOrEqual(sizes.cw);
+    }
+  });
+
+  test("overflowing diagram regions say they scroll", async ({ page }) => {
+    for (const path of ["ai-delivery/", "cs/ai-delivery/", "wins/along-the-way/"]) {
+      await page.goto(`${BASE}${path}`);
+      const regions = await page.locator(".hscroll").evaluateAll((els) =>
+        els.map((el) => {
+          const h = el.nextElementSibling as HTMLElement | null;
+          return {
+            overflow: el.scrollWidth > el.clientWidth,
+            hint: !!h && h.classList.contains("hscroll-hint") && h.getBoundingClientRect().height > 0,
+          };
+        }),
+      );
+      if (path.includes("ai-delivery")) expect(regions.some((r) => r.overflow), path).toBe(true);
+      for (const r of regions) if (r.overflow) expect(r.hint, path).toBe(true);
+    }
+  });
+
+  test("a hint appears when a hidden overflowing region is revealed", async ({ page }) => {
+    await page.goto(`${BASE}ai-delivery/`);
+    // No diagram lives inside a <details> today, so move one into a closed one and open it.
+    await page.evaluate(() => {
+      const region = [...document.querySelectorAll<HTMLElement>(".hscroll")].find((el) => el.scrollWidth > el.clientWidth)!;
+      const hint = region.nextElementSibling!;
+      const d = document.createElement("details");
+      region.before(d);
+      d.append(document.createElement("summary"), region, hint);
+      d.id = "reveal-test";
+    });
+    const hint = page.locator("#reveal-test .hscroll-hint");
+    await expect(hint).toBeHidden();
+    await page.locator("#reveal-test summary").evaluate((el) => ((el.parentElement as HTMLDetailsElement).open = true));
+    await expect(hint).toBeVisible();
+  });
+});
+
+const SHORT: Record<string, string[]> = {
+  "": ["Intro", "Journey", "AI", "Wins", "Toolkit", "CV"],
+  "cs/": ["Úvod", "Cesta", "AI", "Výsledky", "Nástroje", "CV"],
+};
+
+test.describe("rail labels", () => {
+  for (const [path, labels] of Object.entries(SHORT)) {
+    for (const [w, h] of [
+      [1440, 900],
+      [390, 844],
+    ]) {
+      test(`rail shows a text label for every page (${path || "en"}, ${w}px)`, async ({ page }) => {
+        await page.setViewportSize({ width: w, height: h });
+        await page.goto(`${BASE}${path}`);
+        const links = page.locator("nav.rail a[href]:not(.mark):not([data-lang-switch])");
+        await expect(links).toHaveCount(labels.length);
+        for (let i = 0; i < labels.length; i++) {
+          const label = links.nth(i).locator(".label");
+          await expect(label).toBeVisible();
+          await expect(label).toHaveText(labels[i]);
+        }
+        if (w === 390) {
+          const fits = await page.locator("nav.rail").evaluate((el) => el.scrollWidth <= el.clientWidth);
+          expect(fits, "rail needs no horizontal scroll").toBe(true);
+          const box = await links.first().boundingBox();
+          expect(box!.height).toBeGreaterThanOrEqual(44);
+        }
+      });
+    }
+  }
+});

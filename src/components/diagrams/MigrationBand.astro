@@ -1,6 +1,7 @@
 ---
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -53,7 +54,7 @@ const Y_BUNDLE = 262;
 const phases = PHASES[locale];
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
   <svg
     class="band"
     data-diagram="migration-band"
@@ -118,6 +119,7 @@ const phases = PHASES[locale];
     <text class="val" x={wx(5.2) + 3 * 54 + 6} y={Y_BUNDLE + 15} font-size="13">{MINUS[locale]}</text>
   </svg>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

@@ -6,6 +6,7 @@
 import { AREAS, MONTHS, YEAR, winsIn, type Win } from "../../data/alongTheWay";
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -37,7 +38,7 @@ const lanes = AREAS.map((a) => {
 });
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={LABEL[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={LABEL[locale]}>
   <figure class="map" data-diagram="wins-map" style={`--months: ${MONTHS.length}`}>
     <figcaption class="sr">{LABEL[locale]}</figcaption>
     <div class="axis" aria-hidden="true">
@@ -63,6 +64,7 @@ const lanes = AREAS.map((a) => {
     }
   </figure>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

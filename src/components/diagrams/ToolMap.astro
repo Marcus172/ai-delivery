@@ -1,6 +1,7 @@
 ---
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -63,7 +64,7 @@ const CARD_H = 80;
 const BAND_Y = 240;
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
   <svg
     class="map"
     data-diagram="tool-map"
@@ -117,6 +118,7 @@ const BAND_Y = 240;
     <text class="legend" x={PAD} y={H - 10} font-size="12.5">{LEGEND[locale]}</text>
   </svg>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

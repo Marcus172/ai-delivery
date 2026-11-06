@@ -1,0 +1,26 @@
+---
+import { t } from "../i18n/ui";
+import type { Locale } from "../i18n/locales";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<p class="hscroll-hint"><span aria-hidden="true">→</span> {t(locale, "diagram.scrollHint")}</p>
+
+<script>
+  // Shows each sideways-scrolling region's hint while the region overflows. A ResizeObserver also
+  // fires when a region inside a collapsed <details> gains a box, which load/resize events would miss.
+  const mark = (el: Element) => {
+    const hint = el.nextElementSibling;
+    if (hint?.classList.contains("hscroll-hint")) hint.toggleAttribute("data-overflow", el.scrollWidth > el.clientWidth);
+  };
+  const ro = new ResizeObserver((entries) => entries.forEach((e) => mark(e.target)));
+  document.querySelectorAll(".hscroll").forEach((el) => {
+    mark(el);
+    ro.observe(el);
+  });
+</script>

@@ -1,6 +1,7 @@
 ---
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -53,7 +54,7 @@ const A_TOP = TOP + 10;
 const A_BOT = yOf(layers.length - 1) + BOX_H - 10;
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
   <svg
     class="layers"
     data-diagram="flow-layers"
@@ -113,6 +114,7 @@ const A_BOT = yOf(layers.length - 1) + BOX_H - 10;
     </g>
   </svg>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

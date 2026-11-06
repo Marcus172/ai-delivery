@@ -1,6 +1,7 @@
 ---
 import { l } from "../../data/l10n";
 import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
 
 interface Props {
   locale: Locale;
@@ -42,7 +43,7 @@ const sx = (i: number) => X0 + 50 + i * STEP;
 const spurFrom = sx(0);
 ---
 
-<div class="scroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
   <svg
     class="trail"
     data-diagram="decision-trail"
@@ -94,6 +95,7 @@ const spurFrom = sx(0);
     <text class="legend" x={X0} y={H - 8} font-size="13">{LEGEND[locale]}</text>
   </svg>
 </div>
+<ScrollHint locale={locale} />
 
 <style>
   .scroll {

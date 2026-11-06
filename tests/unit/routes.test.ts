@@ -35,13 +35,13 @@ describe("localizedPath", () => {
     ["en", "journey", "/ai-delivery/journey/"],
     ["en", "ai-delivery", "/ai-delivery/ai-delivery/"],
     ["en", "wins", "/ai-delivery/wins/"],
-    ["en", "sources", "/ai-delivery/sources/"],
+    ["en", "toolkit", "/ai-delivery/toolkit/"],
     ["en", "cv", "/ai-delivery/cv/"],
     ["cs", "landing", "/ai-delivery/cs/"],
     ["cs", "journey", "/ai-delivery/cs/journey/"],
     ["cs", "ai-delivery", "/ai-delivery/cs/ai-delivery/"],
     ["cs", "wins", "/ai-delivery/cs/wins/"],
-    ["cs", "sources", "/ai-delivery/cs/sources/"],
+    ["cs", "toolkit", "/ai-delivery/cs/toolkit/"],
     ["cs", "cv", "/ai-delivery/cs/cv/"],
   ];
 

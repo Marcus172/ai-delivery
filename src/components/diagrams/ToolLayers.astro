@@ -78,7 +78,7 @@ const ROWS: Row[] = [
   },
 ];
 const MORE = l("Every tool, what it is for and its documentation:", "Všechny nástroje, k čemu jsou a jejich dokumentace:");
-const MORE_LINK = l("Sources", "Zdroje");
+const MORE_LINK = l("Toolkit", "Nástroje");
 const NOTE = l(
   "The contract names none of them: tools live only in the team and personal layers, so a swap never touches the process.",
   "Kontrakt nezná žádný z nich: nástroje žijí jen v týmové a osobní vrstvě, takže výměna nikdy nesáhne na proces.",
@@ -129,7 +129,7 @@ const NOTE = l(
     {(["mine", "default", "also", "earlier"] as State[]).map((s) => <span class="chip" data-state={s}>{STATE[s][locale]}</span>)}
   </p>
   <p class="note">
-    {NOTE[locale]} {MORE[locale]} <a href={localizedPath(locale, "sources")}>{MORE_LINK[locale]}</a>.
+    {NOTE[locale]} {MORE[locale]} <a href={localizedPath(locale, "toolkit")}>{MORE_LINK[locale]}</a>.
   </p>
 </figure>
 

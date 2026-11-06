@@ -73,15 +73,10 @@ const { locale, page, sub } = Astro.props;
     background: var(--ink);
     color: var(--bg);
   }
+  /* Stays stacked on mobile: the six labelled page links need the width. */
   @media (max-width: 899px) {
     .lang {
-      flex-direction: row;
-      border-radius: 999px;
       margin-left: 0.25rem;
-    }
-    .lang > * {
-      border-radius: 999px;
-      padding: 0.3125rem 0.5625rem;
     }
   }
 </style>

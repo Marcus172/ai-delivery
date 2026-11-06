@@ -126,7 +126,7 @@ const year = new Date().getFullYear();
   }
   .shell {
     display: grid;
-    grid-template-columns: 4rem minmax(0, 1fr);
+    grid-template-columns: 4.75rem minmax(0, 1fr);
     min-height: 100vh;
   }
   .page {
@@ -151,6 +151,9 @@ const year = new Date().getFullYear();
     color: var(--bg);
     border-radius: 1.125rem;
     padding: 2.75rem;
+  }
+  :lang(cs) .contact h2 {
+    line-height: 1.06;
   }
   .contact h2 {
     font-size: clamp(2rem, 4vw, 3.4rem);

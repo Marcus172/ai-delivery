@@ -1,13 +1,13 @@
 /**
  * External tools the site names, with their official link. One registry for the whole site: prose is
  * linked automatically (rendered MDX through `linkToolsInHtml` in `Prose`, data strings through
- * `<Linked>`), diagrams and the Sources page read from here. `match` covers the forms the copy uses,
+ * `<Linked>`), diagrams and the Toolkit page read from here. `match` covers the forms the copy uses,
  * Czech inflections included.
  * Order matters: a longer phrase is listed before a shorter tool name it contains.
  */
 import { l, type L10n } from "./l10n";
 
-/** Where a tool sits on the Sources page; tools without a group are only linked in the text (history). */
+/** Where a tool sits on the Toolkit page; tools without a group are only linked in the text (history). */
 export type ToolGroup = "agents" | "skills" | "workspaces" | "planning" | "context" | "fleet" | "quality" | "site";
 
 export type Tool = {
@@ -16,18 +16,18 @@ export type Tool = {
   url: string;
   match: RegExp;
   group?: ToolGroup;
-  /** What the tool does in my flow, one sentence for the Sources page. */
+  /** What the tool does in my flow, one sentence for the Toolkit page. */
   what?: L10n;
   /** Documentation, when it lives somewhere else than `url`. */
   docs?: string;
   /** A video where the author shows how the tool is used. */
   video?: string;
   /**
-   * Linked in the text only and deliberately left off the Sources page: past tools and the
+   * Linked in the text only and deliberately left off the Toolkit page: past tools and the
    * application stack (React, Next.js and the like). Every tool has either this or a `group`.
    */
   textOnly?: true;
-  /** Name on the Sources page, when it differs from the name used in the text. */
+  /** Name on the Toolkit page, when it differs from the name used in the text. */
   label?: L10n;
 };
 

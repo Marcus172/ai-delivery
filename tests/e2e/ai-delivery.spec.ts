@@ -113,11 +113,13 @@ for (const locale of LOCALES) {
         const context = await browser.newContext({ viewport: { width, height: 900 } });
         const page = await context.newPage();
         await page.goto(URL[locale]);
+        // The role matrix ships a phone and a wide variant; the one not shown has no box and is skipped.
         const sizes = await page.locator("svg[data-diagram] text").evaluateAll((els) =>
-          els.map((el) => {
+          els.flatMap((el) => {
             const svg = (el as SVGTextElement).ownerSVGElement as SVGSVGElement;
+            if (!svg.getBoundingClientRect().width) return [];
             const scale = svg.getBoundingClientRect().width / svg.viewBox.baseVal.width;
-            return parseFloat(getComputedStyle(el).fontSize) * scale;
+            return [parseFloat(getComputedStyle(el).fontSize) * scale];
           }),
         );
         expect(sizes.length).toBeGreaterThan(10);

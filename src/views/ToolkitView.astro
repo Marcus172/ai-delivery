@@ -4,7 +4,7 @@ import { Image } from "astro:assets";
 import Eyebrow from "../components/Eyebrow.astro";
 import Section from "../components/Section.astro";
 import { csTypo } from "../data/l10n";
-import { PEOPLE, TOOL_GROUPS, toolsIn } from "../data/sources";
+import { PEOPLE, TOOL_GROUPS, toolsIn } from "../data/toolkit";
 import type { Locale } from "../i18n/locales";
 import { t, type UiKey } from "../i18n/ui";
 
@@ -26,20 +26,20 @@ const photo = (handle: string) => {
 
 <div class="column">
   <header class="head">
-    <Eyebrow>{tt("sources.eyebrow")}</Eyebrow>
-    <h1>{tt("sources.title")}</h1>
-    <p class="lead">{tt("sources.lead")}</p>
-    <nav class="jump" aria-label={tt("sources.tools")}>
+    <Eyebrow>{tt("toolkit.eyebrow")}</Eyebrow>
+    <h1>{tt("toolkit.title")}</h1>
+    <p class="lead">{tt("toolkit.lead")}</p>
+    <nav class="jump" aria-label={tt("toolkit.tools")}>
       <ul>
-        <li><a href="#people">{tt("sources.people")}</a></li>
+        <li><a href="#people">{tt("toolkit.people")}</a></li>
         {TOOL_GROUPS.map((g) => <li><a href={`#${g.id}`}>{g.title[locale]}</a></li>)}
       </ul>
     </nav>
   </header>
 
   <Section id="people" first>
-    <h2>{tt("sources.people")}</h2>
-    <p class="intro">{tt("sources.peopleLead")}</p>
+    <h2>{tt("toolkit.people")}</h2>
+    <p class="intro">{tt("toolkit.peopleLead")}</p>
     <ul class="people">
       {
         PEOPLE.map((p) => (
@@ -72,16 +72,16 @@ const photo = (handle: string) => {
               <p class="what">{x.what?.[locale]}</p>
               <p class="links">
                 <a href={x.url}>
-                  <span class="k">{tt("sources.site")}</span> {host(x.url)}
+                  <span class="k">{tt("toolkit.site")}</span> {host(x.url)}
                 </a>
                 {x.docs && (
                   <a href={x.docs}>
-                    <span class="k">{tt("sources.docs")}</span> {host(x.docs)}
+                    <span class="k">{tt("toolkit.docs")}</span> {host(x.docs)}
                   </a>
                 )}
                 {x.video && (
                   <a href={x.video}>
-                    <span class="k">{tt("sources.video")}</span> {host(x.video)}
+                    <span class="k">{tt("toolkit.video")}</span> {host(x.video)}
                   </a>
                 )}
               </p>

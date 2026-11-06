@@ -6,6 +6,7 @@ import {
   LANDING_METRIC_IDS,
   METRICS,
   RESULTS_CAVEAT_IDS,
+  RESULTS_GROUPS,
   RESULTS_METRIC_IDS,
   metric,
 } from "../../src/data/metrics";
@@ -72,6 +73,12 @@ describe("metrics", () => {
 
   it("metric() throws on an unknown id", () => {
     expect(() => metric("no-such-metric")).toThrow();
+  });
+
+  it("results open with the sturdiest figure and keep the process measures last", () => {
+    expect(RESULTS_GROUPS.map((g) => g.id)).toEqual(["speed", "quality", "process"]);
+    expect(RESULTS_METRIC_IDS[0]).toBe("in-progress-to-pr");
+    expect(new Set(RESULTS_METRIC_IDS).size).toBe(RESULTS_METRIC_IDS.length);
   });
 
   it("lead time and returns from test exist only as caveated results metrics", () => {

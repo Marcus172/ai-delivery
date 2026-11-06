@@ -34,7 +34,10 @@ const cases = defineCollection({
     /** Metric ids shown on the case card and in the case's at-a-glance header. */
     highlights: z.array(z.string()).min(1),
     title: z.string().min(1),
+    /** The case page's lead under the title. */
     summary: z.string().min(1),
+    /** One or two sentences for the case card on the Wins & cases landing. */
+    teaser: z.string().min(1),
   }),
 });
 

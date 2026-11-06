@@ -11,7 +11,7 @@ const ROOT = join(CONTENT, "ai-delivery");
 const CHAPTER_IDS = ["principle", "flow", "tooling", "guardrails", "enablement", "planning", "offer"] as const;
 const CASE_IDS = ["brand-voice", "accessibility", "tailwind"] as const;
 
-type Chapter = { file: string; id: string; order: number; title: string; summary: string; body: string };
+type Chapter = { file: string; id: string; order: number; title: string; summary: string; teaser?: string; body: string };
 
 function parse(file: string, text: string): Chapter {
   const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/.exec(text);
@@ -21,7 +21,7 @@ function parse(file: string, text: string): Chapter {
     const kv = /^(\w+):\s*(.*)$/.exec(line);
     if (kv) fm[kv[1]] = kv[2].trim().replace(/^"(.*)"$/, "$1");
   }
-  return { file, id: fm.id, order: Number(fm.order), title: fm.title, summary: fm.summary, body: m[2] };
+  return { file, id: fm.id, order: Number(fm.order), title: fm.title, summary: fm.summary, teaser: fm.teaser, body: m[2] };
 }
 
 function chapters(locale: Locale, root = ROOT): Chapter[] {
@@ -59,7 +59,7 @@ const BANNED = [
 
 describe("ai-delivery chapters", () => {
   it("keep HTML entities out of frontmatter, which renders as escaped text (use the literal U+00A0)", () => {
-    for (const c of ALL) expect(`${c.title} ${c.summary}`, c.file).not.toMatch(/&[#\w]+;/);
+    for (const c of ALL) expect(`${c.title} ${c.summary} ${c.teaser ?? ""}`, c.file).not.toMatch(/&[#\w]+;/);
   });
 
   it("exist for both locales, all seven", () => {
@@ -107,14 +107,14 @@ describe("ai-delivery chapters", () => {
 
   it("contain no banned phrasing, no bank, no front-end, no over-claim", () => {
     for (const c of ALL) {
-      const text = `${c.title} ${c.summary} ${c.body}`;
+      const text = `${c.title} ${c.summary} ${c.teaser ?? ""} ${c.body}`;
       for (const re of BANNED) expect(text, `${c.file} ${re}`).not.toMatch(re);
     }
   });
 
   it.skipIf(!denylist)("contain no denylist term of either scope", () => {
     for (const c of ALL) {
-      const text = `${c.title} ${c.summary} ${c.body}`;
+      const text = `${c.title} ${c.summary} ${c.teaser ?? ""} ${c.body}`;
       for (const r of rules) {
         expect(matchesRule(r, text), `${c.file}: ${r.label}`).toBe(false);
       }

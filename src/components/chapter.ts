@@ -5,6 +5,7 @@ export { default as Point } from "./blocks/Point.astro";
 export { default as Detail } from "./blocks/Detail.astro";
 export { default as Facts } from "./blocks/Facts.astro";
 export { default as Fact } from "./blocks/Fact.astro";
+export { default as Caveat } from "./blocks/Caveat.astro";
 export { default as Stat } from "./Stat.astro";
 export { default as DecisionTrail } from "./diagrams/DecisionTrail.astro";
 export { default as FlowBand } from "./diagrams/FlowBand.astro";

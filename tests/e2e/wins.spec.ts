@@ -41,10 +41,15 @@ for (const locale of LOCALES) {
       const measured = results.locator(".stat[data-kind=measured]");
       expect(await measured.count()).toBeGreaterThanOrEqual(8);
       for (let i = 0; i < (await measured.count()); i++) await expect(measured.nth(i).locator(".period")).toBeVisible();
-      await expect(results.locator(".stat[data-kind=estimate]")).toHaveCount(0);
-      const pointer = results.locator("[data-estimate]");
-      await expect(pointer.locator(`a[href="${PREFIX[locale]}ai-delivery/#principle"]`)).toHaveCount(1);
-      expect(await pointer.textContent()).not.toMatch(/5\s?[–-]\s?10\s?×/);
+      const metricCaveats = caveats.locator("li[data-metric]");
+      expect(await metricCaveats.count()).toBeGreaterThan(0);
+      for (let i = 0; i < (await metricCaveats.count()); i++) await expect(metricCaveats.nth(i).locator(".period")).toBeVisible();
+      // The estimate is shown, but only in its own block, apart from the measured set.
+      const estimate = results.locator("[data-estimate]");
+      await expect(results.locator(".stat[data-kind=estimate]")).toHaveCount(1);
+      await expect(estimate.locator(".stat[data-kind=estimate]")).toContainText(/5\s?[–-]\s?10\s?×/);
+      await expect(estimate.locator(".stat[data-kind=estimate] small")).toHaveText(t(locale, "badge.estimate"));
+      await expect(estimate.locator(`a[href="${PREFIX[locale]}ai-delivery/#principle"]`)).toHaveCount(1);
     });
 
     test("three case cards in order, each linking to its case page, with labelled highlights", async ({ page }) => {
@@ -97,7 +102,7 @@ for (const locale of LOCALES) {
       for (const url of [WINS[locale], ...CASES.map(caseUrl)]) {
         await page.goto(url);
         const text = (await page.locator("main").textContent()) ?? "";
-        const caveat = (await page.locator(".stat[data-metric=tracker-scope]").allTextContents()).join("");
+        const caveat = (await page.locator("[data-metric=tracker-scope]").allTextContents()).join("");
         expect(text.replace(caveat, ""), url).not.toMatch(/front[-\s]?end/i);
       }
     });

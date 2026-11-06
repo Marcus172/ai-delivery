@@ -66,6 +66,33 @@ for (const locale of LOCALES) {
       await expect(details.locator("nav[data-toc]")).toHaveCount(1);
     });
 
+    test("chapter list stays reachable while reading on mobile", async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+      await page.goto(URL[locale]);
+      await page.evaluate(() => document.querySelector("#guardrails")?.scrollIntoView());
+      const bar = page.locator("[data-toc-bar]");
+      await expect(bar).toBeInViewport();
+      const title = (await page.locator("#guardrails-title").textContent())!.trim();
+      await expect(bar.locator("summary")).toContainText(title);
+      const rail = await page.locator(".rail").boundingBox();
+      const box = await bar.boundingBox();
+      expect(box!.y).toBeGreaterThanOrEqual(rail!.y + rail!.height - 1);
+      await bar.locator("summary").click();
+      await expect(bar).toHaveAttribute("open", "");
+      await bar.locator('nav a[href="#planning"]').click();
+      await expect(bar).not.toHaveAttribute("open", "");
+      await expect(page).toHaveURL(/#planning$/);
+      await expect(page.locator("#planning")).toBeInViewport();
+      // The sticky bar must not cover the heading we jumped to.
+      await expect
+        .poll(async () => {
+          const h = await page.locator("#planning-title").boundingBox();
+          const b = await bar.boundingBox();
+          return h!.y >= b!.y + b!.height - 1;
+        })
+        .toBe(true);
+    });
+
     test("language switch from a chapter anchor keeps the anchor", async ({ page }) => {
       await page.goto(`${URL[locale]}#guardrails`);
       const other = locale === "en" ? "/cs/ai-delivery/#guardrails" : "/ai-delivery/#guardrails";

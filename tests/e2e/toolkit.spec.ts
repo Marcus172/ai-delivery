@@ -40,14 +40,14 @@ for (const locale of LOCALES) {
 }
 
 test.describe("toolkit: old URLs", () => {
-  test("/toolkit/ redirects to /toolkit/", async ({ page }) => {
-    await page.goto("toolkit/");
+  test("/sources/ redirects to /toolkit/", async ({ page }) => {
+    await page.goto("sources/");
     await expect(page).toHaveURL(/\/ai-delivery\/toolkit\/$/);
     await expect(page.locator("main h1")).toHaveCount(1);
   });
 
-  test("/cs/toolkit/ redirects to /cs/toolkit/", async ({ page }) => {
-    await page.goto("cs/toolkit/");
+  test("/cs/sources/ redirects to /cs/toolkit/", async ({ page }) => {
+    await page.goto("cs/sources/");
     await expect(page).toHaveURL(/\/ai-delivery\/cs\/toolkit\/$/);
   });
 });

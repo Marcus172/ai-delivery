@@ -11,6 +11,7 @@ export { default as A11yAgents } from "./diagrams/A11yAgents.astro";
 export { default as A11yLifecycle } from "./diagrams/A11yLifecycle.astro";
 export { default as AuditShape } from "./diagrams/AuditShape.astro";
 export { default as DecisionTrail } from "./diagrams/DecisionTrail.astro";
+export { default as FleetMap } from "./diagrams/FleetMap.astro";
 export { default as FlowBand } from "./diagrams/FlowBand.astro";
 export { default as FlowLayers } from "./diagrams/FlowLayers.astro";
 export { default as GatesTable } from "./diagrams/GatesTable.astro";

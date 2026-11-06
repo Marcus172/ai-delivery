@@ -1,0 +1,208 @@
+---
+import { l } from "../../data/l10n";
+import type { Locale } from "../../i18n/locales";
+import ScrollHint from "../ScrollHint.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TITLE = l(
+  "The fleet: two symmetric machines that share the state of the work through git",
+  "Flotila: dva symetrické stroje, které sdílejí stav práce přes git",
+);
+const DESC = l(
+  "Two machines side by side, a laptop and a Linux desktop under Windows. Each one orchestrates and executes: agents, a worktree per ticket with its own dev-server port, a memory governor that pauses batch jobs. Between them, orchestration (workspaces, agents, briefs) goes through the Paseo relay, the control plane; files and commands go over ssh on the private Tailscale network, with checksums and exit codes. Below them, two git repositories both machines use: the state of the work, replicated to both, with metadata merged per key and a ledger per machine; and the configuration, a chezmoi profile every machine pulls, so none is the master. Either machine starts work and either runs it; an offline machine is a stop.",
+  "Dva stroje vedle sebe, notebook a desktop s Linuxem pod Windows. Každý řídí i vykonává: agenti, worktree na tiket s vlastním portem dev serveru, správce paměti, který pozastaví dávkové úlohy. Mezi nimi jde orchestrace (pracoviště, agenti, briefy) přes Paseo relay, control plane; soubory a příkazy jdou přes ssh v privátní síti Tailscale, s kontrolními součty a návratovými kódy. Pod nimi dva git repozitáře, které používají oba stroje: stav práce, replikovaný na oba, s meta slučovanými po klíčích a ledgerem pro každý stroj; a konfigurace, profil v chezmoi, který si každý stroj stáhne, takže žádný není hlavní. Práci rozjede i vykoná kterýkoli stroj; offline stroj je stop.",
+);
+
+const HEAD = l("fleet · two symmetric machines, no master", "flotila · dva symetrické stroje, žádný hlavní");
+const MACHINES = [
+  l("laptop", "notebook"),
+  l("desktop · Linux under Windows", "desktop · Linux pod Windows"),
+];
+const MACHINE_LINES = l(
+  "orchestrates and executes|agents, a worktree per ticket|own dev-server port per branch|memory governor pauses batch jobs",
+  "řídí i vykonává|agenti, worktree na tiket|vlastní port dev serveru na větev|správce paměti pozastaví dávky",
+)[locale].split("|");
+
+const LINKS = [
+  { cls: "control", top: l("Paseo relay · control plane", "Paseo relay · control plane"), bottom: l("workspaces, agents, briefs", "pracoviště, agenti, briefy") },
+  { cls: "ssh", top: l("ssh over Tailscale", "ssh přes Tailscale"), bottom: l("files and commands, checksums, exit codes", "soubory a příkazy, součty, návratové kódy") },
+];
+
+const BANDS = [
+  {
+    cls: "state",
+    title: l("state of the work · one git repository, replicated to both machines", "stav práce · jeden git repozitář, replikovaný na oba stroje"),
+    sub: l(
+      "both push and pull · metadata merged per key · each machine writes its own ledger",
+      "oba pushují i stahují · meta se slučují po klíčích · každý stroj píše vlastní ledger",
+    ),
+  },
+  {
+    cls: "config",
+    title: l("configuration · a chezmoi profile in git", "konfigurace · profil v chezmoi v gitu"),
+    sub: l(
+      "every machine pulls and applies it, none is the master · secrets encrypted with age",
+      "každý stroj si ho stáhne a aplikuje, žádný není hlavní · tajemství šifrovaná přes age",
+    ),
+  },
+];
+const LEGEND = l(
+  "Either machine starts work and either runs it. An offline machine is a stop; moving work is an explicit choice.",
+  "Práci rozjede i vykoná kterýkoli stroj. Offline stroj je stop; přesun práce je výslovná volba.",
+);
+
+const W = 920;
+const PAD = 16;
+const INNER = W - 2 * PAD;
+const CARD_W = 270;
+const CARD_Y = 34;
+const CARD_H = 124;
+const CARD_X = [PAD, W - PAD - CARD_W];
+const LINK_X1 = PAD + CARD_W;
+const LINK_X2 = W - PAD - CARD_W;
+const LINK_MID = (LINK_X1 + LINK_X2) / 2;
+const LINK_Y = [72, 126];
+const BAND_Y = [204, 262];
+const BAND_H = 48;
+const H = BAND_Y[1] + BAND_H + 34;
+const DROP_X = CARD_X.map((x) => x + CARD_W / 2);
+---
+
+<div class="scroll hscroll" tabindex="0" role="region" aria-label={TITLE[locale]}>
+  <svg
+    class="fleet"
+    data-diagram="fleet-map"
+    viewBox={`0 0 ${W} ${H}`}
+    role="img"
+    aria-labelledby="fleet-map-t"
+    aria-describedby="fleet-map-d"
+  >
+    <title id="fleet-map-t">{TITLE[locale]}</title>
+    <desc id="fleet-map-d">{DESC[locale]}</desc>
+
+    <text class="head strong" x={PAD} y="20" font-size="13">{HEAD[locale]}</text>
+
+    {/* Drops first, so the bands drawn later cover them: each machine reaches both repositories. */}
+    {DROP_X.map((x) => <line class="drop" x1={x} y1={CARD_Y + CARD_H} x2={x} y2={BAND_Y[1]} />)}
+
+    {
+      CARD_X.map((x, i) => (
+        <g class="machine">
+          <rect x={x} y={CARD_Y} width={CARD_W} height={CARD_H} rx="8" />
+          <text class="t" x={x + 16} y={CARD_Y + 28} font-size="14">
+            {MACHINES[i][locale]}
+          </text>
+          {MACHINE_LINES.map((line, j) => (
+            <text class="s" x={x + 16} y={CARD_Y + 54 + j * 19} font-size="12">
+              {line}
+            </text>
+          ))}
+        </g>
+      ))
+    }
+
+    {
+      LINKS.map((link, i) => (
+        <g class:list={["link", link.cls]}>
+          <line x1={LINK_X1} y1={LINK_Y[i]} x2={LINK_X2} y2={LINK_Y[i]} />
+          <circle cx={LINK_X1} cy={LINK_Y[i]} r="3.5" />
+          <circle cx={LINK_X2} cy={LINK_Y[i]} r="3.5" />
+          <text class="lt" x={LINK_MID} y={LINK_Y[i] - 9} text-anchor="middle" font-size="12.5">
+            {link.top[locale]}
+          </text>
+          <text class="ls" x={LINK_MID} y={LINK_Y[i] + 19} text-anchor="middle" font-size="12">
+            {link.bottom[locale]}
+          </text>
+        </g>
+      ))
+    }
+
+    {
+      BANDS.map((band, i) => (
+        <g class:list={["band", band.cls]}>
+          <rect x={PAD} y={BAND_Y[i]} width={INNER} height={BAND_H} rx="6" />
+          <text class="t" x={PAD + 16} y={BAND_Y[i] + 20} font-size="13">
+            {band.title[locale]}
+          </text>
+          <text class="s" x={PAD + 16} y={BAND_Y[i] + 38} font-size="12">
+            {band.sub[locale]}
+          </text>
+        </g>
+      ))
+    }
+
+    <text class="legend" x={PAD} y={H - 10} font-size="12.5">{LEGEND[locale]}</text>
+  </svg>
+</div>
+<ScrollHint locale={locale} />
+
+<style>
+  .scroll {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    margin-top: 1.75rem;
+  }
+  .fleet {
+    display: block;
+    width: 100%;
+    /* At a 390 px phone the box scrolls; 860 / 920 viewBox keeps 12 px labels ≥ 11 px rendered. */
+    min-width: 53.75rem;
+    overflow: visible;
+  }
+  .head,
+  .legend,
+  .machine .s,
+  .band .s,
+  .link .ls {
+    fill: var(--mute);
+  }
+  .head {
+    font-weight: 600;
+  }
+  .head.strong {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .machine rect {
+    fill: var(--tint);
+    stroke: var(--line);
+  }
+  .machine .t,
+  .band .t,
+  .link .lt {
+    fill: var(--ink);
+    font-weight: 700;
+  }
+  .link line {
+    stroke-width: 2;
+  }
+  .link.control line {
+    stroke: var(--acc);
+  }
+  .link.control circle {
+    fill: var(--acc);
+  }
+  .link.ssh line {
+    stroke: var(--mute);
+    stroke-dasharray: 5 5;
+  }
+  .link.ssh circle {
+    fill: var(--mute);
+  }
+  .drop {
+    stroke: var(--mute);
+    stroke-width: 1.5;
+  }
+  .band rect {
+    fill: var(--bg);
+    stroke: var(--mute);
+  }
+  .band.config rect {
+    stroke-dasharray: 4 5;
+  }
+</style>

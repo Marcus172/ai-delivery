@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import photo from "../assets/photo.jpg";
 import CtaRow from "../components/CtaRow.astro";
 import Orbit from "../components/diagrams/Orbit.astro";
+import FactsLine from "../components/FactsLine.astro";
 import Eyebrow from "../components/Eyebrow.astro";
 import Note from "../components/Note.astro";
 import Section from "../components/Section.astro";
@@ -42,6 +43,7 @@ const OFFER_ICONS: Record<string, string> = {
         <p class="role"><i aria-hidden="true"></i>{LANDING.who[locale]}</p>
       </div>
     </div>
+    <FactsLine locale={locale} />
     <p class="claim" data-hero-claim>
       {claimSentences.map((sentence, i) => <>{i > 0 && " "}<span>{sentence}</span></>)}
     </p>
@@ -146,6 +148,9 @@ const OFFER_ICONS: Record<string, string> = {
     display: flex;
     gap: 1.5rem;
     align-items: center;
+    margin: 0 0 1rem;
+  }
+  .hero-text :global(.facts) {
     margin: 0 0 2rem;
   }
   .who .avatar {

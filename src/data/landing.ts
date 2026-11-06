@@ -32,7 +32,7 @@ export const LANDING = {
     "Proces, kterým se dnes řídí agenti, je ten, ve kterém jsem pracoval dávno před nimi. Proto vím, které kroky AI zrychlí a které ne, a proto je zrychlení níž odhad, ne měření.",
   ),
   photoAlt: l("Marek Rom, portrait", "Marek Rom, portrét"),
-  badge: l("Prague · available for a new project", "Praha · k dispozici pro nový projekt"),
+  badge: l("Prague or remote · available from January 2027", "Praha nebo remote · k dispozici od ledna 2027"),
 
   readEyebrow: l("Read on", "Čtěte dál"),
   teasers: [

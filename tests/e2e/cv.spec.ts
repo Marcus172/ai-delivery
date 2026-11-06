@@ -80,3 +80,17 @@ test.describe("employer name is confined to the cv pages", () => {
     });
   }
 });
+
+for (const locale of LOCALES) {
+  test.describe(`cv facts line (${locale})`, () => {
+    test.use({ viewport: { width: 390, height: 844 } });
+    test("facts line is in the first viewport and names the role", async ({ page }) => {
+      await page.goto(CV_URL[locale]);
+      const facts = page.locator("[data-facts]");
+      await expect(facts).toBeVisible();
+      await expect(facts).toContainText("Product Engineering & AI Lead");
+      const box = await facts.boundingBox();
+      expect(box!.y + box!.height).toBeLessThanOrEqual(844);
+    });
+  });
+}

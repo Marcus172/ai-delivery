@@ -288,6 +288,18 @@ for (const locale of LOCALES) {
         const box = await facts.boundingBox();
         expect(box!.y + box!.height).toBeLessThanOrEqual(vp.height);
       });
+
+      test("two reader paths link to Wins & cases and the CV, in the first viewport", async ({ page }) => {
+        await page.goto(URL_OF[locale]);
+        const links = page.locator("[data-reader-paths] a");
+        await expect(links).toHaveCount(2);
+        await expect(links.nth(0)).toHaveAttribute("href", PATH_OF[locale].wins);
+        await expect(links.nth(1)).toHaveAttribute("href", PATH_OF[locale].cv);
+        for (const i of [0, 1]) {
+          const box = await links.nth(i).boundingBox();
+          expect(box!.y + box!.height).toBeLessThanOrEqual(vp.height);
+        }
+      });
     });
   }
 }

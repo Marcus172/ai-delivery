@@ -45,8 +45,8 @@ export const METRICS: Metric[] = [
     id: "in-progress-to-pr",
     value: l("−70 %", "−70 %"),
     label: l(
-      "from In Progress to pull request, median (2.3 → 0.7 days)",
-      "od rozpracování po pull request, medián (2,3 → 0,7 dne)",
+      "time from starting work on a ticket to opening its pull request, median (2.3 → 0.7 days)",
+      "doba od začátku práce na tiketu po otevření pull requestu, medián (2,3 → 0,7 dne)",
     ),
     kind: "measured",
     period: TRACKER,
@@ -82,8 +82,8 @@ export const METRICS: Metric[] = [
     id: "lead-time",
     value: l("−57 %", "−57 %"),
     label: l(
-      "lead time from In Progress to ready for test, median (2.8 → 1.2 days)",
-      "lead time od rozpracování po předání do testu, medián (2,8 → 1,2 dne)",
+      "lead time from starting work on a ticket to handing it over to testing, median (2.8 → 1.2 days)",
+      "lead time od začátku práce na tiketu po předání do testu, medián (2,8 → 1,2 dne)",
     ),
     kind: "measured",
     period: TRACKER,
@@ -773,8 +773,8 @@ export const RESULTS_GROUPS: readonly ResultsGroup[] = [
     id: "speed",
     title: l("Speed", "Rychlost"),
     note: l(
-      "The time from In Progress to pull request is the sturdiest figure here; lead time is partly status discipline.",
-      "Doba od rozpracování po pull request je tu nejodolnější; lead time je zčásti disciplína ve stavech.",
+      "The time from starting work to the pull request is the sturdiest figure here; lead time is partly status discipline.",
+      "Doba od začátku práce po pull request je tu nejodolnější; lead time je zčásti disciplína ve stavech.",
     ),
     metrics: ["in-progress-to-pr", "lead-time"],
   },

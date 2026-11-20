@@ -31,21 +31,12 @@ const cases = await loadCases(locale);
   <h1>{tt("wins.title")}</h1>
   <p class="lead">{tt("wins.lead")}</p>
   <nav class="jump" aria-label={tt("wins.jumpLabel")}>
-    <a href="#results">{tt("wins.jump.results")}</a>
     <a href="#cases">{tt("wins.jump.cases")} ({cases.length})</a>
     <a href="#along-the-way">{tt("wins.jump.more")} ({WINS.length})</a>
+    <a href="#results">{tt("wins.jump.results")}</a>
   </nav>
   <p class="as-of">{t(locale, "ai.asOf")}</p>
 </header>
-
-<Section id="results" class="results">
-  <Eyebrow>{tt("wins.resultsEyebrow")}</Eyebrow>
-  <h2>{typo(resultsEntry.data.title)}</h2>
-  <p class="summary">{typo(resultsEntry.data.summary)}</p>
-  <Prose>
-    <Results />
-  </Prose>
-</Section>
 
 <Section id="cases">
   <Eyebrow>{tt("wins.casesEyebrow")}</Eyebrow>
@@ -95,6 +86,15 @@ const cases = await loadCases(locale);
       </span>
     </div>
   </div>
+</Section>
+
+<Section id="results" class="results">
+  <Eyebrow>{tt("wins.resultsEyebrow")}</Eyebrow>
+  <h2>{typo(resultsEntry.data.title)}</h2>
+  <p class="summary">{typo(resultsEntry.data.summary)}</p>
+  <Prose>
+    <Results />
+  </Prose>
 </Section>
 
 <Section id="next">

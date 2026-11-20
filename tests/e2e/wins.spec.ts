@@ -32,11 +32,20 @@ for (const locale of LOCALES) {
       });
     }
 
-    test("has one h1, results before the cases, and the rail marks Wins as the current page", async ({ page }) => {
+    test("has one h1, the cases and smaller wins before the results, and the rail marks Wins as the current page", async ({ page }) => {
       await page.goto(WINS[locale]);
       await expect(page.locator("main h1")).toHaveCount(1);
       const order = await page.locator("main section[id]").evaluateAll((els) => els.map((el) => el.id));
-      expect(order.indexOf("results")).toBeLessThan(order.indexOf("cases"));
+      expect(order.indexOf("cases")).toBeGreaterThanOrEqual(0);
+      expect(order.indexOf("cases")).toBeLessThan(order.indexOf("results"));
+      const following = await page.evaluate(() => {
+        const more = document.querySelector("[data-more-wins]");
+        const results = document.querySelector("section#results");
+        return !!more && !!results && !!(more.compareDocumentPosition(results) & Node.DOCUMENT_POSITION_FOLLOWING);
+      });
+      expect(following).toBe(true);
+      const jumps = await page.locator("header.head nav.jump a").evaluateAll((els) => els.map((el) => el.getAttribute("href")));
+      expect(jumps).toEqual(["#cases", "#along-the-way", "#results"]);
       await expect(page.locator(`nav.rail a[href="${PREFIX[locale]}wins/"]`)).toHaveAttribute("aria-current", "page");
     });
 
